@@ -1,0 +1,26 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0",
+        "title": "Paddle"
+    },
+    "basePath": "/paddle/api/v1",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "consumes": [
+        "application/json",
+        "application/x-www-form-urlencoded",
+        "multipart/form-data"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "tags": [
+        
+    ],
+    "paths": {
+
+    }
+}
