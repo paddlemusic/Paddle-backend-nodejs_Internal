@@ -3,5 +3,5 @@ const routePrefix = `/paddle/api/v${config.constants.apiVersion}/`
 const userRoutes = require('./userRoutes')
 
 module.exports = (app) => {
-    app.use(`${routePrefix}/user`, userRoutes)
+  app.use(`${routePrefix}/user`, userRoutes)
 }
