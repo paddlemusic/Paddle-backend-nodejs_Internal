@@ -1,0 +1,16 @@
+{
+  "name": "paddle-backend-nodejs",
+  "version": "1.0.0",
+  "description": "Paddle app backend (A music app using Spotify web APIs).",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bipin_yadav-algo@bitbucket.org/algoworks-dev/paddle-backend-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/algoworks-dev/paddle-backend-nodejs#readme"
+}
