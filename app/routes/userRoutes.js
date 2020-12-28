@@ -4,5 +4,6 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 
 router.post('/signup', userController.signup)
+// router.post('authenticate/facebook' , userController.)
 
 module.exports = router
