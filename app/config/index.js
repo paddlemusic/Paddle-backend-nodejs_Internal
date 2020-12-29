@@ -14,6 +14,10 @@ module.exports = {
   JWT: {
     secret: process.env.JWT_SECRET
   },
+  FACEBOOK : {
+      clientId: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET
+  },
   port: port,
   messages: messages,
   constants: constants

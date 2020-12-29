@@ -16,7 +16,21 @@ const failureResponse = (res, errorCode, errorMessage) => {
   })
 }
 
+async function rawQuery(query) {
+  return new Promise((resolve, reject) => {
+    dbConfig.pool.query(query, (error, results) => {
+      if (error) {
+        console.log(error)
+        reject(error)
+      } else {
+        resolve(results.rows)
+      }
+    })
+  })
+}
+
 module.exports = {
   successResponse,
-  failureResponse
+  failureResponse,
+  rawQuery
 }

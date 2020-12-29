@@ -23,7 +23,7 @@ const User = sequelize.define('User', {
   },
   date_of_birth: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true
   },
   social_user_id: {
     type: DataTypes.STRING,
@@ -35,7 +35,7 @@ const User = sequelize.define('User', {
     allowNull: true
   },
   role: {
-    type: DataTypes.ENUM('1', '2'),
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   device_token: {

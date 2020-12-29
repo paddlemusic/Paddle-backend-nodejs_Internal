@@ -1,13 +1,19 @@
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const passport = require('passport');
 const swaggerUI = require('swagger-ui-express')
 const swaggerDocument = require('../../swagger.json')
 const routes = require('../routes/index')
 const config = require('../config')
 const utils = require('../utils/utils')
 const constants = require('../config/constants')
+const express = require('express');
+const path = require('path');
 
 function loader (app) {
+// view engine setup
+
+
   app.use(cookieParser())
 
   app.use(bodyParser.urlencoded({
@@ -18,6 +24,8 @@ function loader (app) {
     limit: '50mb'
   }))
 
+  app.use(passport.initialize());
+ 
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
     if (language) {
