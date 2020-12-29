@@ -25,7 +25,7 @@ function loader (app) {
   }))
 
   app.use(passport.initialize());
- 
+  app.use(passport.session());
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
     if (language) {

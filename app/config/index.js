@@ -18,6 +18,12 @@ module.exports = {
       clientId: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET
   },
+
+  GOOGLE : {
+    clientId : process.env.GOOGLE_CLIENT_ID,
+    clientSecret : process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL : process.env.GOOGLE_CALLBACK_URL
+  },
   port: port,
   messages: messages,
   constants: constants
