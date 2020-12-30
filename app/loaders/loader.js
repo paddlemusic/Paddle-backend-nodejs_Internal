@@ -25,7 +25,7 @@ function loader (app) {
   }))
 
   app.use(passport.initialize());
-  app.use(passport.session());
+  // app.use(passport.session());
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
     if (language) {
@@ -45,6 +45,7 @@ function loader (app) {
 
   routes(app)
   app.use((req, res, next) => {
+    console.log("url is:", req.url);
     const langMsg = config.messages[req.app.get('lang')]
     utils.failureResponse(res, constants.NOT_FOUND, langMsg.routeNotFound)
     next()
