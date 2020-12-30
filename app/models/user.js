@@ -8,7 +8,7 @@ const User = sequelize.define('User', {
   },
   username: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
     unique: true
   },
   email: {
@@ -36,7 +36,7 @@ const User = sequelize.define('User', {
   },
   role: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   device_token: {
     type: DataTypes.STRING,
@@ -44,7 +44,7 @@ const User = sequelize.define('User', {
   },
   is_active: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: true
   },
   created_at: {

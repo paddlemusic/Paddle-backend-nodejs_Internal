@@ -2,7 +2,13 @@ const User = require('../models/user')
 
 class UserService {
   signup(params) {
-    console.log('signup service called')
+    return new Promise((resolve, reject) => {
+      console.log('signup service called')
+      console.log("params are:",params)
+        User.create(params)
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+      })
   }
 
 
