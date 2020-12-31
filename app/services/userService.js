@@ -12,7 +12,7 @@ class UserService {
   }
 
 
-  facebookSignup(params) {
+  socialMediaSignup(params) {
       return new Promise((resolve, reject) => {
       console.log("params are:",params)
         User.create(params)
