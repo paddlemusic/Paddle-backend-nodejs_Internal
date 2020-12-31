@@ -116,7 +116,7 @@ class UserController {
           util.successResponse(res, config.SUCCESS,
             config.LOGIN_SUCCESSFULLY, { token: token })
         } else {
-          const data = await userService.facebookSignup(userData)
+          const data = await userService.socialMediaSignup(userData)
           if (data) {
             util.successResponse(res, config.SUCCESS,
               config.LOGIN_SUCCESSFULLY, { token: token })

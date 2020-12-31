@@ -8,10 +8,10 @@ const sequelize = new Sequelize(config.DB.database, config.DB.user, config.DB.pa
     port: 5432
   })
 
-<<<<<<< HEAD
+
 //sequelize.sync()
-=======
+
 // sequelize.sync({alter: true})
->>>>>>> 108a00838d3e06c04acb55e0126239ad43d7353b
+
 
 module.exports = sequelize
