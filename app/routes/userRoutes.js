@@ -9,8 +9,8 @@ const userController = new UserController()
 router.post('/signup', userController.signup)
 router.get('/facebook/token', passport.authenticate('facebook-token'),userController.socialMediaSignup)
 
-router.get('/error', (req, res) => res.send("error logging in"));
-router.get('/success', (req, res) => rconsole.log(res));
+// router.get('/error', (req, res) => res.send("error logging in"));
+// router.get('/success', (req, res) => rconsole.log(res));
 
 router.get('/auth/google', passport.authenticate('google',{ scope: ['profile', 'email'] }))
 
