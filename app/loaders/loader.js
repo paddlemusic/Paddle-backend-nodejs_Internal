@@ -2,7 +2,9 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const passport = require('passport');
 const swaggerUI = require('swagger-ui-express')
-const swaggerDocument = require('../../swagger.json')
+// const swaggerDocument = require('../../swagger.json')
+const swaggerDocument = require('../config/swagger.js')
+
 const routes = require('../routes/index')
 const config = require('../config')
 const utils = require('../utils/utils')
@@ -38,14 +40,16 @@ function loader (app) {
     next()
   })
 
-  app.use('/paddle/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
+  app.use('/paddle/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument.swaggerSpecification, {
+    explorer: true
+  }))
   app.get('/paddle', (req, res) => {
     res.send('<center><p><b>This is the Paddle app server.</b></p></center>')
   })
 
   routes(app)
   app.use((req, res, next) => {
-    console.log("url is:", req.url);
+    // console.log("url is:", req.url);
     const langMsg = config.messages[req.app.get('lang')]
     utils.failureResponse(res, constants.NOT_FOUND, langMsg.routeNotFound)
     next()
