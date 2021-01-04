@@ -2,21 +2,22 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const passport = require('passport');
 const swaggerUI = require('swagger-ui-express')
-// const swaggerDocument = require('../../swagger.json')
 const swaggerDocument = require('../config/swagger.js')
+const morgan = require('morgan');
 
 const routes = require('../routes/index')
 const config = require('../config')
 const utils = require('../utils/utils')
 const constants = require('../config/constants')
-const express = require('express');
-const path = require('path');
+
 
 function loader (app) {
 // view engine setup
 
 
   app.use(cookieParser())
+  app.use(morgan('tiny'))
+ 
 
   app.use(bodyParser.urlencoded({
     extended: false,
