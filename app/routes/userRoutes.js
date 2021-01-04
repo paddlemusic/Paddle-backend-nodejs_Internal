@@ -17,7 +17,7 @@ router.get('/login', userController.login)
  *     summary: For Signup with Facebook.
  *     description: >
  *      This resource will be used for individual signup with Facebook in the system.
- *      Facebook generated id will be saved in Database
+ *      Facebook generated id will be saved in Database.
  *     produces:
  *       - application/json
  *     externalDocs:
@@ -34,7 +34,7 @@ router.get('/facebook/token', passport.authenticate('facebook-token'), userContr
  *     summary: For Signup with Google.
  *     description: >
  *      This resource will be used for individual signup with Google in the system.
- *      Google generated id will be saved in Database
+ *      Google generated id will be saved in Database.
  *     produces:
  *       - application/json
  *     externalDocs:
@@ -43,6 +43,7 @@ router.get('/facebook/token', passport.authenticate('facebook-token'), userContr
  */
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'paddle/api/v1/user/error' }), userController.socialMediaSignup)
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'paddle/api/v1/user/error' }),
+  userController.socialMediaSignup)
 
 module.exports = router
