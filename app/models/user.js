@@ -47,13 +47,13 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: true
   },
-  created_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+  is_verified: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
   },
-  updated_at: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
+  verification_token: {
+    type: DataTypes.STRING
   }
 },
 {

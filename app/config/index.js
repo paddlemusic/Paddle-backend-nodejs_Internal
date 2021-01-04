@@ -14,15 +14,19 @@ module.exports = {
   JWT: {
     secret: process.env.JWT_SECRET
   },
-  FACEBOOK : {
-      clientId: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET
+  Twilio: {
+    accountSid: process.env.TWILIO_AC_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER
   },
-
-  GOOGLE : {
-    clientId : process.env.GOOGLE_CLIENT_ID,
-    clientSecret : process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL : process.env.GOOGLE_CALLBACK_URL
+  FACEBOOK: {
+    clientId: process.env.FACEBOOK_APP_ID,
+    clientSecret: process.env.FACEBOOK_APP_SECRET
+  },
+  GOOGLE: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
   port: port,
   messages: messages,
