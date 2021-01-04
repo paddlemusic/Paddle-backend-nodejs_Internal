@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser')
 const passport = require('passport')
 const swaggerUI = require('swagger-ui-express')
 const swaggerDocument = require('../config/swagger.js')
-const morgan = require('morgan');
+const morgan = require('morgan')
 
 const routes = require('../routes/index')
 const config = require('../config')
@@ -13,7 +13,6 @@ const constants = require('../config/constants')
 function loader (app) {
   app.use(cookieParser())
   app.use(morgan('tiny'))
- 
 
   app.use(bodyParser.urlencoded({
     extended: false,
