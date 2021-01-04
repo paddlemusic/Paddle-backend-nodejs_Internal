@@ -1,13 +1,14 @@
 const express = require('express')
 const router = express.Router()
-const passport = require('passport');
+const passport = require('passport')
 const UserController = require('../controllers/userController')
 const userController = new UserController()
 
 
 router.post('/signup', userController.signup)
 
-
+router.post('/verify_otp', userController.verifyOTP)
+router.get('/login', userController.login)
 
 /**
  * @swagger
@@ -24,6 +25,7 @@ router.post('/signup', userController.signup)
  *       description: Learn more about signup operations provided by this API.
  *       url: http://www.passportjs.org/docs/facebook/
  */
+
 
 router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
 
@@ -50,6 +52,7 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 
 
 router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: 'paddle/api/v1/user/error' }),
     userController.socialMediaSignup);
+
 
 
 

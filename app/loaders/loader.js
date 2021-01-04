@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-const passport = require('passport');
+const passport = require('passport')
 const swaggerUI = require('swagger-ui-express')
 const swaggerDocument = require('../config/swagger.js')
 const morgan = require('morgan');
@@ -10,11 +10,7 @@ const config = require('../config')
 const utils = require('../utils/utils')
 const constants = require('../config/constants')
 
-
 function loader (app) {
-// view engine setup
-
-
   app.use(cookieParser())
   app.use(morgan('tiny'))
  
@@ -27,8 +23,7 @@ function loader (app) {
     limit: '50mb'
   }))
 
-  app.use(passport.initialize());
-  // app.use(passport.session());
+  app.use(passport.initialize())
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
     if (language) {
@@ -50,7 +45,6 @@ function loader (app) {
 
   routes(app)
   app.use((req, res, next) => {
-    // console.log("url is:", req.url);
     const langMsg = config.messages[req.app.get('lang')]
     utils.failureResponse(res, constants.NOT_FOUND, langMsg.routeNotFound)
     next()
