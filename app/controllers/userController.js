@@ -4,99 +4,131 @@ const {authSchema} = require('../middleware/userSchema');
 const UserService = require('../services/userService')
 const util = require('../utils/utils');
 const bcrypt = require("bcrypt");
-const config = require('../config/constants');
+//const config = require('../config/constants');
 //import moment from 'moment';
 //import uuidv4 from 'uuid/v4';
 const Helper=require('./Helper');
 //import Helper from './Helper';
 const User = require('../models/user');
-const authenticate = require('../middleware/authenticate')
-const UserService = require('../services/userService')
-const util = require('../utils/utils')
-const config = require('../config/constants')
+//const authenticate = require('../middleware/authenticate')
+//const UserService = require('../services/userService')
+//const util = require('../utils/utils')
+const config = require('../config')
+const schema = require('../middleware/schemaValidator/userSchema')
 const userService = new UserService()
 
 class UserController {
   async signup (req, res) {
-    console.log("signup api called");
-    if (!req.body.email || !req.body.password) {
-      return res.status(400).send({'message': 'Some values are missing'});
-    }
-    if (!Helper.isValidEmail(req.body.email)) {
-      return res.status(400).send({ 'message': 'Please enter a valid email address' });
-    }
-    authSchema.validateAsync(req.body).then(()=>{
-      const hashed = Helper.hashPassword(req.body.password);
-      console.log(hashed);
-      req.body.password = hashed;
-    });
-    console.log(req.body);
-  //  validator.schema.signup.validateUser(req.body).then(() =>{
-    //  const hashPassword = Helper.hashPassword(req.body.password);
-      //console.log(hashPassword);
-   // });
-
-    //saving  a new user
-    /*const user=new User({
-      name:req.body.name,
-      email:req.body.email,
-      password:hashPassword
-    });
-    user
-    .save()
-    .then(result=>{
-      console.log(result);
-      res.status(201).json({
-        message:"user created"
-      });
+    const langMsg = config.messages[req.app.get('lang')]
+   // console.log(langMsg);
+    schema.signup.validateAsync(req.body).then(async () => {
+      const passwordHash = await util.encryptPassword(req.body.password)
+      req.body.password = passwordHash
+      console.log(req.body);
+      const signupData = await userService.signup(req.body)
+      console.log("signupdatacalled",signupData);
+      const otp = await util.sendOTP(signupData.dataValues.phone_number)
+      if (otp) {
+        const otpJwt = await util.getJwtFromOtp(otp.otp)
+        await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
+      }
+      const payload = { id: signupData.dataValues.id, username: signupData.dataValues.username, role: 1 }
+      const token = await util.generateJwtToken(payload)
+      signupData.dataValues.token = token
+      delete signupData.dataValues.password
+      delete signupData.dataValues.role
+      delete signupData.dataValues.device_token
+      delete signupData.dataValues.verification_token
+      delete signupData.dataValues.social_user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.signupSuccess, signupData.dataValues)
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
+      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      util.failureResponse(res, errorCode, errorMessage)
     })
-    .catch(err=>{
-      console.log(err);
-      res.status(500).json({
-        error:err
-      });
-    });*/
-    /*console.log("signup called 1"+req.body.email);
-      console.log("signup called 2");
-      User.find({email: req.body.email})
-      .exec()
-      .then(user=>{
-        if(user.length>=1){
-          return res.status(409).json({
-            message:"mail exists"
-          });
+  }
+
+  async verifyOTP (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.verifyOTP.validateAsync(req.body).then(async () => {
+      const verificationToken = await userService.getVerificationToken(req.body)
+      if (!verificationToken.verification_token) {
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return
+      }
+      const otp = await util.getOtpFromJwt(verificationToken.verification_token)
+      if (otp.otp === req.body.otp) {
+        await userService.verifyUser(req.body)
+        util.successResponse(res, config.constants.SUCCESS, langMsg.userVerified, {})
+      } else {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.otpIncorrect)
+      }
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    })
+  }
+
+  async login (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.login.validateAsync(req.body).then(async () => {
+      const loginResponse = await userService.login(req.body)
+      if (!loginResponse) {
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      } else if (!loginResponse.dataValues.is_active) {
+        util.failureResponse(res, config.constants.FORBIDDEN, langMsg.userDeactivated)
+      } else if (!loginResponse.dataValues.password) {
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      } else {
+        const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
+        if (didMatch) {
+          const payload = {
+            id: loginResponse.dataValues.id,
+            username: loginResponse.dataValues.email,
+            role: 1
+          }
+          const token = await util.generateJwtToken(payload)
+          loginResponse.dataValues.token = token
+          delete loginResponse.dataValues.password
+          util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
+        } else {
+          util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.wrongPassword)
         }
-        else{
-          bcrypt.hash(req.body.password,10,(err,hash)=>{
-            if(err){
-              return res.status(500).json({
-                error:err
-              });
-            }
-            else{
-              const user=new User({
-                email:req.body.email,
-                password:hash
-              });
-              user
-              .save()
-              .then(result=>{
-                console.log(result);
-                res.status(201).json({
-                  message:"user created"
-                });
-              })
-              .catch(err=>{
-                console.log(err);
-                res.status(500).json({
-                  error:err
-                });
-              });
-            }
-          });
+      }
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, langMsg.internalServerError, config.constants.internalServerError)
+    })
+  }
+  async forgotPassword(req,res){
+//    console.log(req.body)
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.forgotPassword.validateAsync(req.body).then(async()=>{
+      const userExist = await userService.forgotPassword(req.body)
+//      console.log("result params from controller services",userExist)
+      if (!userExist) {
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      }
+      else
+      {
+        const resetPasswordToken = await util.generatePasswordReset()
+//        console.log("result params from controller services resetPasswordToken",resetPasswordToken)
+        await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
+        const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
+        if (!getResetPasswordToken) {
+          util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+          return
         }
-      });*/
-    
+        console.log("result params from controller services getresetPasswordToken",getResetPasswordToken.reset_password_token)
+      }
+    })
   }
 
   async socialMediaSignup (req, res) {

@@ -1,40 +1,132 @@
 const User = require('../models/user')
 
-class UserService {
-  signup(params) {
-    return new Promise((resolve, reject) => {
-      console.log('signup service called')
-      console.log("params are:",params)
-        User.create(params)
-        .then(result => resolve(result))
-        .catch(err => reject(err))
-      })
+class CustomError extends Error {
+  constructor (message) {
+    super(message)
+    this.name = 'CustomError'
   }
+}
 
-
-  socialMediaSignup(params) {
-      return new Promise((resolve, reject) => {
-      console.log("params are:",params)
-        User.create(params)
-        .then(result => resolve(result))
-        .catch(err => reject(err))
-      })
-    }
-    
-
-  
-
-
-
-  isUserAlreadyExist(params) {
+class UserService {
+  signup (params) {
     return new Promise((resolve, reject) => {
-        const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
-        User.findOne({ where: params }, { attribute: userAttribute })
-            .then(result => resolve(result))
-            .catch(err => reject(err))
+      params.role = 1 // 1->User, 2->Admin
+      console.log(params)
+      User.create(params)
+        .then(result => resolve(result))
+        .catch(err => {
+          if (err.original.code === '23505' || err.original.code === 23505) {
+            switch (err.errors[0].path) {
+              case 'phone_number':
+                reject(new CustomError('Phone number is already registered.'))
+                break
+              case 'email':
+                reject(new CustomError('Email address is already registered.'))
+                break
+              case 'username':
+                reject(new CustomError('Username is already registered.'))
+                break
+              default:
+                reject(err)
+            }
+          }
+          else
+          {
+            console.log(err);
+            reject(err)
+          }
+        })
     })
   }
 
+  updateVerificationToken (params) {
+    return new Promise((resolve, reject) => {
+      User.update({ verification_token: params.otp },
+        { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+  
+  updateResetPasswordToken (params) {
+    return new Promise((resolve, reject) => {
+      User.update({ resetPasswordToken: params.resetPasswordToken,resetPasswordExpires:Date.now() + 3600000 },
+        { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getVerificationToken (params) {
+    return new Promise((resolve, reject) => {
+      User.findOne({ where: { phone_number: params.phone_number }, raw: true, attributes: ['verification_token'] })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getResetPasswordToken(params) {
+    return new Promise((resolve, reject) => {
+      User.findOne({ where: { username: params.username }, raw: true, attributes: ['reset_password_token'] })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  verifyUser (params) {
+    return new Promise((resolve, reject) => {
+      const query = {}
+      query.is_verified = true
+      query.verification_token = null
+      User.update(query, { where: { phone_number: params.phone_number } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  login (params) {
+    return new Promise((resolve, reject) => {
+      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
+        'password', 'is_verified', 'is_active', 'createdAt', 'updatedAt']
+      const criteria = {
+        role: 1,
+        email: params.email
+      }
+      User.findOne({ where: criteria, attributes: userAttribute })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  socialMediaSignup (params) {
+    return new Promise((resolve, reject) => {
+      console.log('params are:', params)
+      User.create(params)
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  isUserAlreadyExist (params) {
+    return new Promise((resolve, reject) => {
+      const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
+      User.findOne({ where: params }, { attribute: userAttribute })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+  forgotPassword(params){
+    return new Promise((resolve,reject)=>{
+      const criteria = {
+        role: 1,
+        username: params.username
+      }
+      User.findOne({where:criteria})
+      .then(result=>resolve(result))
+      .catch(err=>reject(err))
+      //console.log("result params from util services")
+    })
+  }
 }
 
 module.exports = UserService
