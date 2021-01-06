@@ -21,7 +21,8 @@ module.exports = {
   },
   FACEBOOK: {
     clientId: process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET
+    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    callbackURL: process.env.FACEBOOK_CALLBACK_URL
   },
   GOOGLE: {
     clientId: process.env.GOOGLE_CLIENT_ID,
