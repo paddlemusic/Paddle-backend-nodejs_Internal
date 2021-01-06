@@ -3,9 +3,7 @@ const passport = require('passport')
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const jwt = require('jsonwebtoken')
 const FacebookTokenStrategy = require('passport-facebook-token')
-// const FacebookStrategy = require('passport-facebook').Strategy
-// const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
-//const GoogleTokenStrategy = require('passport-google-token').Strategy
+
 const config = require('../config/index')
 const { OAuth2Client } = require('google-auth-library')
 const googleClient = new OAuth2Client(config.GOOGLE.clientId)
@@ -38,39 +36,6 @@ exports.facebookPassport = passport.use(new FacebookTokenStrategy({
   }
 }
 ))
-// exports.facebookPassport = passport.use(new FacebookStrategy({
-//   clientID: config.FACEBOOK.clientId,
-//   clientSecret: config.FACEBOOK.clientSecret,
-//   callbackURL: config.FACEBOOK.callbackURL // http://localhost:8080/paddle/api/v1/user/auth/google/callback
-// }, (accessToken, refreshToken, profile, done) => {
-//   if (profile.id) {
-//     return done(null, profile)
-//   }
-// }
-// ))
-
-// exports.googlePassport = passport.use(new GoogleStrategy({
-//   clientID: config.GOOGLE.clientId,
-//   clientSecret: config.GOOGLE.clientSecret,
-//   callbackURL: config.GOOGLE.callbackURL // http://localhost:8080/paddle/api/v1/user/auth/google/callback
-// },
-// function (accessToken, refreshToken, profile, done) {
-//   if (profile.id) {
-//     console.log('acessToken:', accessToken)
-//     return done(null, profile)
-//   }
-// }
-// ))
-// exports.googlePassport = passport.use(new GoogleTokenStrategy({
-//   clientID: config.GOOGLE.clientId,
-//   clientSecret: config.GOOGLE.clientSecret
-// }, (accessToken, refreshToken, profile, done) => {
-//   if (profile.id) {
-//     console.log('acessToken:', accessToken)
-//     return done(null, profile)
-//   }
-// }
-// ))
 
 exports.googleSignIn = function (req, res, next) {
   console.log('Body is:', req.body.token)
