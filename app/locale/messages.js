@@ -11,7 +11,13 @@ module.exports = {
     otpIncorrect: 'OTP is wrong or expired.',
     loginSuccess: 'User logged in successfully.',
     userDeactivated: 'User account is deactivated.',
+    userNotVerfied: 'User account is not verified.',
     wrongPassword: 'Password is incorrect.',
-    socialAccount: 'Login with your social account.'
+    socialAccount: 'Login with your social account.',
+    invalidToken: 'Authorization token is not valid.',
+    tokenExpired: 'Authorization token has expired.',
+    tokenMissing: 'Authorization token is missing.',
+    invaldRole: 'User role not valid.',
+    updateSuccess: 'Updated successfully.'
   }
 }

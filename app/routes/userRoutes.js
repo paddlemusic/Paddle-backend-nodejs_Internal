@@ -3,11 +3,13 @@ const router = express.Router()
 const passport = require('passport')
 const UserController = require('../controllers/userController')
 const userController = new UserController()
+const auth = require('../middleware/authenticate')
 
 router.post('/signup', userController.signup)
 
 router.post('/verify_otp', userController.verifyOTP)
 router.get('/login', userController.login)
+router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
  * @swagger

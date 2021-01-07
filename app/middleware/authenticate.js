@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const FacebookTokenStrategy = require('passport-facebook-token')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const config = require('../config/index')
+const util = require('../utils/utils')
 
 passport.serializeUser(function (user, done) {
   done(null, user)
@@ -45,3 +46,30 @@ function (accessToken, refreshToken, profile, done) {
   }
 }
 ))
+
+exports.verifyToken = (req, res, next) => {
+  const secret = config.JWT.secret
+  const token = req.headers.authorization
+  const LangMsg = config.messages[req.app.get('lang')]
+  if (token) {
+    console.log(req.path)
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        console.log(LangMsg.invalidToken)
+        util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
+      } else {
+        console.log(decoded)
+        if (Number(decoded.role) !== 1) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
+        } else if (!decoded.is_active) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
+        } else {
+          req.decoded = decoded
+          next()
+        }
+      }
+    })
+  } else {
+    util.failureResponse(res, config.constants.UNAUTHORIZED, LangMsg.tokenMissing)
+  }
+}
