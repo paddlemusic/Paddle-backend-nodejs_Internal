@@ -34,6 +34,12 @@ const schema = {
     email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
     bio: Joi.string().trim().alphanum().max(300).required()
+  }),
+  follow: Joi.object().keys({
+    user_id: Joi.number().min(1).required()
+  }),
+  unfollow: Joi.object().keys({
+    user_id: Joi.number().min(1).required()
   })
 }
 

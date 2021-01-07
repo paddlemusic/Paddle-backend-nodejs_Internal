@@ -18,6 +18,9 @@ module.exports = {
     tokenExpired: 'Authorization token has expired.',
     tokenMissing: 'Authorization token is missing.',
     invaldRole: 'User role not valid.',
-    updateSuccess: 'Updated successfully.'
+    updateSuccess: 'Updated successfully.',
+    conflict: 'Conflicting request.',
+    success: 'Successful.',
+    failed: 'Error occured.'
   }
 }

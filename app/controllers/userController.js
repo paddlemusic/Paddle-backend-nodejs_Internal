@@ -4,8 +4,10 @@ const CommonService = require('../services/commonService')
 const util = require('../utils/utils')
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
+const User = require('../models/user')
 const userService = new UserService()
 const commonService = new CommonService()
+const UserFollower = require('../models/userFollower')
 
 class UserController {
   async signup (req, res) {
@@ -146,17 +148,17 @@ class UserController {
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.editDetails.validateAsync(req.body).then(async () => {
-      const currentPhoneNumber = await commonService.findOne('User', { id: req.decoded.id }, ['phone_number'])
-      const updateResult = await commonService.update('User', req.body, { id: req.decoded.id })
+      const currentPhoneNumber = await commonService.findOne(User, { id: req.decoded.id }, ['phone_number'])
+      const updateResult = await commonService.update(User, req.body, { id: req.decoded.id })
       console.log(currentPhoneNumber)
       console.log(JSON.stringify(updateResult))
       if (req.body.phone_number !== currentPhoneNumber.phone_number) {
         const otp = await util.sendOTP(req.body.phone_number)
         if (otp) {
           const otpJwt = await util.getJwtFromOtp(otp.otp)
-          await commonService.update('User', { verification_token: otpJwt }, { id: req.decoded.id })
+          await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
         }
-        await commonService.update('User', { is_verified: false }, { id: req.decoded.id })
+        await commonService.update(User, { is_verified: false }, { id: req.decoded.id })
         util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
         return
       }
@@ -169,6 +171,53 @@ class UserController {
       const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
       util.failureResponse(res, errorCode, errorMessage)
     })
+  }
+
+  async follow (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.follow.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      if (req.decoded.id === req.params.user_id) {
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+        return
+      }
+      const params = { user_id: req.params.user_id, follower_id: req.decoded.id }
+      const idAlreadyFollowing = await commonService.findOne(UserFollower, params, ['user_id', 'follower_id'])
+      if (idAlreadyFollowing) {
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+        return
+      }
+      await commonService.create(UserFollower, params)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async unfollow (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.follow.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      if (req.decoded.id === req.params.user_id) {
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+        return
+      }
+      const params = { user_id: req.params.user_id, follower_id: req.decoded.id }
+      await commonService.delete(UserFollower, params)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
   }
 }
 module.exports = UserController

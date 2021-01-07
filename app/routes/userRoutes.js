@@ -75,6 +75,8 @@ router.post('/verify_otp', userController.verifyOTP)
  */
 router.get('/login', userController.login)
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
+router.post('/follow/:user_id', auth.verifyToken, userController.follow)
+router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
 
 /**
  * @swagger
