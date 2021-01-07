@@ -94,6 +94,16 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  editDetails (params) {
+    return new Promise((resolve, reject) => {
+      console.log(params)
+      const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
+      User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = UserService

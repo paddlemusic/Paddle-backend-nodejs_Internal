@@ -6,6 +6,7 @@ const config = require('../config')
 const successResponse = (res, successCode, successMessage, data) => {
   res.status(successCode).json({
     status: true,
+    status_code: successCode,
     message: successMessage,
     data: data
   })
@@ -27,7 +28,8 @@ const generateJwtToken = function (payload) {
     const data = {
       id: payload.id,
       username: payload.email,
-      role: payload.role
+      role: payload.role,
+      is_active: payload.isActive
     }
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
       if (err) {

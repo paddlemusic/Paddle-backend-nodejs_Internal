@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const UserController = require('../controllers/userController')
 const userController = new UserController()
+const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
 
 /**
@@ -72,6 +73,7 @@ router.post('/verify_otp', userController.verifyOTP)
  *       - application/json
  */
 router.get('/login', userController.login)
+router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
  * @swagger
