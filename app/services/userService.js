@@ -1,7 +1,5 @@
 const User = require('../models/user')
-const { OAuth2Client } = require('google-auth-library')
-const config = require('../config/index')
-const googleClient = new OAuth2Client(config.GOOGLE.clientId)
+
 class CustomError extends Error {
   constructor (message) {
     super(message)
@@ -108,8 +106,6 @@ class UserService {
         .catch(err => reject(err))
     })
   }
-
- 
 
   isUserAlreadyExist (params) {
     return new Promise((resolve, reject) => {

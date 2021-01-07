@@ -5,9 +5,73 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 const authenticate = require('../middleware/authenticate')
 
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: For Normal Signup.
+ *     description: >
+ *      This resource will be used for individual normal signup in the system.
+ *     parameters:
+ *      - in: body
+ *        name: name
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: username
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: phone_number
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: password
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: university
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
 router.post('/signup', userController.signup)
 
 router.post('/verify_otp', userController.verifyOTP)
+/**
+ * @swagger
+ *
+ * /login:
+ *   get:
+ *     summary: For Login.
+ *     description: >
+ *      This resource will be used for individual login in the system.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: password
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
 router.get('/login', userController.login)
 router.get('/forgotPassword', userController.forgotPassword)
 router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
