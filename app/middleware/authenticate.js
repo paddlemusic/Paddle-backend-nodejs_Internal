@@ -37,7 +37,8 @@ exports.facebookPassport = passport.use(new FacebookTokenStrategy({
 ))
 
 exports.googleSignIn = function (req, res, next) {
-  console.log('Body is:', req.body.token)
+  // console.log('Body is:', req.body.token)
+  const langMsg = config.messages[req.app.get('lang')]
   return googleClient
     .verifyIdToken({
       idToken: req.body.token,
@@ -75,6 +76,8 @@ exports.googleSignIn = function (req, res, next) {
     })
     .catch(err => {
       // throw an error if something gos wrong
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
+
       throw new Error(
         'error while authenticating google user: ' + JSON.stringify(err)
       )
