@@ -34,6 +34,10 @@ const schema = {
     email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
     bio: Joi.string().trim().alphanum().max(300).required()
+  }),
+  changePassowrd: Joi.object().keys({
+    old_password: Joi.string().required(),
+    new_password: Joi.string().min(6).max(26).required()
   })
 }
 

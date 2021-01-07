@@ -123,4 +123,7 @@ router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.s
  *       url: http://www.passportjs.org/docs/google/
  */
 router.post('/auth/google/token', authenticate.googleSignIn, userController.socialMediaSignup)
+
+router.post('/changePassword', authenticate.verifyToken, userController.changePassword)
+
 module.exports = router

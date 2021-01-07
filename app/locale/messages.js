@@ -1,3 +1,4 @@
+
 module.exports = {
   avail_lang: {
     en: 'en'
@@ -18,6 +19,8 @@ module.exports = {
     tokenExpired: 'Authorization token has expired.',
     tokenMissing: 'Authorization token is missing.',
     invaldRole: 'User role not valid.',
-    updateSuccess: 'Updated successfully.'
+    updateSuccess: 'Updated successfully.',
+    changePassowrd: 'Password change successfully',
+    incorrectPassword: 'Password not correct'
   }
 }
