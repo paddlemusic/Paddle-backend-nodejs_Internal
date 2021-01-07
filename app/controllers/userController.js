@@ -2,7 +2,7 @@
 const authenticate = require('../middleware/authenticate');
 const {authSchema} = require('../middleware/userSchema');
 const UserService = require('../services/userService')
-const util = require('../utils/utils');
+//const util = require('../utils/utils');
 const bcrypt = require("bcrypt");
 //const config = require('../config/constants');
 //import moment from 'moment';
@@ -13,10 +13,11 @@ const User = require('../models/user');
 //const authenticate = require('../middleware/authenticate')
 //const UserService = require('../services/userService')
 //const util = require('../utils/utils')
-const config = require('../config')
+//const config = require('../config')
+const util = require('../utils/utils')
+const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
 const userService = new UserService()
-
 class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -132,27 +133,39 @@ class UserController {
   }
 
   async socialMediaSignup (req, res) {
+    // console.log('IN controller',req.user)
     try {
+      const langMsg = config.messages[req.app.get('lang')]
       if (req.user) {
-        // console.log("User is:", req.user);
+        console.log('User is:', req.user)
         const token = authenticate.getToken({ _id: req.user.id })
         const userData = {
           name: req.user.displayName,
           username: req.user.id,
           social_user_id: req.user.id,
-          email: req.user.emails[0].value,
+          email: req.user.emails[0].value || req.user.email,
           role: '1'
         }
         const isUserExist = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
+        console.log('isUserExist:', isUserExist)
+        console.log('msg:', config.messages.en.loginSuccess)
         if (isUserExist) {
-          util.successResponse(res, config.SUCCESS,
-            config.LOGIN_SUCCESSFULLY, { token: token })
+          util.successResponse(res, config.constants.SUCCESS,
+            langMsg.loginSuccess, { token: token })
         } else {
-          const data = await userService.socialMediaSignup(userData)
-          if (data) {
-            util.successResponse(res, config.SUCCESS,
-              config.LOGIN_SUCCESSFULLY, { token: token })
+          try {
+            const data = await userService.socialMediaSignup(userData)
+            if (data) {
+              util.successResponse(res, config.constants.SUCCESS,
+                langMsg.loginSuccess, { token: token })
+            }
+          } catch (err) {
+            console.log('Error1 is:', err)
+            throw err
           }
+          // else {
+          //   util.failureResponse(res, langMsg.internalServerError, config.constants.internalServerError)
+          // }
         }
       }
     } catch (err) {
@@ -161,5 +174,4 @@ class UserController {
     }
   }
 }
-
 module.exports = UserController

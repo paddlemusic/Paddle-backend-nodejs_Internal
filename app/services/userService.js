@@ -1,5 +1,7 @@
 const User = require('../models/user')
-
+const { OAuth2Client } = require('google-auth-library')
+const config = require('../config/index')
+const googleClient = new OAuth2Client(config.GOOGLE.clientId)
 class CustomError extends Error {
   constructor (message) {
     super(message)
@@ -107,9 +109,12 @@ class UserService {
     })
   }
 
+ 
+
   isUserAlreadyExist (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
+      const userAttribute = ['name', 'username', 'email', 'phophone_number', 'date_of_birth', 'social_user_id',
+        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token']
       User.findOne({ where: params }, { attribute: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))

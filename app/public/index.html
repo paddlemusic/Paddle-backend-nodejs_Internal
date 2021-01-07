@@ -1,11 +1,13 @@
 <html>
 <title>This is index.html</title>
+<meta name="google-signin-client_id" content="509891183766-dmmif96a2e3e953b8d645qrm9j8t0hl8.apps.googleusercontent.com">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
     <style>
       body        { padding-top:80px; }
   </style>
 <body>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
 <script>
   // This is called with the results from from FB.getLoginStatus().
   function statusChangeCallback(response) {
@@ -79,6 +81,16 @@
     });
   }
   </script>
+  <script>
+    function onSignIn(googleUser) {
+      console.log("Google user is:", googleUser);
+  var profile = googleUser.getBasicProfile();
+  console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+  console.log('Name: ' + profile.getName());
+  console.log('Image URL: ' + profile.getImageUrl());
+  console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+}
+  </script>
 
 <h1>Index.html</h1>
 <p>This is the contents of this file</p>
@@ -105,8 +117,9 @@
           <p>Login or Register with:</p>
   
           <a href="/paddle/api/v1/user/auth/google" class="btn btn-danger"><span class="fa fa-google-plus"></span> Google</a>
-  
-      </div>
+          <a href="/paddle/api/v1/user/auth/facebook" class="btn btn-primary"><span class="fa fa-facebook-square"></span> Facebook</a>
+        </div>
+        <div class="g-signin2" data-onsuccess="onSignIn"></div>
   
   </div>
   </body>
