@@ -54,7 +54,7 @@ router.post('/verify_otp', userController.verifyOTP)
  * @swagger
  *
  * /login:
- *   post:
+ *   get:
  *     summary: For Login.
  *     description: >
  *      This resource will be used for individual login in the system.
