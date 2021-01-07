@@ -7,7 +7,7 @@ const FacebookTokenStrategy = require('passport-facebook-token')
 const config = require('../config/index')
 const { OAuth2Client } = require('google-auth-library')
 const googleClient = new OAuth2Client(config.GOOGLE.clientId)
-
+const util = require('../utils/utils')
 passport.serializeUser(function (user, done) {
   done(null, user)
 })
@@ -81,4 +81,19 @@ exports.googleSignIn = function (req, res, next) {
         'error while authenticating google user: ' + JSON.stringify(err)
       )
     })
+}
+
+exports.facebookSignIn = function (req, res, next) {
+  const langMsg = config.messages[req.app.get('lang')]
+  passport.authenticate('facebook-token', function (err, user, info) {
+    // console.error(err);
+    if (err) {
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.unauthorized)
+    }
+    if (user) {
+      console.log(user)
+      req.user = user
+      next()
+    }
+  })(req, res, next)
 }

@@ -12,6 +12,7 @@ module.exports = {
     loginSuccess: 'User logged in successfully.',
     userDeactivated: 'User account is deactivated.',
     wrongPassword: 'Password is incorrect.',
-    socialAccount: 'Login with your social account.'
+    socialAccount: 'Login with your social account.',
+    unauthorized : 'Unauthorized'
   }
 }

@@ -93,7 +93,7 @@ class UserController {
   }
 
   async socialMediaSignup (req, res) {
-    // console.log('IN controller',req.user)
+    console.log('IN controller')
     try {
       const langMsg = config.messages[req.app.get('lang')]
       if (req.user) {

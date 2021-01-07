@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const passport = require('passport')
 const UserController = require('../controllers/userController')
 const userController = new UserController()
 const authenticate = require('../middleware/authenticate')
@@ -54,7 +53,7 @@ router.post('/verify_otp', userController.verifyOTP)
  * @swagger
  *
  * /login:
- *   post:
+ *   get:
  *     summary: For Login.
  *     description: >
  *      This resource will be used for individual login in the system.
@@ -96,7 +95,7 @@ router.get('/login', userController.login)
  *       url: http://www.passportjs.org/docs/facebook/
  */
 
-router.get('/auth/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
+router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.socialMediaSignup)
 /**
  * @swagger
  *
