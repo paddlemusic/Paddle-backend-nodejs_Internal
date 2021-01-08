@@ -20,14 +20,16 @@ const UserFollower = sequelize.define('User_Follower', {
 })
 
 UserFollower.belongsTo(User, {
-  sourcerKey: 'id',
+  sourceKey: 'id',
+  as: 'followed',
   foreignKey: 'user_id',
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
 
 UserFollower.belongsTo(User, {
-  sourcerKey: 'id',
+  sourceKey: 'id',
+  as: 'follower',
   foreignKey: 'follower_id',
   onDelete: 'Cascade',
   onUpdate: 'Cascade'

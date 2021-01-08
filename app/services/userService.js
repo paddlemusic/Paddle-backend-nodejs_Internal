@@ -1,4 +1,6 @@
 const User = require('../models/user')
+const UserFollower = require('../models/userFollower')
+const Sequelize = require('sequelize')
 
 class CustomError extends Error {
   constructor (message) {
@@ -101,6 +103,23 @@ class UserService {
       const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
       User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
         .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowing (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { follower_id: params.id },
+        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'followed'
+        }]
+      }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }

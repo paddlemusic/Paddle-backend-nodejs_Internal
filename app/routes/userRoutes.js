@@ -77,6 +77,8 @@ router.get('/login', userController.login)
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
 router.post('/follow/:user_id', auth.verifyToken, userController.follow)
 router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
+router.get('/following', auth.verifyToken, userController.getFollowing)
+router.get('/followers', auth.verifyToken, userController.getFollowing)
 
 /**
  * @swagger

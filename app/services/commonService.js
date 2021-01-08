@@ -23,6 +23,14 @@ class CommonService {
     })
   }
 
+  findAll (table, condition, attributes) {
+    return new Promise((resolve, reject) => {
+      table.findAll({ where: condition, attributes: attributes })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   delete (table, condition) {
     return new Promise((resolve, reject) => {
       table.destroy({ where: condition })

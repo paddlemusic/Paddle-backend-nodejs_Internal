@@ -25,6 +25,10 @@ const User = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true
   },
+  profile_picture: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   social_user_id: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -62,3 +66,5 @@ const User = sequelize.define('User', {
 })
 
 module.exports = User
+
+// User.sync({ alter: true })
