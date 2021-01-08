@@ -230,5 +230,16 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async getFollowers (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const followingData = await userService.getFollowers(req.decoded)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, followingData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 module.exports = UserController

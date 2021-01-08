@@ -123,6 +123,23 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  getFollowers (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { user_id: params.id },
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'follower'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = UserService
