@@ -124,6 +124,38 @@ router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.s
  */
 router.post('/auth/google/token', authenticate.googleSignIn, userController.socialMediaSignup)
 
+/**
+ * @swagger
+ *
+ * /changePassword:
+ *   post:
+ *     summary: Reset password.
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: body
+ *          name : old_password
+ *          description: Old password.
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: body
+ *          name : new_password
+ *          description: New password.
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: body
+ *          name : confirm_password
+ *          description: Confirm password.
+ *          schema:
+ *          type: string
+ *          required: true
+ *     description: >
+ *       This resource will be used for changing the password
+ *     produces:
+ *       - application/json
+ */
 router.post('/changePassword', authenticate.verifyToken, userController.changePassword)
 
 module.exports = router
