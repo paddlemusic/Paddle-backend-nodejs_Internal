@@ -21,6 +21,8 @@ module.exports = {
     invaldRole: 'User role not valid.',
     updateSuccess: 'Updated successfully.',
     changePassowrd: 'Password change successfully',
-    incorrectPassword: 'Password not correct'
+    incorrectPassword: 'Password not correct',
+    track: 'track Added successfully',
+    artist: 'artist Added successfully'
   }
 }
