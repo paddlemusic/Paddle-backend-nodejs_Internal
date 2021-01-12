@@ -59,11 +59,11 @@ const User = sequelize.define('User', {
   verification_token: {
     type: DataTypes.STRING
   },
-  resetPasswordToken:{
-    type:DataTypes.STRING
+  resetPasswordToken: {
+    type: DataTypes.STRING
   },
-  resetPasswordExpires:{
-    type:DataTypes.DATE
+  resetPasswordExpires: {
+    type: DataTypes.DATE
   }
 },
 {

@@ -31,7 +31,7 @@ const schema = {
     artist_id: Joi.string().required(),
     artist_name: Joi.string().required(),
     image_id: Joi.string()
-  }),  
+  }),
   editDetails: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(15).required(),

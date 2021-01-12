@@ -138,7 +138,6 @@ class UserService {
       User.findOne({ where: criteria })
         .then(result => resolve(result))
         .catch(err => reject(err))
-      // console.log("result params from util services")
     })
   }
   /*  saveArtist (params) {

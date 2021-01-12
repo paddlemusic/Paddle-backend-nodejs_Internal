@@ -29,9 +29,9 @@ module.exports = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
-  SENDGRID:{
-    sendgridApiKey:process.env.SENDGRID_API_KEY,
-    fromEmail:process.env.FROM_EMAIL
+  SENDGRID: {
+    sendgridApiKey: process.env.SENDGRID_API_KEY,
+    fromEmail: process.env.FROM_EMAIL
   },
   port: port,
   messages: messages,

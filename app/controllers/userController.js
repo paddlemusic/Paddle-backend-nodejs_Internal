@@ -13,15 +13,11 @@ const UserFollower = require('../models/userFollower')
 class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    // console.log(langMsg);
     schema.signup.validateAsync(req.body).then(async () => {
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
-      console.log(req.body)
       const signupData = await userService.signup(req.body)
-      console.log('signupdatacalled', signupData)
       const otp = await util.sendOTP(signupData.dataValues.phone_number)
-      console.log('ye dekho ', otp)
       if (otp) {
         const otpJwt = await util.getJwtFromOtp(otp.otp)
         await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
@@ -121,11 +117,9 @@ class UserController {
   }
 
   async forgotPassword (req, res) {
-    //    console.log(req.body)
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await userService.forgotPassword(req.body)
-      // console.log("result params from controller services",userExist)
       if (!userExist) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
@@ -148,9 +142,7 @@ class UserController {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
       console.log(err)
-      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-      util.failureResponse(res, errorCode, errorMessage)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
   }
 
@@ -158,11 +150,8 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.resetPassword.validateAsync(req.body).then(async () => {
       const passwordHash = await util.encryptPassword(req.body.password)
-      // console.log(passwordHash)
       req.body.password = passwordHash
-      // console.log(req.body)
       const userExist = await userService.forgotPassword(req.body)
-      // console.log("result params from controller services",userExist)
       if (!userExist) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
@@ -186,9 +175,7 @@ class UserController {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
       console.log(err)
-      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-      util.failureResponse(res, errorCode, errorMessage)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
   }
 
@@ -196,7 +183,6 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.sendOTP.validateAsync(req.body).then(async () => {
       const userExist = await userService.forgotPassword(req.body)
-      // console.log("result params from controller services",userExist)
       if (!userExist) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
@@ -219,9 +205,7 @@ class UserController {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
       console.log(err)
-      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-      util.failureResponse(res, errorCode, errorMessage)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
   }
 
@@ -256,9 +240,6 @@ class UserController {
             console.log('Error1 is:', err)
             throw err
           }
-          // else {
-          //   util.failureResponse(res, langMsg.internalServerError, config.constants.internalServerError)
-          // }
         }
       }
     } catch (err) {
