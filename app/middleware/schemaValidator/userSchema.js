@@ -31,7 +31,7 @@ const schema = {
     artist_id: Joi.string().required(),
     artist_name: Joi.string().required(),
     image_id: Joi.string()
-  }),  
+  }),
   editDetails: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(15).required(),
@@ -39,6 +39,12 @@ const schema = {
     email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
     bio: Joi.string().trim().alphanum().max(300).required()
+  }),
+  follow: Joi.object().keys({
+    user_id: Joi.number().min(1).required()
+  }),
+  unfollow: Joi.object().keys({
+    user_id: Joi.number().min(1).required()
   }),
   changePassowrd: Joi.object().keys({
     old_password: Joi.string().required(),

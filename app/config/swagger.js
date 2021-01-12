@@ -6,13 +6,13 @@ const options = {
       version: '1.0.0',
       description: 'All v1 routes documentation',
       license: {
-        name: 'MIT',
-        url: 'https://spdx.org/licenses/MIT.html'
+        name: '',
+        url: ''
       },
       contact: {
-        name: 'Algoworks',
-        url: 'https://algoworks.com',
-        email: 'algoworks@gmail.com'
+        name: '',
+        url: '',
+        email: ''
       },
       servers: [
         {

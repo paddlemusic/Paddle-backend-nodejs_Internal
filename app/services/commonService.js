@@ -1,5 +1,3 @@
-const User = require('../models/user')
-
 class CommonService {
   create (table, params) {
     return new Promise((resolve, reject) => {
@@ -20,7 +18,23 @@ class CommonService {
 
   findOne (table, condition, attributes) {
     return new Promise((resolve, reject) => {
-      table.findOne({ where: condition, raw: true, attributes: attributes })
+      table.findOne({ where: condition, attributes: attributes })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  findAll (table, condition, attributes) {
+    return new Promise((resolve, reject) => {
+      table.findAll({ where: condition, attributes: attributes })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  delete (table, condition) {
+    return new Promise((resolve, reject) => {
+      table.destroy({ where: condition })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

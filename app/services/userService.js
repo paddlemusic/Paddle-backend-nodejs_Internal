@@ -1,8 +1,7 @@
 const User = require('../models/user')
-const SaveArtist = require('../models/saveartist')
+const UserFollower = require('../models/userFollower')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-
 
 class CustomError extends Error {
   constructor (message) {
@@ -33,10 +32,8 @@ class UserService {
               default:
                 reject(err)
             }
-          }
-          else
-          {
-            console.log(err);
+          } else {
+            console.log(err)
             reject(err)
           }
         })
@@ -45,28 +42,27 @@ class UserService {
 
   updateVerificationToken (params) {
     return new Promise((resolve, reject) => {
-      User.is_verified=false
+      User.is_verified = false
       User.update({ verification_token: params.otp },
         { where: { id: params.id } })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
-  
+
   updateResetPasswordToken (params) {
     return new Promise((resolve, reject) => {
-      User.update({ resetPasswordToken: params.resetPasswordToken,resetPasswordExpires:Date.now() + 3600000 },
+      User.update({ resetPasswordToken: params.resetPasswordToken, resetPasswordExpires: Date.now() + 3600000 },
         { where: { id: params.id } })
         .then(result => resolve(result))
         .catch(err => reject(err))
-        
     })
   }
 
-  resetPassword(params){
-    return new Promise((resolve,reject)=>{
-      User.update({password:params.newPassword,resetPasswordToken:null,resetPasswordExpires:null},
-        {where:{resetPasswordToken: params.getResetPasswordToken,resetPasswordExpires:{[Op.gt]: Date.now()}}})
+  resetPassword (params) {
+    return new Promise((resolve, reject) => {
+      User.update({ password: params.newPassword, resetPasswordToken: null, resetPasswordExpires: null },
+        { where: { resetPasswordToken: params.getResetPasswordToken, resetPasswordExpires: { [Op.gt]: Date.now() } } })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -80,9 +76,9 @@ class UserService {
     })
   }
 
-  getResetPasswordToken(params) {
+  getResetPasswordToken (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['reset_password_token','reset_password_expires']
+      const userAttribute = ['reset_password_token', 'reset_password_expires']
       User.findOne({ where: { email: params.email }, raw: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
@@ -97,7 +93,6 @@ class UserService {
       User.update(query, { where: { phone_number: params.phone_number } })
         .then(result => resolve(result))
         .catch(err => reject(err))
-        
     })
   }
 
@@ -133,22 +128,22 @@ class UserService {
         .catch(err => reject(err))
     })
   }
-  forgotPassword(params){
-    return new Promise((resolve,reject)=>{
+
+  forgotPassword (params) {
+    return new Promise((resolve, reject) => {
       const criteria = {
         role: 1,
         email: params.email
       }
-      User.findOne({where:criteria})
-      .then(result=>resolve(result))
-      .catch(err=>reject(err))
-      //console.log("result params from util services")
+      User.findOne({ where: criteria })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
     })
   }
-/*  saveArtist (params) {
+  /*  saveArtist (params) {
     return new Promise((resolve, reject) => {
       console.log('params are:', params)
-      SaveArtist.create(params)*/
+      SaveArtist.create(params) */
 
   editDetails (params) {
     return new Promise((resolve, reject) => {
@@ -156,6 +151,57 @@ class UserService {
       const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
       User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
         .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowing (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { follower_id: params.id },
+        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'followed'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowers (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { user_id: params.id },
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'follower'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowBack (id, followers) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAll({
+        where: { user_id: followers, follower_id: id },
+        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'followed'
+        }]
+      }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }

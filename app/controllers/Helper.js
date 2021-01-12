@@ -1,7 +1,5 @@
-//import bcrypt from 'bcrypt';
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-//import jwt from 'jsonwebtoken';
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 
 const Helper = {
   /**
@@ -9,39 +7,39 @@ const Helper = {
    * @param {string} password
    * @returns {string} returns hashed password
    */
-  hashPassword(password) {
+  hashPassword (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(4))
   },
   /**
    * comparePassword
-   * @param {string} hashPassword 
-   * @param {string} password 
+   * @param {string} hashPassword
+   * @param {string} password
    * @returns {Boolean} return True or False
    */
-  comparePassword(hashPassword, password) {
-    return bcrypt.compareSync(password, hashPassword);
+  comparePassword (hashPassword, password) {
+    return bcrypt.compareSync(password, hashPassword)
   },
   /**
    * isValidEmail helper method
    * @param {string} email
    * @returns {Boolean} True or False
    */
-  isValidEmail(email) {
-    return /\S+@\S+\.\S+/.test(email);
+  isValidEmail (email) {
+    return /\S+@\S+\.\S+/.test(email)
   },
   /**
    * Gnerate Token
    * @param {string} id
    * @returns {string} token
    */
-  generateToken(id) {
+  generateToken (id) {
     const token = jwt.sign({
       userId: id
     },
-      process.env.SECRET, { expiresIn: '7d' }
-    );
-    return token;
+    process.env.SECRET, { expiresIn: '7d' }
+    )
+    return token
   }
 }
 
-module.exports= Helper;
+module.exports = Helper

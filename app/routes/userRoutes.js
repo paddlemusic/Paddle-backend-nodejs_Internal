@@ -74,8 +74,8 @@ router.post('/signup', userController.signup)
  *     produces:
  *       - application/json
  */
-
 router.post('/verify_otp', userController.verifyOTP)
+
 /**
  * @swagger
  *
@@ -100,8 +100,74 @@ router.post('/verify_otp', userController.verifyOTP)
  *     produces:
  *       - application/json
  */
-
 router.get('/login', userController.login)
+
+/**
+ * @swagger
+ *
+ * /follow/{user_id}:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: For following users.
+ *     description: >
+ *      This resource will be used for following other users.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *      - in: path
+ *        name: user_id
+ *        schema:
+ *            type: int64
+ *     produces:
+ *       - application/json
+ */
+router.post('/follow/:user_id', auth.verifyToken, userController.follow)
+
+/**
+ * @swagger
+ *
+ * /unfollow/{user_id}:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: For unfollowing users.
+ *     description: >
+ *      This resource will be used for unfollowing other users.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *      - in: path
+ *        name: user_id
+ *        schema:
+ *            type: int64
+ *     produces:
+ *       - application/json
+ */
+router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
+
+/**
+ * @swagger
+ *
+ * /following:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: For fetching the list of users you are following.
+ *     description: >
+ *      This resource will be used for fetching the list of users you are following.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *     produces:
+ *       - application/json
+ */
+router.get('/following', auth.verifyToken, userController.getFollowing)
+
 /**
  * @swagger
  *
@@ -142,8 +208,25 @@ router.get('/forgotPassword', userController.forgotPassword)
  *     produces:
  *       - application/json
  */
-
 router.post('/resetPassword', userController.resetPassword)
+
+/**
+ * @swagger
+ *
+ * /followers:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: For fetching the list of followers.
+ *     description: >
+ *      This resource will be used for fetching the list of followers.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *     produces:
+ *       - application/json
+ */
+router.get('/followers', auth.verifyToken, userController.getFollowers)
 
 /**
  * @swagger
@@ -194,7 +277,6 @@ router.put('/edit_details', auth.verifyToken, userController.editDetails)
  *       description: Learn more about signup operations provided by this API.
  *       url: http://www.passportjs.org/docs/facebook/
  */
-
 router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.socialMediaSignup)
 /**
  * @swagger
@@ -305,7 +387,6 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  *     produces:
  *       - application/json
- *
  */
 router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.saveTrackArtist)
 
@@ -348,7 +429,6 @@ router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.sav
  *       type : string
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
- *
  */
 router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
 
