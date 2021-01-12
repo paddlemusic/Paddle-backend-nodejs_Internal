@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt')
 const crypto = require('crypto');
 const config = require('../config');
 const { resolve } = require('path');
+const sgMail = require('@sendgrid/mail');
+const mail = require('@sendgrid/mail');
+sgMail.setApiKey(config.SENDGRID.sendgridApiKey);
 
 const successResponse = (res, successCode, successMessage, data) => {
   res.status(successCode).json({
@@ -76,6 +79,34 @@ const getOtpFromJwt = function (token) {
     })
   })
 }
+const sendEmail=async function(toEmail,name){
+  return new Promise((resolve,reject)=>{
+    const otp = otpGenerator.generate(4, {
+      digits: true, alphabets: false, upperCase: false, specialChars: false
+    })
+    console.log("otp check",otp)
+    const mailOptions={
+      to:"simnankhan1994@gmail.com",
+      from:config.SENDGRID.fromEmail,
+      subject: "Password change request",
+      text:`Hi ${name} \n 
+      Your password recovery otp is ${otp}. \n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+    sgMail.send(mailOptions,(err,result)=>{
+      if(err)
+      {
+        console.log(err)
+        reject(err)
+      }
+      else
+      {
+        //console.log("send email util response",result)
+        mailOptions.otp=otp
+        resolve(mailOptions)
+      }
+    })
+  })
+}
 
 const sendOTP = async function (phoneNumber) {
   return new Promise((resolve, reject) => {
@@ -132,6 +163,7 @@ function generatePasswordReset(){
     })
   })
 }
+
 module.exports = {
   successResponse,
   failureResponse,
@@ -141,5 +173,6 @@ module.exports = {
   sendOTP,
   encryptPassword,
   comparePassword,
-  generatePasswordReset
+  generatePasswordReset,
+  sendEmail
 }

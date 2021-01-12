@@ -49,6 +49,28 @@ const authenticate = require('../middleware/authenticate')
 
 router.post('/signup', userController.signup)
 
+/**
+ * @swagger
+ * /verify_otp:
+ *   post:
+ *     summary: To verify The Otp Recieved.
+ *     description: >
+ *      This resource will be used for individual to verify the otp recieved on registerd email.
+ *     parameters:
+ *      - in: body
+ *        name: phonenumber
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: otp
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
 router.post('/verify_otp', userController.verifyOTP)
 /**
  * @swagger
@@ -72,8 +94,70 @@ router.post('/verify_otp', userController.verifyOTP)
  *     produces:
  *       - application/json
  */
+
+
 router.get('/login', userController.login)
+/**
+ * @swagger
+ *
+ * /forgotPassword:
+ *   get:
+ *     summary: Forgot Password OTP Generation.
+ *     description: >
+ *      This resource will be used for individual to send OTP to registered email for new password generation.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
 router.get('/forgotPassword', userController.forgotPassword)
+
+/**
+ * @swagger
+ * /resetPassword:
+ *   post:
+ *     summary: To Reset Forgotten Password.
+ *     description: >
+ *      This resource will be used for individual to regenerate password via otp verification.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: password
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
+router.post('/resetPassword', userController.resetPassword)
+
+/**
+ * @swagger
+ *
+ * /resend_Otp:
+ *   get:
+ *     summary: Resend OTP Verification.
+ *     description: >
+ *      This resource will be used for individual to send OTP again to the registered email if not recieved .
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/resend_Otp', userController.resendOtp)
 router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
 
 // router.get('/error', (req, res) => res.send("error logging in"));
@@ -129,4 +213,5 @@ router.get('/auth/facebook/token', passport.authenticate('facebook-token'), user
  *       url: http://www.passportjs.org/docs/google/
  */
 router.post('/auth/google/token', authenticate.googleSignIn, userController.socialMediaSignup)
+router.post('/saveArtist', userController.saveArtist)
 module.exports = router

@@ -1,4 +1,8 @@
 const User = require('../models/user')
+const SaveArtist = require('../models/saveartist')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+
 
 class CustomError extends Error {
   constructor (message) {
@@ -41,6 +45,7 @@ class UserService {
 
   updateVerificationToken (params) {
     return new Promise((resolve, reject) => {
+      User.is_verified=false
       User.update({ verification_token: params.otp },
         { where: { id: params.id } })
         .then(result => resolve(result))
@@ -52,6 +57,16 @@ class UserService {
     return new Promise((resolve, reject) => {
       User.update({ resetPasswordToken: params.resetPasswordToken,resetPasswordExpires:Date.now() + 3600000 },
         { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+        
+    })
+  }
+
+  resetPassword(params){
+    return new Promise((resolve,reject)=>{
+      User.update({password:params.newPassword,resetPasswordToken:null,resetPasswordExpires:null},
+        {where:{resetPasswordToken: params.getResetPasswordToken,resetPasswordExpires:{[Op.gt]: Date.now()}}})
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -67,7 +82,8 @@ class UserService {
 
   getResetPasswordToken(params) {
     return new Promise((resolve, reject) => {
-      User.findOne({ where: { username: params.username }, raw: true, attributes: ['reset_password_token'] })
+      const userAttribute = ['reset_password_token','reset_password_expires']
+      User.findOne({ where: { email: params.email }, raw: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -81,6 +97,7 @@ class UserService {
       User.update(query, { where: { phone_number: params.phone_number } })
         .then(result => resolve(result))
         .catch(err => reject(err))
+        
     })
   }
 
@@ -120,12 +137,20 @@ class UserService {
     return new Promise((resolve,reject)=>{
       const criteria = {
         role: 1,
-        username: params.username
+        email: params.email
       }
       User.findOne({where:criteria})
       .then(result=>resolve(result))
       .catch(err=>reject(err))
       //console.log("result params from util services")
+    })
+  }
+  saveArtist (params) {
+    return new Promise((resolve, reject) => {
+      console.log('params are:', params)
+      SaveArtist.create(params)
+        .then(result => resolve(result))
+        .catch(err => reject(err))
     })
   }
 }
