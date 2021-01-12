@@ -53,7 +53,7 @@ const authenticate = require('../middleware/authenticate')
 
 router.post('/signup', userController.signup)
 
-router.post('/verify_otp', userController.verifyOTP)
+router.post('/verifyOtp', userController.verifyOTP)
 /**
  * @swagger
  *
@@ -79,10 +79,90 @@ router.post('/verify_otp', userController.verifyOTP)
  *       - application/json
  */
 router.get('/login', userController.login)
-router.put('/edit_details', auth.verifyToken, userController.editDetails)
+router.put('/editDetails', auth.verifyToken, userController.editDetails)
+
+/**
+ * @swagger
+ *
+ * /follow/{user_id}:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: For following users.
+ *     description: >
+ *      This resource will be used for following other users.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *      - in: path
+ *        name: user_id
+ *        schema:
+ *            type: int64
+ *     produces:
+ *       - application/json
+ */
 router.post('/follow/:user_id', auth.verifyToken, userController.follow)
+
+/**
+ * @swagger
+ *
+ * /unfollow/:user_id:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: For unfollowing users.
+ *     description: >
+ *      This resource will be used for unfollowing other users.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *      - in: path
+ *        name: user_id
+ *        schema:
+ *            type: int64
+ *     produces:
+ *       - application/json
+ */
 router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
+
+/**
+ * @swagger
+ *
+ * /following:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: For fetching the list of users you are following.
+ *     description: >
+ *      This resource will be used for fetching the list of users you are following.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *     produces:
+ *       - application/json
+ */
 router.get('/following', auth.verifyToken, userController.getFollowing)
+
+/**
+ * @swagger
+ *
+ * /followers:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: For fetching the list of followers.
+ *     description: >
+ *      This resource will be used for fetching the list of followers.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *     produces:
+ *       - application/json
+ */
 router.get('/followers', auth.verifyToken, userController.getFollowers)
 
 /**
