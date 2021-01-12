@@ -15,6 +15,9 @@ module.exports = {
     userNotVerfied: 'User account is not verified.',
     wrongPassword: 'Password is incorrect.',
     socialAccount: 'Login with your social account.',
+    otpSent:'OTP send to email sucesessfully.',
+    tokenExpired:'Password reset token is invalid or has expired.',
+    passwordUpdated:'Your password has been updated.',
     invalidToken: 'Authorization token is not valid.',
     tokenExpired: 'Authorization token has expired.',
     tokenMissing: 'Authorization token is missing.',
@@ -25,7 +28,9 @@ module.exports = {
     failed: 'Error occured.',
     changePassowrd: 'Password change successfully',
     incorrectPassword: 'Password not correct',
-    track: 'track Added successfully',
-    artist: 'artist Added successfully'
+    trackAdded: 'Track added successfully',
+    artistAdded: 'Artist added successfully',
+    trackDeleted: 'Track deleted successfully',
+    artistDeleted: 'Artist deleted successfully'
   }
 }

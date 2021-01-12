@@ -9,7 +9,7 @@ const User = sequelize.define('User', {
   username: {
     type: DataTypes.STRING,
     allowNull: true,
-    unique: false
+    unique: true
   },
   email: {
     type: DataTypes.STRING,
@@ -40,7 +40,7 @@ const User = sequelize.define('User', {
   },
   role: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   device_token: {
     type: DataTypes.STRING,
@@ -48,7 +48,7 @@ const User = sequelize.define('User', {
   },
   is_active: {
     type: DataTypes.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: true
   },
   is_verified: {
@@ -58,6 +58,12 @@ const User = sequelize.define('User', {
   },
   verification_token: {
     type: DataTypes.STRING
+  },
+  resetPasswordToken:{
+    type:DataTypes.STRING
+  },
+  resetPasswordExpires:{
+    type:DataTypes.DATE
   }
 },
 {

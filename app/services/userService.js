@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 
 class CustomError extends Error {
   constructor (message) {
@@ -31,6 +32,9 @@ class UserService {
               default:
                 reject(err)
             }
+          } else {
+            console.log(err)
+            reject(err)
           }
         })
     })
@@ -38,8 +42,27 @@ class UserService {
 
   updateVerificationToken (params) {
     return new Promise((resolve, reject) => {
+      User.is_verified = false
       User.update({ verification_token: params.otp },
         { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  updateResetPasswordToken (params) {
+    return new Promise((resolve, reject) => {
+      User.update({ resetPasswordToken: params.resetPasswordToken, resetPasswordExpires: Date.now() + 3600000 },
+        { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  resetPassword (params) {
+    return new Promise((resolve, reject) => {
+      User.update({ password: params.newPassword, resetPasswordToken: null, resetPasswordExpires: null },
+        { where: { resetPasswordToken: params.getResetPasswordToken, resetPasswordExpires: { [Op.gt]: Date.now() } } })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -48,6 +71,15 @@ class UserService {
   getVerificationToken (params) {
     return new Promise((resolve, reject) => {
       User.findOne({ where: { phone_number: params.phone_number }, raw: true, attributes: ['verification_token'] })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getResetPasswordToken (params) {
+    return new Promise((resolve, reject) => {
+      const userAttribute = ['reset_password_token', 'reset_password_expires']
+      User.findOne({ where: { email: params.email }, raw: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -96,6 +128,23 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  forgotPassword (params) {
+    return new Promise((resolve, reject) => {
+      const criteria = {
+        role: 1,
+        email: params.email
+      }
+      User.findOne({ where: criteria })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+      // console.log("result params from util services")
+    })
+  }
+  /*  saveArtist (params) {
+    return new Promise((resolve, reject) => {
+      console.log('params are:', params)
+      SaveArtist.create(params) */
 
   editDetails (params) {
     return new Promise((resolve, reject) => {

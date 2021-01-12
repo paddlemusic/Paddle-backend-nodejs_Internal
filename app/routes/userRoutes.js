@@ -53,7 +53,29 @@ const authenticate = require('../middleware/authenticate')
 
 router.post('/signup', userController.signup)
 
-router.post('/verifyOtp', userController.verifyOTP)
+/**
+ * @swagger
+ * /verify_otp:
+ *   post:
+ *     summary: To verify The Otp Recieved.
+ *     description: >
+ *      This resource will be used for individual to verify the otp recieved on registerd email.
+ *     parameters:
+ *      - in: body
+ *        name: phonenumber
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: otp
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.post('/verify_otp', userController.verifyOTP)
+
 /**
  * @swagger
  *
@@ -79,7 +101,6 @@ router.post('/verifyOtp', userController.verifyOTP)
  *       - application/json
  */
 router.get('/login', userController.login)
-router.put('/editDetails', auth.verifyToken, userController.editDetails)
 
 /**
  * @swagger
@@ -108,7 +129,7 @@ router.post('/follow/:user_id', auth.verifyToken, userController.follow)
 /**
  * @swagger
  *
- * /unfollow/:user_id:
+ * /unfollow/{user_id}:
  *   delete:
  *     tags :
  *      - user
@@ -150,6 +171,48 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
 /**
  * @swagger
  *
+ * /forgotPassword:
+ *   get:
+ *     summary: Forgot Password OTP Generation.
+ *     description: >
+ *      This resource will be used for individual to send OTP to registered email for new password generation.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/forgotPassword', userController.forgotPassword)
+
+/**
+ * @swagger
+ * /resetPassword:
+ *   post:
+ *     summary: To Reset Forgotten Password.
+ *     description: >
+ *      This resource will be used for individual to regenerate password via otp verification.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: password
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.post('/resetPassword', userController.resetPassword)
+
+/**
+ * @swagger
+ *
  * /followers:
  *   get:
  *     tags :
@@ -164,6 +227,32 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  *       - application/json
  */
 router.get('/followers', auth.verifyToken, userController.getFollowers)
+
+/**
+ * @swagger
+ *
+ * /resend_Otp:
+ *   get:
+ *     summary: Resend OTP Verification.
+ *     description: >
+ *      This resource will be used for individual to send OTP again to the registered email if not recieved .
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/resend_Otp', userController.resendOtp)
+// router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
+
+// router.get('/error', (req, res) => res.send("error logging in"));
+// router.get('/success', (req, res) => rconsole.log(res));
+
+// router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
  * @swagger
@@ -188,7 +277,6 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  *       description: Learn more about signup operations provided by this API.
  *       url: http://www.passportjs.org/docs/facebook/
  */
-
 router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.socialMediaSignup)
 /**
  * @swagger
@@ -217,6 +305,7 @@ router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.s
  *       url: http://www.passportjs.org/docs/google/
  */
 router.post('/auth/google/token', authenticate.googleSignIn, userController.socialMediaSignup)
+router.post('/saveArtist', userController.saveArtist)
 
 /**
  * @swagger
@@ -229,6 +318,11 @@ router.post('/auth/google/token', authenticate.googleSignIn, userController.soci
  *     consumes:
  *        - application/json
  *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
  *        - in: body
  *          name : old_password
  *          description: Old password.
@@ -265,6 +359,11 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *     consumes:
  *        - application/json
  *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
  *        - in: path
  *          name: type
  *          schema:
@@ -278,20 +377,59 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *          schema:
  *            type: array
  *            items :
- *               $ref: '#/definitions/TrackIds'
+ *               $ref: '#/definitions/TrackArtistIds'
  *            example:
  *               - "5"
  *     definitions:
- *       TrackIds :
+ *       TrackArtistIds :
  *       type : string
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  *     produces:
  *       - application/json
- *
  */
 router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.saveTrackArtist)
 
+/**
+ * @swagger
+ *
+ * /deleteTrackArtist/{type}:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete Your TOP SONGS and TOP ARTISTS.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name : ids
+ *          description: Tracks Or artist Ids.
+ *          required : true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example:
+ *               - "5"
+ *     definitions:
+ *       TrackArtistIds :
+ *       type : string
+ *     description: >
+ *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ */
 router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
 
 module.exports = router

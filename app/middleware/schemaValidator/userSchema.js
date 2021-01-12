@@ -14,19 +14,24 @@ const schema = {
     password: Joi.string().trim().min(8).max(30).required()
   }),
   sendOTP: Joi.object().keys({
-    username: Joi.string().required()
+    email: Joi.string().trim().email().required()
   }),
-  fortgetPassword: Joi.object().keys({
-    username: Joi.string().required()
+  forgotPassword: Joi.object().keys({
+    email: Joi.string().trim().email().required()
   }),
   verifyOTP: Joi.object().keys({
     phone_number: Joi.string().trim().min(10).max(14).required(),
     otp: Joi.string().trim().length(4).required()
   }),
   resetPassword: Joi.object().keys({
-    username: Joi.string().required(),
+    email: Joi.string().trim().email().required(),
     password: Joi.string().min(6).max(26).required()
   }),
+  saveArtist: Joi.object().keys({
+    artist_id: Joi.string().required(),
+    artist_name: Joi.string().required(),
+    image_id: Joi.string()
+  }),  
   editDetails: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(15).required(),

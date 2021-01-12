@@ -23,6 +23,14 @@ const options = {
     },
     host: `http://${process.env.HOST}:${process.env.PORT}`,
     basePath: '/paddle/api/v1',
+    tags: [{
+      name: 'user',
+      description: 'Everything about user',
+      externalDocs: {
+        description: 'Find out more',
+        url: 'http://swagger.io'
+      }
+    }],
     schemes: [
       'http',
       'https'
