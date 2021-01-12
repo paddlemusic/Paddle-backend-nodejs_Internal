@@ -355,12 +355,12 @@ class UserController {
   async changePassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.changePassowrd.validateAsync(req.body).then(async () => {
-      const data = await commonService.findOne('User', { id: req.decoded.id }, ['password'])
+      const data = await commonService.findOne(User, { id: req.decoded.id }, ['password'])
       console.log('OLd pwd is:', data.old_password)
       const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
       if (isPasswordMatched) {
         const passwordHash = await util.encryptPassword(req.body.new_password)
-        const updateResult = await commonService.update('User', { password: passwordHash }, { id: req.decoded.id })
+        const updateResult = await commonService.update(User, { password: passwordHash }, { id: req.decoded.id })
         // console.log('updateResult:', updateResult)
         if (updateResult) { util.successResponse(res, config.constants.SUCCESS, langMsg.changePassowrd, {}) }
       } else {
