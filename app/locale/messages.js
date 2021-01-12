@@ -1,3 +1,4 @@
+
 module.exports = {
   avail_lang: {
     en: 'en'
@@ -21,6 +22,10 @@ module.exports = {
     updateSuccess: 'Updated successfully.',
     conflict: 'Conflicting request.',
     success: 'Successful.',
-    failed: 'Error occured.'
+    failed: 'Error occured.',
+    changePassowrd: 'Password change successfully',
+    incorrectPassword: 'Password not correct',
+    track: 'track Added successfully',
+    artist: 'artist Added successfully'
   }
 }

@@ -7,7 +7,6 @@ const FacebookTokenStrategy = require('passport-facebook-token')
 const { OAuth2Client } = require('google-auth-library')
 const googleClient = new OAuth2Client(config.GOOGLE.clientId)
 const util = require('../utils/utils')
-
 passport.serializeUser(function (user, done) {
   done(null, user)
 })
@@ -38,7 +37,8 @@ exports.facebookPassport = passport.use(new FacebookTokenStrategy({
 ))
 
 exports.googleSignIn = function (req, res, next) {
-  console.log('Body is:', req.body.token)
+  // console.log('Body is:', req.body.token)
+  const langMsg = config.messages[req.app.get('lang')]
   return googleClient
     .verifyIdToken({
       idToken: req.body.token,
@@ -76,12 +76,28 @@ exports.googleSignIn = function (req, res, next) {
     })
     .catch(err => {
       // throw an error if something gos wrong
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
+
       throw new Error(
         'error while authenticating google user: ' + JSON.stringify(err)
       )
     })
 }
 
+exports.facebookSignIn = function (req, res, next) {
+  const langMsg = config.messages[req.app.get('lang')]
+  passport.authenticate('facebook-token', function (err, user, info) {
+    // console.error(err);
+    if (err) {
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
+    }
+    if (user) {
+      console.log(user)
+      req.user = user
+      next()
+    }
+  })(req, res, next)
+}
 exports.verifyToken = (req, res, next) => {
   const secret = config.JWT.secret
   const token = req.headers.authorization

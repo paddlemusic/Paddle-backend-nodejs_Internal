@@ -7,7 +7,7 @@ const schema = {
   }),
   signup: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
-    username: Joi.string().trim().max(15).required(),
+    username: Joi.string().trim().max(15),
     phone_number: Joi.string().trim().max(14).min(10).required(),
     email: Joi.string().trim().email().required(),
     university: Joi.number().min(1),
@@ -40,6 +40,10 @@ const schema = {
   }),
   unfollow: Joi.object().keys({
     user_id: Joi.number().min(1).required()
+  }),
+  changePassowrd: Joi.object().keys({
+    old_password: Joi.string().required(),
+    new_password: Joi.string().min(6).max(26).required()
   })
 }
 
