@@ -11,6 +11,7 @@ sgMail.setApiKey(config.SENDGRID.sendgridApiKey);
 const successResponse = (res, successCode, successMessage, data) => {
   res.status(successCode).json({
     status: true,
+    status_code: successCode,
     message: successMessage,
     data: data
   })
@@ -19,6 +20,7 @@ const successResponse = (res, successCode, successMessage, data) => {
 const failureResponse = (res, errorCode, errorMessage) => {
   res.status(errorCode).json({
     status: false,
+    status_code: errorCode,
     error: {
       error_code: errorCode,
       message: errorMessage
@@ -32,7 +34,8 @@ const generateJwtToken = function (payload) {
     const data = {
       id: payload.id,
       username: payload.email,
-      role: payload.role
+      role: payload.role,
+      is_active: payload.isActive
     }
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
       if (err) {

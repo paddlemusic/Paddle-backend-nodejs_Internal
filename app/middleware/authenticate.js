@@ -1,13 +1,12 @@
 require('dotenv').config()
+const config = require('../config/index')
 const passport = require('passport')
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const jwt = require('jsonwebtoken')
 const FacebookTokenStrategy = require('passport-facebook-token')
-
-const config = require('../config/index')
 const { OAuth2Client } = require('google-auth-library')
 const googleClient = new OAuth2Client(config.GOOGLE.clientId)
-
+const util = require('../utils/utils')
 passport.serializeUser(function (user, done) {
   done(null, user)
 })
@@ -38,7 +37,8 @@ exports.facebookPassport = passport.use(new FacebookTokenStrategy({
 ))
 
 exports.googleSignIn = function (req, res, next) {
-  console.log('Body is:', req.body.token)
+  // console.log('Body is:', req.body.token)
+  const langMsg = config.messages[req.app.get('lang')]
   return googleClient
     .verifyIdToken({
       idToken: req.body.token,
@@ -49,7 +49,6 @@ exports.googleSignIn = function (req, res, next) {
       const payload = login.getPayload()
       console.log('Payload is:', payload)
       // const userid = payload['sub']
-
       // check if the jwt is issued for our client
       const audience = payload.aud
       if (audience !== config.GOOGLE.clientId) {
@@ -77,8 +76,51 @@ exports.googleSignIn = function (req, res, next) {
     })
     .catch(err => {
       // throw an error if something gos wrong
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
+
       throw new Error(
         'error while authenticating google user: ' + JSON.stringify(err)
       )
     })
+}
+
+exports.facebookSignIn = function (req, res, next) {
+  const langMsg = config.messages[req.app.get('lang')]
+  passport.authenticate('facebook-token', function (err, user, info) {
+    // console.error(err);
+    if (err) {
+      util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
+    }
+    if (user) {
+      console.log(user)
+      req.user = user
+      next()
+    }
+  })(req, res, next)
+}
+exports.verifyToken = (req, res, next) => {
+  const secret = config.JWT.secret
+  const token = req.headers.authorization
+  const LangMsg = config.messages[req.app.get('lang')]
+  if (token) {
+    console.log(req.path)
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        console.log(LangMsg.invalidToken)
+        util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
+      } else {
+        console.log(decoded)
+        if (Number(decoded.role) !== 1) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
+        } else if (!decoded.is_active) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
+        } else {
+          req.decoded = decoded
+          next()
+        }
+      }
+    })
+  } else {
+    util.failureResponse(res, config.constants.UNAUTHORIZED, LangMsg.tokenMissing)
+  }
 }

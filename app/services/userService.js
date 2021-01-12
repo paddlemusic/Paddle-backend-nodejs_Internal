@@ -145,10 +145,16 @@ class UserService {
       //console.log("result params from util services")
     })
   }
-  saveArtist (params) {
+/*  saveArtist (params) {
     return new Promise((resolve, reject) => {
       console.log('params are:', params)
-      SaveArtist.create(params)
+      SaveArtist.create(params)*/
+
+  editDetails (params) {
+    return new Promise((resolve, reject) => {
+      console.log(params)
+      const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
+      User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

@@ -1,15 +1,11 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
 
-const SaveArtist = sequelize.define('SaveArtist', {
+const savedArtist = sequelize.define('savedArtist', {
     artist_id: {
       type: DataTypes.STRING,
       primaryKey: true,
       autoIncrement:true
-    },
-    artist_name: {
-      type: DataTypes.STRING,
-      allowNull: true
     },
     image_id: {
       type: DataTypes.STRING,
@@ -21,4 +17,4 @@ const SaveArtist = sequelize.define('SaveArtist', {
     freezeTableName: true,
     underscored: true
   })
-  module.exports = SaveArtist
+  module.exports = savedArtist

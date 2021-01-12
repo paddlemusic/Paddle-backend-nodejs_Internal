@@ -1,15 +1,11 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
-
-const SaveSong = sequelize.define('SaveSong', {
+const Saveartist = require('../models/saveSong')
+const savedSongs = sequelize.define('savedSongs', {
     track_id: {
       type: DataTypes.STRING,
       primaryKey: true,
       autoIncrement:true
-    },
-    song_name: {
-      type: DataTypes.STRING,
-      allowNull: true
     },
     artist_id: {
       type: DataTypes.STRING,
@@ -27,4 +23,4 @@ const SaveSong = sequelize.define('SaveSong', {
     underscored: true
   })
 
-  module.exports = SaveSong
+  module.exports = savedSongs

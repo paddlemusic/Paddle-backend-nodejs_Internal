@@ -14,10 +14,13 @@ const User = require('../models/user');
 //const UserService = require('../services/userService')
 //const util = require('../utils/utils')
 //const config = require('../config')
+const CommonService = require('../services/commonService')
 const util = require('../utils/utils')
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
 const userService = new UserService()
+const commonService = new CommonService()
+
 class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -34,7 +37,12 @@ class UserController {
         const otpJwt = await util.getJwtFromOtp(otp.otp)
         await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
       }
-      const payload = { id: signupData.dataValues.id, username: signupData.dataValues.username, role: 1 }
+      const payload = {
+        id: signupData.dataValues.id,
+        username: signupData.dataValues.username,
+        role: 1,
+        isActive: signupData.dataValues.is_active
+      }
       const token = await util.generateJwtToken(payload)
       signupData.dataValues.token = token
       delete signupData.dataValues.password
@@ -91,8 +99,9 @@ class UserController {
         if (didMatch) {
           const payload = {
             id: loginResponse.dataValues.id,
-            username: loginResponse.dataValues.email,
-            role: 1
+            username: loginResponse.dataValues.username,
+            role: 1,
+            isActive: loginResponse.dataValues.is_active
           }
           const token = await util.generateJwtToken(payload)
           loginResponse.dataValues.token = token
@@ -228,7 +237,7 @@ class UserController {
   }
 
   async socialMediaSignup (req, res) {
-    // console.log('IN controller',req.user)
+    console.log('IN controller')
     try {
       const langMsg = config.messages[req.app.get('lang')]
       if (req.user) {
@@ -267,6 +276,54 @@ class UserController {
       console.log('Error is:', err)
       throw err
     }
+  }
+
+  async editDetails (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.editDetails.validateAsync(req.body).then(async () => {
+      const currentPhoneNumber = await commonService.findOne('User', { id: req.decoded.id }, ['phone_number'])
+      const updateResult = await commonService.update('User', req.body, { id: req.decoded.id })
+      console.log(currentPhoneNumber)
+      console.log(JSON.stringify(updateResult))
+      if (req.body.phone_number !== currentPhoneNumber.phone_number) {
+        const otp = await util.sendOTP(req.body.phone_number)
+        if (otp) {
+          const otpJwt = await util.getJwtFromOtp(otp.otp)
+          await commonService.update('User', { verification_token: otpJwt }, { id: req.decoded.id })
+        }
+        await commonService.update('User', { is_verified: false }, { id: req.decoded.id })
+        util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
+        return
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, {})
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
+      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      util.failureResponse(res, errorCode, errorMessage)
+    })
+  }
+
+  async changePassword (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.changePassowrd.validateAsync(req.body).then(async () => {
+      const data = await commonService.findOne('User', { id: req.decoded.id }, ['password'])
+      console.log('OLd pwd is:', data.old_password)
+      const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
+      if (isPasswordMatched) {
+        const passwordHash = await util.encryptPassword(req.body.new_password)
+        const updateResult = await commonService.update('User', { password: passwordHash }, { id: req.decoded.id })
+        // console.log('updateResult:', updateResult)
+        if (updateResult) { util.successResponse(res, config.constants.SUCCESS, langMsg.changePassowrd, {}) }
+      } else {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.incorrectPassword)
+      }
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    })
   }
 }
 module.exports = UserController
