@@ -101,7 +101,6 @@ router.post('/verify_otp', userController.verifyOTP)
  *       - application/json
  */
 
-
 router.get('/login', userController.login)
 /**
  * @swagger
@@ -164,12 +163,12 @@ router.post('/resetPassword', userController.resetPassword)
  *       - application/json
  */
 router.get('/resend_Otp', userController.resendOtp)
-//router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
+// router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
 
 // router.get('/error', (req, res) => res.send("error logging in"));
 // router.get('/success', (req, res) => rconsole.log(res));
 
-//router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+// router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
