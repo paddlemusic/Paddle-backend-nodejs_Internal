@@ -140,6 +140,23 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  getFollowBack (id, followers) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAll({
+        where: { user_id: followers, follower_id: id },
+        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'followed'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = UserService

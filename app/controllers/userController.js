@@ -234,8 +234,15 @@ class UserController {
   async getFollowers (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const followingData = await userService.getFollowers(req.decoded)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, followingData)
+      const followerData = await userService.getFollowers(req.decoded)
+      const followersID = followerData.rows.map(follower => { return follower.id })
+      const followBackData = await userService.getFollowBack(req.decoded.id, followersID)
+      followerData.rows.forEach((follower, index) => {
+        followBackData.forEach(followBack => {
+          followerData.rows[index].follow_back = follower.id === followBack.id
+        })
+      })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, followerData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
