@@ -57,6 +57,8 @@ router.post('/signup', userController.signup)
  * @swagger
  * /verify_otp:
  *   post:
+ *     tags :
+ *      - user
  *     summary: To verify The Otp Recieved.
  *     description: >
  *      This resource will be used for individual to verify the otp recieved on registerd email.
@@ -173,6 +175,8 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  *
  * /forgotPassword:
  *   get:
+ *     tags :
+ *      - user
  *     summary: Forgot Password OTP Generation.
  *     description: >
  *      This resource will be used for individual to send OTP to registered email for new password generation.
@@ -191,6 +195,8 @@ router.get('/forgotPassword', userController.forgotPassword)
  * @swagger
  * /resetPassword:
  *   post:
+ *     tags :
+ *      - user
  *     summary: To Reset Forgotten Password.
  *     description: >
  *      This resource will be used for individual to regenerate password via otp verification.
@@ -233,6 +239,8 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  *
  * /resend_Otp:
  *   get:
+ *     tags :
+ *      - user
  *     summary: Resend OTP Verification.
  *     description: >
  *      This resource will be used for individual to send OTP again to the registered email if not recieved .
@@ -246,12 +254,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  *       - application/json
  */
 router.get('/resend_Otp', userController.resendOtp)
-// router.get('/facebook/token', passport.authenticate('facebook-token'), userController.socialMediaSignup)
 
-// router.get('/error', (req, res) => res.send("error logging in"));
-// router.get('/success', (req, res) => rconsole.log(res));
-
-// router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
