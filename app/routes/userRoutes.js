@@ -145,6 +145,11 @@ router.post('/auth/google/token', authenticate.googleSignIn, userController.soci
  *     consumes:
  *        - application/json
  *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
  *        - in: body
  *          name : old_password
  *          description: Old password.
@@ -181,6 +186,11 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *     consumes:
  *        - application/json
  *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
  *        - in: path
  *          name: type
  *          schema:
@@ -194,11 +204,11 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *          schema:
  *            type: array
  *            items :
- *               $ref: '#/definitions/TrackIds'
+ *               $ref: '#/definitions/TrackArtistIds'
  *            example:
  *               - "5"
  *     definitions:
- *       TrackIds :
+ *       TrackArtistIds :
  *       type : string
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
@@ -208,6 +218,47 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  */
 router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.saveTrackArtist)
 
+/**
+ * @swagger
+ *
+ * /deleteTrackArtist/{type}:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete Your TOP SONGS and TOP ARTISTS.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name : ids
+ *          description: Tracks Or artist Ids.
+ *          required : true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example:
+ *               - "5"
+ *     definitions:
+ *       TrackArtistIds :
+ *       type : string
+ *     description: >
+ *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ *
+ */
 router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
 
 module.exports = router
