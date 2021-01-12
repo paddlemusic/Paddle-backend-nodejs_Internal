@@ -25,7 +25,9 @@ module.exports = {
     updateSuccess: 'Updated successfully.',
     changePassowrd: 'Password change successfully',
     incorrectPassword: 'Password not correct',
-    track: 'track Added successfully',
-    artist: 'artist Added successfully'
+    trackAdded: 'Track added successfully',
+    artistAdded: 'Artist added successfully',
+    trackDeleted: 'Track deleted successfully',
+    artistDeleted: 'Artist deleted successfully'
   }
 }
