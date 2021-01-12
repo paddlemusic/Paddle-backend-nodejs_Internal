@@ -6,7 +6,6 @@ const ProfileController = require('../controllers/profileContoller')
 const profileContoller = new ProfileController()
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
-const { profile } = require('winston')
 
 /**
  * @swagger
@@ -209,6 +208,6 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  */
 router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.saveTrackArtist)
 
-router.delete('/trackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
+router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
 
 module.exports = router

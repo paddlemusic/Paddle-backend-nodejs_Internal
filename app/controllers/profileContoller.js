@@ -41,6 +41,16 @@ class ProfileController {
   async deleteTrackArtist (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
+      const result = await commonService.findOne(UserPreference, { user_id: req.decoded.id }, ['track_ids'])
+      const arr = result.track_ids
+      const trackIds = req.body.ids
+      const mArr = arr.filter(function (item) {
+        return !trackIds.includes(item)
+      })
+      if (mArr.length > 0) {
+        const res = await commonService.update(UserPreference, { track_ids: mArr }, { user_id: req.decoded.id })
+        console.log('REsult is:', res)
+      }
     } catch (err) {
       console.log('err is:', err)
     }
