@@ -4,8 +4,7 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 const ProfileController = require('../controllers/profileContoller')
 const profileContoller = new ProfileController()
-const HomePageController = require('../controllers/homePageController')
-const homePageController = new HomePageController()
+
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
 
@@ -555,9 +554,5 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
-
-router.post('/createPost', authenticate.verifyToken, homePageController.createUserPost)
-
-router.get('/getPost/:user_id', authenticate.verifyToken, homePageController.getUserPost)
 
 module.exports = router

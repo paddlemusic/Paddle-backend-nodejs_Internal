@@ -31,14 +31,14 @@ class HomePageController {
     }
   }
 
-  async getUserPost (req, res) {
+  async getUserPosts (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.follow.validate(req.params)
-      if (validationResult.error) {
-        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-        return
-      }
+      // const validationResult = await schema.follow.validate(req.params)
+      // if (validationResult.error) {
+      //   util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      //   return
+      // }
 
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
