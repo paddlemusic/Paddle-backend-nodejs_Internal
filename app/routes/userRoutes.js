@@ -255,6 +255,42 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  */
 router.get('/resend_Otp', userController.resendOtp)
 
+/**
+ * @swagger
+ *
+ * /edit_details:
+ *   put:
+ *     tags :
+ *      - user
+ *     summary: To Edit User Details.
+ *     description: >
+ *      This resource will be used for an individual to update its details in context of profile.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name : name
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name : username
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name : email
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name : phone_number
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
 
 /**
@@ -308,7 +344,6 @@ router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.s
  *       url: http://www.passportjs.org/docs/google/
  */
 router.post('/auth/google/token', authenticate.googleSignIn, userController.socialMediaSignup)
-router.post('/saveArtist', userController.saveArtist)
 
 /**
  * @swagger
@@ -434,5 +469,89 @@ router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.sav
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
+
+/**
+ * @swagger
+ *
+ * /saveSongArtist/{type}:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: My SAVED SONGS and SAVED ARTISTS.
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name : ids
+ *          description: Tracks Or artist Ids.
+ *          required : true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example:
+ *               - "5"
+ *     definitions:
+ *       TrackArtistIds :
+ *       type : string
+ *     description: >
+ *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ *     produces:
+ *       - application/json
+ */
+router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.savedSongArtist)
+
+/**
+ * @swagger
+ *
+ * /deleteSongArtist/{type}:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete Your SAVED SONGS and SAVED ARTISTS.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name : ids
+ *          description: Tracks Or artist Ids.
+ *          required : true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example:
+ *               - "5"
+ *     definitions:
+ *       TrackArtistIds :
+ *       type : string
+ *     description: >
+ *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ */
+router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
 module.exports = router
