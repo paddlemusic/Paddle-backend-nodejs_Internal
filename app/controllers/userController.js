@@ -1,4 +1,3 @@
-
 const authenticate = require('../middleware/authenticate')
 const UserService = require('../services/userService')
 const User = require('../models/user')
@@ -17,7 +16,8 @@ class UserController {
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
       const signupData = await userService.signup(req.body)
-      const otp = await util.sendOTP(signupData.dataValues.phone_number)
+      //  const otp = await util.sendOTP(signupData.dataValues.phone_number)
+      const otp = await util.sendEmail(signupData.dataValues.email, signupData.dataValues.name)
       if (otp) {
         const otpJwt = await util.getJwtFromOtp(otp.otp)
         await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
@@ -104,18 +104,6 @@ class UserController {
     })
   }
 
-  async saveArtist (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    schema.saveArtist.validateAsync(req.body).then(async () => {
-      console.log('saveartist api called')
-      const saveArtist = await userService.saveArtist(req.body)
-      if (!saveArtist) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
-      }
-      console.log('save artist details controller side', saveArtist)
-    })
-  }
-
   async forgotPassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
@@ -128,6 +116,7 @@ class UserController {
         const otpJwt = await util.getJwtFromOtp(getEmail.otp)
         await userService.updateVerificationToken({ otp: otpJwt, id: userExist.dataValues.id })
       }
+      await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
       const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
       const token = await util.generateJwtToken(payload)
       userExist.dataValues.token = token
@@ -136,7 +125,6 @@ class UserController {
       delete userExist.dataValues.device_token
       delete userExist.dataValues.verification_token
       delete userExist.dataValues.social_user_id
-      delete userExist.dataValues.is_verified
       util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
@@ -169,7 +157,6 @@ class UserController {
       delete userExist.dataValues.device_token
       delete userExist.dataValues.verification_token
       delete userExist.dataValues.social_user_id
-      delete userExist.dataValues.is_verified
       util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, userExist.dataValues)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
@@ -199,7 +186,6 @@ class UserController {
       delete userExist.dataValues.device_token
       delete userExist.dataValues.verification_token
       delete userExist.dataValues.social_user_id
-      delete userExist.dataValues.is_verified
       util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
@@ -251,12 +237,13 @@ class UserController {
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.editDetails.validateAsync(req.body).then(async () => {
-      const currentPhoneNumber = await commonService.findOne(User, { id: req.decoded.id }, ['phone_number'])
+      const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
       const updateResult = await commonService.update(User, req.body, { id: req.decoded.id })
-      console.log(currentPhoneNumber)
+      console.log(currentEmail)
       console.log(JSON.stringify(updateResult))
-      if (req.body.phone_number !== currentPhoneNumber.phone_number) {
-        const otp = await util.sendOTP(req.body.phone_number)
+      if (req.body.email !== currentEmail.email) {
+        // const otp = await util.sendOTP(req.body.phone_number)
+        const otp = await util.sendEmail(req.body.email, req.body.name)
         if (otp) {
           const otpJwt = await util.getJwtFromOtp(otp.otp)
           await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
@@ -355,12 +342,12 @@ class UserController {
   async changePassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.changePassowrd.validateAsync(req.body).then(async () => {
-      const data = await commonService.findOne(User, { id: req.decoded.id }, ['password'])
+      const data = await commonService.findOne('User', { id: req.decoded.id }, ['password'])
       console.log('OLd pwd is:', data.old_password)
       const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
       if (isPasswordMatched) {
         const passwordHash = await util.encryptPassword(req.body.new_password)
-        const updateResult = await commonService.update(User, { password: passwordHash }, { id: req.decoded.id })
+        const updateResult = await commonService.update('User', { password: passwordHash }, { id: req.decoded.id })
         // console.log('updateResult:', updateResult)
         if (updateResult) { util.successResponse(res, config.constants.SUCCESS, langMsg.changePassowrd, {}) }
       } else {
