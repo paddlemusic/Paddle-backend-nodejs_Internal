@@ -49,6 +49,11 @@ const schema = {
   changePassowrd: Joi.object().keys({
     old_password: Joi.string().required(),
     new_password: Joi.string().min(6).max(26).required()
+  }),
+  userPost: Joi.object().keys({
+    track_id: Joi.string().required(),
+    caption: Joi.string().allow(null).allow(''),
+    shared_with: Joi.string().allow(null).allow('').required()
   })
 }
 
