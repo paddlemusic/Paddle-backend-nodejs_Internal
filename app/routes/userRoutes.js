@@ -4,7 +4,7 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 const ProfileController = require('../controllers/profileContoller')
 const profileContoller = new ProfileController()
-const HomePageController = require('../controllers/HomePageController')
+const HomePageController = require('../controllers/homePageController')
 const homePageController = new HomePageController()
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
@@ -556,6 +556,8 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
-router.post('/createPost', authenticate.verifyToken, homePageController.createPost)
+router.post('/createPost', authenticate.verifyToken, homePageController.createUserPost)
+
+router.get('/getPost/:userId', authenticate.verifyToken, homePageController.getUserPost)
 
 module.exports = router
