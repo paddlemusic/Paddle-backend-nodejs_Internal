@@ -5,7 +5,9 @@ const UserPost = sequelize.define('User_Post', {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    unique: true
+    // unique: true
+    primaryKey: true
+
   },
   track_id: {
     type: DataTypes.STRING,
@@ -17,7 +19,7 @@ const UserPost = sequelize.define('User_Post', {
   },
   shared_with: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   }
 },
 {
@@ -27,9 +29,11 @@ const UserPost = sequelize.define('User_Post', {
 
 UserPost.belongsTo(User, {
   sourceKey: 'id',
+  as: 'post',
   foreignKey: 'user_id',
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
+// UserPost.sync({ alter: true })
 
 module.exports = UserPost

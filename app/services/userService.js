@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
+const UserPost = require('../models/userPost')
 // const SaveArtist = require('../models/saveArtist')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -191,6 +192,17 @@ class UserService {
     })
   }
 
+  getUserFollowing (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAll({
+        where: { follower_id: params.id },
+        // attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."profile_picture"')],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   getFollowBack (id, followers) {
     return new Promise((resolve, reject) => {
       UserFollower.findAll({
@@ -202,6 +214,24 @@ class UserService {
           required: true,
           attributes: [],
           as: 'followed'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUserPublicPost (follwersId, sharedWith) {
+    // console.log('ffffffffffff', follwersId, sharedWith)
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        where: { user_id: follwersId, shared_with: sharedWith },
+        attributes: [Sequelize.literal('"post"."id","post"."name","post"."profile_picture",track_id,caption,shared_with')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: [],
+          as: 'post'
         }]
       }).then(result => resolve(result))
         .catch(err => reject(err))

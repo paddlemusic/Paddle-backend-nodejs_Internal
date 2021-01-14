@@ -558,6 +558,6 @@ router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContolle
 
 router.post('/createPost', authenticate.verifyToken, homePageController.createUserPost)
 
-router.get('/getPost/:userId', authenticate.verifyToken, homePageController.getUserPost)
+router.get('/getPost/:user_id', authenticate.verifyToken, homePageController.getUserPost)
 
 module.exports = router
