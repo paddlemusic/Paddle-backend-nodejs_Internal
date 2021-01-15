@@ -65,4 +65,6 @@ router.post('/createPost', authenticate.verifyToken, homePageController.createUs
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
 
+router.get('/getUserSharedasFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedasFriendPost)
+
 module.exports = router

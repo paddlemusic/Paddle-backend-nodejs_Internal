@@ -54,6 +54,9 @@ const schema = {
     track_id: Joi.string().required(),
     caption: Joi.string().allow(null).allow(''),
     shared_with: Joi.string().allow(null).allow('').required()
+  }),
+  friend: Joi.object().keys({
+    shared_with: Joi.number().min(1).required()
   })
 }
 

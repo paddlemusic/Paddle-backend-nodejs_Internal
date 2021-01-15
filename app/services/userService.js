@@ -196,7 +196,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       UserFollower.findAll({
         where: { follower_id: params.id },
-        // attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."profile_picture"')],
+        attributes: ['follower_id'],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
@@ -220,18 +220,36 @@ class UserService {
     })
   }
 
-  getUserPublicPost (follwersId, sharedWith) {
+  getUserPost (follwersId, sharedWith) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
       UserPost.findAll({
         where: { user_id: follwersId, shared_with: sharedWith },
-        attributes: [Sequelize.literal('"post"."id","post"."name","post"."profile_picture",track_id,caption,shared_with')],
+        attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
         raw: true,
         include: [{
           model: User,
           required: true,
-          attributes: [],
-          as: 'post'
+          attributes: []
+          // as: 'post'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUserSharedasFriendPost (follwersId, sharedWith) {
+    // console.log('ffffffffffff', follwersId, sharedWith)
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        where: { user_id: follwersId, shared_with: sharedWith },
+        attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: []
+          // as: 'post'
         }]
       }).then(result => resolve(result))
         .catch(err => reject(err))

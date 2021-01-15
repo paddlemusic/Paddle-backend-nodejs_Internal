@@ -4,9 +4,8 @@ const User = require('../models/user')
 const UserPost = sequelize.define('User_Post', {
   user_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    // unique: true
-    primaryKey: true
+    allowNull: false
+    // primaryKey: true
 
   },
   track_id: {
@@ -29,7 +28,7 @@ const UserPost = sequelize.define('User_Post', {
 
 UserPost.belongsTo(User, {
   sourceKey: 'id',
-  as: 'post',
+  // as: 'post',
   foreignKey: 'user_id',
   onDelete: 'Cascade',
   onUpdate: 'Cascade'

@@ -42,9 +42,30 @@ class HomePageController {
 
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      const postData = await userService.getUserPublicPost(myfollowersIDs, null)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+      const postData = await userService.getUserPost(myfollowersIDs, null)
       console.log('MyFollower:', postData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getUserSharedasFriendPost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.friend.validate(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+
+      const myfollowingData = await userService.getUserFollowing(req.decoded)
+      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
+      const sharedWith = req.params.shared_with
+      const postData = await userService.getUserSharedasFriendPost(myfollowersIDs, sharedWith)
+      console.log('MyFollower:', postData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
