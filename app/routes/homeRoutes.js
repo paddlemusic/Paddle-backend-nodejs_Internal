@@ -65,6 +65,30 @@ router.post('/createPost', authenticate.verifyToken, homePageController.createUs
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
 
-router.get('/getUserSharedasFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedasFriendPost)
+/**
+ * @swagger
+ *
+ * /getUserSharedAsFriendPost/{shared_with}:
+ *   get:
+ *     tags :
+ *      - home
+ *     summary: get User posts by shared_with friend.
+ *     description: >
+ *      This resource will be used for getting shared with friend posts .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: shared_with
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 
 module.exports = router

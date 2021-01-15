@@ -51,7 +51,7 @@ class HomePageController {
     }
   }
 
-  async getUserSharedasFriendPost (req, res) {
+  async getUserSharedAsFriendPost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const validationResult = await schema.friend.validate(req.params)
@@ -63,7 +63,7 @@ class HomePageController {
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
       const sharedWith = req.params.shared_with
-      const postData = await userService.getUserSharedasFriendPost(myfollowersIDs, sharedWith)
+      const postData = await userService.getUserSharedAsFriendPost(myfollowersIDs, sharedWith)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {

@@ -238,7 +238,7 @@ class UserService {
     })
   }
 
-  getUserSharedasFriendPost (follwersId, sharedWith) {
+  getUserSharedAsFriendPost (follwersId, sharedWith) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
       UserPost.findAll({
