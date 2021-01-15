@@ -1,11 +1,15 @@
 const schema = require('../middleware/schemaValidator/userRefSchema')
+const userschema = require('../middleware/schemaValidator/userSchema')
 // const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
+const UserService = require('../services/userService')
+const userService = new UserService()
 const UserPreference = require('../models/userPreference')
 const UserSongArtist = require('../models/userSongArtist')
 const config = require('../config/index')
+const UserShare = require('../models/userPost')
 
 class ProfileController {
   async saveTrackArtist (req, res) {
@@ -93,6 +97,7 @@ class ProfileController {
           return
         }
         req.body.user_id = req.decoded.id
+        console.log(req.decoded.id)
         const trackIds = req.body.ids
         const trackData = await commonService.upsert(UserSongArtist, { user_id: req.decoded.id, track_ids: trackIds }, { user_id: req.decoded.id })
         console.log('Data is:', trackData)
@@ -156,6 +161,46 @@ class ProfileController {
       console.log('err is:', err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
+  }
+
+  async userShare (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    userschema.userShare.validateAsync(req.body).then(async () => {
+      const sharedWith = req.body.shared_with
+      try {
+        if (!sharedWith) {
+          console.log('share with everyone')
+          const shareData = {
+            user_id: req.decoded.id,
+            track_id: req.body.track_id,
+            caption: req.body.caption,
+            shared_with: req.body.shared_with
+          }
+          await commonService.create(UserShare, shareData)
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+        } else {
+          console.log('share with specific')
+          const shareData = {
+            user_id: req.decoded.id,
+            track_id: req.body.track_id,
+            caption: req.body.caption,
+            shared_with: req.body.shared_with
+          }
+          await commonService.create(UserShare, shareData)
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+        }
+      } catch (err) {
+        console.log('err is:', err)
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      }
+    })
+  }
+
+  async getUserShare (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    const myfollowingData = await userService.getFollowing(req.decoded)
+    console.log(myfollowingData)
+    const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
   }
 }
 module.exports = ProfileController

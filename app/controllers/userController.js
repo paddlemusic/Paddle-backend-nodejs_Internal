@@ -237,6 +237,7 @@ class UserController {
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.editDetails.validateAsync(req.body).then(async () => {
+      console.log('id', req.decoded.id)
       const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
       const updateResult = await commonService.update(User, req.body, { id: req.decoded.id })
       console.log(currentEmail)

@@ -553,5 +553,6 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
-
+router.post('/userShare', auth.verifyToken, profileContoller.userShare)
+router.post('/getUserShare', auth.verifyToken, profileContoller.getUserShare)
 module.exports = router

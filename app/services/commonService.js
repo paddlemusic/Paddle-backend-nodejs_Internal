@@ -63,7 +63,7 @@ class CommonService {
           }
           return this.create(table, params)
         }).then(result => {
-          return resolve(result)
+          resolve(result)
         })
         .catch(err => reject(err))
     })
