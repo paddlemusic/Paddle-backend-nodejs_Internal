@@ -4,6 +4,7 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 const ProfileController = require('../controllers/profileContoller')
 const profileContoller = new ProfileController()
+
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
 
