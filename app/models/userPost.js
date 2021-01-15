@@ -5,7 +5,10 @@ const UserPost = sequelize.define('User_Post', {
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false
+<<<<<<< HEAD
     // unique: true
+=======
+>>>>>>> f99e6115e64332a0b9a6a50f8bff77222016f9bb
     // primaryKey: true
 
   },
@@ -35,6 +38,9 @@ UserPost.belongsTo(User, {
   onUpdate: 'Cascade'
 })
 // UserPost.sync({ alter: true })
+<<<<<<< HEAD
 UserPost.removeAttribute('id')
+=======
+>>>>>>> f99e6115e64332a0b9a6a50f8bff77222016f9bb
 
 module.exports = UserPost

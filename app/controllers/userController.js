@@ -272,7 +272,7 @@ class UserController {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
-      if (req.decoded.id === req.params.user_id) {
+      if (Number(req.decoded.id) === Number(req.params.user_id)) {
         util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
         return
       }

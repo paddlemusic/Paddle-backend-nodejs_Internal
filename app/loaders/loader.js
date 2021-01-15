@@ -4,7 +4,7 @@ const passport = require('passport')
 const swaggerUI = require('swagger-ui-express')
 const swaggerDocument = require('../config/swagger.js')
 const morgan = require('morgan')
-
+const cors = require('cors')
 const routes = require('../routes/index')
 const config = require('../config')
 const utils = require('../utils/utils')
@@ -20,7 +20,7 @@ function loader (app) {
   app.use(bodyParser.json({
     limit: '50mb'
   }))
-
+  app.use(cors())
   app.use(passport.initialize())
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
