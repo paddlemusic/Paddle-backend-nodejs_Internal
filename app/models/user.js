@@ -46,6 +46,10 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  university_code: {
+    type: DataTypes.INTEGER,
+    allowNull: true
+  },
   is_active: {
     type: DataTypes.BOOLEAN,
     allowNull: true,
