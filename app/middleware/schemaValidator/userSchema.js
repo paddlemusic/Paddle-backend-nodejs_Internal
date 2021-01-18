@@ -38,7 +38,7 @@ const schema = {
     phone_number: Joi.string().trim().max(14).min(10).required(),
     email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
-    bio: Joi.string().trim().alphanum().max(300).required()
+    bio: Joi.string().trim().alphanum().max(300)
   }),
   follow: Joi.object().keys({
     user_id: Joi.number().min(1).required()
@@ -49,6 +49,14 @@ const schema = {
   changePassowrd: Joi.object().keys({
     old_password: Joi.string().required(),
     new_password: Joi.string().min(6).max(26).required()
+  }),
+  userPost: Joi.object().keys({
+    track_id: Joi.string().required(),
+    caption: Joi.string().allow(null).allow(''),
+    shared_with: Joi.string().allow(null).allow('').required()
+  }),
+  friend: Joi.object().keys({
+    shared_with: Joi.number().min(1).required()
   })
 }
 

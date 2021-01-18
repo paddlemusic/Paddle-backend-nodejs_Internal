@@ -85,6 +85,7 @@ const sendEmail = async function (toEmail, name) {
     const otp = otpGenerator.generate(4, {
       digits: true, alphabets: false, upperCase: false, specialChars: false
     })
+    console.log(otp)
     const mailOptions = {
       to: 'simnankhan1994@gmail.com',
       from: config.SENDGRID.fromEmail,
@@ -98,6 +99,7 @@ const sendEmail = async function (toEmail, name) {
         reject(err)
       } else {
         mailOptions.otp = otp
+        // console.log(mailOptions)
         resolve(mailOptions)
       }
     })
