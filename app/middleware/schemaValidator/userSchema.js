@@ -10,7 +10,7 @@ const schema = {
     username: Joi.string().trim().max(15),
     phone_number: Joi.string().trim().max(14).min(10).required(),
     email: Joi.string().trim().email().required(),
-    university: Joi.number().min(1),
+    university_code: Joi.number().min(1),
     password: Joi.string().trim().min(8).max(30).required()
   }),
   sendOTP: Joi.object().keys({
