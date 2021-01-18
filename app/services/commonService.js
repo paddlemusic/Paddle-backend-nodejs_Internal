@@ -46,10 +46,7 @@ class CommonService {
         where: condition,
         raw: true,
         defaults: attributes
-      })
-        .then(result => {
-          return resolve(result)
-        })
+      }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
@@ -62,10 +59,20 @@ class CommonService {
             return this.update(table, params, condition)
           }
           return this.create(table, params)
-        }).then(result => {
-          return resolve(result)
-        })
+        }).then(result => resolve(result))
         .catch(err => reject(err))
+    })
+  }
+
+  bulkCreate (table, params) {
+    return new Promise((resolve, reject) => {
+      table.bulkCreate(params, { ignoreDuplicates: true })
+        .then(result => resolve(result))
+        .catch(err => {
+          (err.original.code === '23505' || err.original.code === '23503')
+            ? resolve(err)
+            : reject(err)
+        })
     })
   }
 }

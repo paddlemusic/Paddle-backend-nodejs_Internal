@@ -237,22 +237,8 @@ class UserController {
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.editDetails.validateAsync(req.body).then(async () => {
-      const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
-      const updateResult = await commonService.update(User, req.body, { id: req.decoded.id })
-      console.log(currentEmail)
-      console.log(JSON.stringify(updateResult))
-      if (req.body.email !== currentEmail.email) {
-        // const otp = await util.sendOTP(req.body.phone_number)
-        const otp = await util.sendEmail(req.body.email, req.body.name)
-        if (otp) {
-          const otpJwt = await util.getJwtFromOtp(otp.otp)
-          await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
-        }
-        await commonService.update(User, { is_verified: false }, { id: req.decoded.id })
-        util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
-        return
-      }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, {})
+      await commonService.update(User, req.body, { id: req.decoded.id })
+      util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {

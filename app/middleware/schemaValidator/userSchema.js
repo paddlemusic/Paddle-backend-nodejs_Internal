@@ -57,6 +57,16 @@ const schema = {
   }),
   friend: Joi.object().keys({
     shared_with: Joi.number().min(1).required()
+  }),
+  playlist: Joi.object().keys({
+    name: Joi.string().trim().min(3).required(),
+    description: Joi.string().trim().allow(null).allow('')
+  }),
+  deletePlaylist: Joi.object().keys({
+    playlist_id: Joi.number().min(1).required()
+  }),
+  tracks: Joi.object().keys({
+    track_ids: Joi.array().items(Joi.string()).unique()
   })
 }
 

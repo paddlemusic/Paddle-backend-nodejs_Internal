@@ -555,4 +555,10 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
+router.post('/playlist/create', authenticate.verifyToken, profileContoller.createPlaylist)
+router.put('/playlist/update/:playlist_id', authenticate.verifyToken, profileContoller.updatePlaylist)
+router.delete('/playlist/delete/:playlist_id', authenticate.verifyToken, profileContoller.deletePlaylist)
+router.put('/playlist/:playlist_id/addTracks', authenticate.verifyToken, profileContoller.addTracks)
+router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, profileContoller.deleteTracks)
+
 module.exports = router

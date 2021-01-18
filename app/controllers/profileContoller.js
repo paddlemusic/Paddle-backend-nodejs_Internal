@@ -1,10 +1,12 @@
 const schema = require('../middleware/schemaValidator/userRefSchema')
-// const userSchema = require('../middleware/schemaValidator/userSchema')
+const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
 const UserPreference = require('../models/userPreference')
 const UserSongArtist = require('../models/userSongArtist')
+const UserPlaylist = require('../models/userPlaylist')
+const PlaylistTrack = require('../models/playlistTrack')
 const config = require('../config/index')
 
 class ProfileController {
@@ -154,6 +156,107 @@ class ProfileController {
       }
     } catch (err) {
       console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  /* Playlist Methods
+      - Create Playlist
+      - Update Playlist
+      - Delete Playlist
+      - Add tracks to playlist
+      - Remove tracks from playlist
+  */
+  async createPlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      req.body.user_id = req.decoded.id
+      const playlistData = await commonService.create(UserPlaylist, req.body)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async updatePlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const condition = { id: req.params.playlist_id, user_id: req.decoded.id }
+      const playlistData = await commonService.update(UserPlaylist, req.body, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async deletePlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.deletePlaylist.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const condition = { id: req.params.playlist_id, user_id: req.decoded.id }
+      const playlistData = await commonService.delete(UserPlaylist, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async addTracks (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const params = []
+      req.body.track_ids.forEach(trackId => {
+        params.push({ playlist_id: req.params.playlist_id, track_id: trackId })
+      })
+      console.log(params)
+      const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async deleteTracks (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const condition = { track_id: req.body.track_ids }
+      const playlistData = await commonService.delete(PlaylistTrack, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
