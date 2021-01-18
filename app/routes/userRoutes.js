@@ -65,7 +65,7 @@ router.post('/signup', userController.signup)
  *      This resource will be used for individual to verify the otp recieved on registerd email.
  *     parameters:
  *      - in: body
- *        name: phonenumber
+ *        name: email
  *        schema:
  *        type: string
  *        required: true
@@ -555,4 +555,88 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
+/**
+ * @swagger
+ *
+ * /userShare:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: This resource will be used to create post from end user as a SHARE TO ALL post OR as SHARE TO FRIEND post.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: body
+ *          name : track_id
+ *          description: track Id or music id.
+ *          schema:
+ *          type: string
+ *          required : true
+ *        - in: body
+ *          name : caption
+ *          description: caption.
+ *          schema:
+ *          type: string
+ *        - in: body
+ *          name : shared_with
+ *          description: Shared with friend OR all  .
+ *          schema:
+ *          type: string
+ *          required: true
+ *     description: >
+ *       In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ */
+
+router.post('/userShare', auth.verifyToken, profileContoller.userShare)
+
+/**
+ * @swagger
+ *
+ * /getPostToAll:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: FOR SHARED TO ALL POST RESPONSE.
+ *     description: >
+ *      This resource will be used to get SHARED TO ALL post response from the end user .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getPostToAll', authenticate.verifyToken, profileContoller.getUserShareAsPost)
+
+/**
+ * @swagger
+ *
+ * /getPostToFriend/{shared_with}:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: FOR SHARED TO FRIEND POST RESPONSE.
+ *     description: >
+ *      This resource will be used to get SHARED TO FRIEND post response from the end user .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileContoller.getUserShareAsFriend)
 module.exports = router

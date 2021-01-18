@@ -2,6 +2,7 @@ const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserPost = require('../models/userPost')
 // const SaveArtist = require('../models/saveArtist')
+// const UserFollower = require('../models/userFollower')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
@@ -72,7 +73,7 @@ class UserService {
 
   getVerificationToken (params) {
     return new Promise((resolve, reject) => {
-      User.findOne({ where: { phone_number: params.phone_number }, raw: true, attributes: ['verification_token'] })
+      User.findOne({ where: { email: params.email }, raw: true, attributes: ['verification_token'] })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -92,7 +93,7 @@ class UserService {
       const query = {}
       query.is_verified = true
       query.verification_token = null
-      User.update(query, { where: { phone_number: params.phone_number } })
+      User.update(query, { where: { email: params.email } })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
