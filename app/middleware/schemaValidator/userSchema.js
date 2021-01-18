@@ -20,7 +20,7 @@ const schema = {
     email: Joi.string().trim().email().required()
   }),
   verifyOTP: Joi.object().keys({
-    phone_number: Joi.string().trim().min(10).max(14).required(),
+    email: Joi.string().trim().email().required(),
     otp: Joi.string().trim().length(4).required()
   }),
   resetPassword: Joi.object().keys({
