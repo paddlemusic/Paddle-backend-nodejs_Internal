@@ -44,9 +44,9 @@ const authenticate = require('../middleware/authenticate')
  *        type: string
  *        required: true
  *      - in: body
- *        name: university
+ *        name: university_code
  *        schema:
- *        type: string
+ *        type: integer
  *        required: true
  *     produces:
  *       - application/json
@@ -65,7 +65,7 @@ router.post('/signup', userController.signup)
  *      This resource will be used for individual to verify the otp recieved on registerd email.
  *     parameters:
  *      - in: body
- *        name: phonenumber
+ *        name: email
  *        schema:
  *        type: string
  *        required: true
