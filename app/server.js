@@ -2,9 +2,17 @@ const express = require('express')
 const config = require('../app/config')
 const loader = require('./loaders/loader')
 const path = require('path')
+const cron = require('node-cron')
+const UserService = require('./services/userService')
+const userService = new UserService()
+const UserPost = require('./models/userPost')
 
 async function startServer () {
   const app = express()
+  // cron.schedule('* * * * *', async function () {
+  //   const result = await userService.updateTableUsingCron(UserPost)
+  //   console.log(' Running Cron Job', result)
+  // })
   app.set('views', path.join(__dirname, 'views'))
   app.set('view engine', 'pug')
   // console.log('path is:', path.join(__dirname, '/public'))

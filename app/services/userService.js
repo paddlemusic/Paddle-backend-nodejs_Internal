@@ -236,6 +236,9 @@ class UserService {
             [Op.gte]: moment().subtract(5, 'days').toDate()
           }
         },
+        order: [
+          ['created_at', 'DESC']
+        ],
         attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
         raw: true,
         include: [{
@@ -263,6 +266,24 @@ class UserService {
           // as: 'post'
         }]
       }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  updateTableUsingCron (table) {
+    return new Promise((resolve, reject) => {
+      table.update(
+        { is_active: false },
+        {
+          where: {
+            is_active: true,
+            updated_at: {
+              [Op.lte]: moment().subtract(5, 'days').toDate()
+            }
+          }
+        }
+
+      ).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
