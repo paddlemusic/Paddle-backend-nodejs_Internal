@@ -28,6 +28,6 @@ UserPlaylist.belongsTo(User, {
   onUpdate: 'Cascade'
 })
 
-// UserPlaylist.sync()
+// UserPlaylist.sync({ alter: true })
 
 module.exports = UserPlaylist

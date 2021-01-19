@@ -555,10 +555,234 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  */
 router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
+/**
+ * @swagger
+ *
+ * /user/playlist/create:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: Create a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *     responses:
+ *          default:
+ *              description: Create playlist response object.
+ */
 router.post('/playlist/create', authenticate.verifyToken, profileContoller.createPlaylist)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/update/{playlist_id}:
+ *   put:
+ *     tags :
+ *      - user
+ *     summary: Update a Playlist's name and description.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
+ */
 router.put('/playlist/update/:playlist_id', authenticate.verifyToken, profileContoller.updatePlaylist)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/delete/{playlist_id}:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: Delete playlist response object.
+ */
 router.delete('/playlist/delete/:playlist_id', authenticate.verifyToken, profileContoller.deletePlaylist)
+
+/**
+ * @swagger
+ *
+ * /user/playlist:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: List all Playlists.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: List all Playlists response object.
+ */
+router.get('/playlist', authenticate.verifyToken, profileContoller.getPlaylist)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/addTracks:
+ *   put:
+ *     tags :
+ *      - user
+ *     summary: Add tracks to playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  track_ids:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                          unique: true
+ *     responses:
+ *          default:
+ *              description: Add tracks to playlist response object.
+ */
 router.put('/playlist/:playlist_id/addTracks', authenticate.verifyToken, profileContoller.addTracks)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/deleteTracks:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete tracks from a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  track_ids:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                          unique: true
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
+ */
 router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, profileContoller.deleteTracks)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/tracks:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Delete tracks from a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
+ */
+router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
 
 module.exports = router

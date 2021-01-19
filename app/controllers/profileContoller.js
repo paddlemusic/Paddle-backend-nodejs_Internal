@@ -164,8 +164,10 @@ class ProfileController {
       - Create Playlist
       - Update Playlist
       - Delete Playlist
+      - Get Playlist
       - Add tracks to playlist
       - Remove tracks from playlist
+      - Get playlist tracks
   */
   async createPlaylist (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -221,6 +223,20 @@ class ProfileController {
     }
   }
 
+  async getPlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { user_id: req.decoded.id }
+      const playlistData = await commonService.findAndCountAll(UserPlaylist, condition,
+        ['id', 'name', 'description', 'createdAt', 'updatedAt'])
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, playlistData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async addTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -255,6 +271,24 @@ class ProfileController {
       const playlistData = await commonService.delete(PlaylistTrack, condition)
       console.log(playlistData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getPlaylistTracks (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { user_id: req.decoded.id, id: req.params.playlist_id }
+      const playlistData = await commonService.findOne(UserPlaylist, condition,
+        ['id', 'name', 'description', 'created_at', 'updated_at'])
+      console.log(playlistData)
+      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.dataValues.id },
+        ['track_id', 'created_at', 'updated_at'])
+      console.log(trackData)
+      trackData.playlist = playlistData
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

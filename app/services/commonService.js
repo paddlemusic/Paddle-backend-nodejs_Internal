@@ -32,6 +32,14 @@ class CommonService {
     })
   }
 
+  findAndCountAll (table, condition, attributes) {
+    return new Promise((resolve, reject) => {
+      table.findAndCountAll({ where: condition, attributes: attributes })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   delete (table, condition) {
     return new Promise((resolve, reject) => {
       table.destroy({ where: condition })
