@@ -72,6 +72,12 @@ class CommonService {
     })
   }
 
+  getPagination (page, pageSize) {
+    const limit = pageSize ? +pageSize : null
+    const offset = page ? page * pageSize : 0
+    return { limit, offset }
+  }
+
   bulkCreate (table, params) {
     return new Promise((resolve, reject) => {
       table.bulkCreate(params, { ignoreDuplicates: true })
