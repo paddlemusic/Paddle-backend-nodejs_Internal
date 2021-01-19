@@ -5,6 +5,7 @@ const UserPost = require('../models/userPost')
 // const UserFollower = require('../models/userFollower')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+const moment = require('moment')
 
 class CustomError extends Error {
   constructor (message) {
@@ -225,7 +226,15 @@ class UserService {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
       UserPost.findAll({
-        where: { user_id: follwersId, shared_with: sharedWith },
+        where: {
+          user_id: follwersId,
+          shared_with: sharedWith,
+          // 2021-01-19 14:49:53
+          // moment().subtract(400, 'seconds').toDate()
+          updated_at: {
+            $gte: moment().subtract(400, 'seconds').toDate()
+          }
+        },
         attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
         raw: true,
         include: [{
