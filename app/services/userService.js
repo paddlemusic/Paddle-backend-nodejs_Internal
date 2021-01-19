@@ -224,7 +224,7 @@ class UserService {
   }
 
   getUserPost (follwersId, pagination) {
-    // console.log('ffffffffffff', follwersId, sharedWith)
+    console.log('ffffffffffff', follwersId)
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
         limit: pagination.limit,
