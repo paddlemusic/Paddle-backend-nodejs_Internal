@@ -1,6 +1,5 @@
 const schema = require('../middleware/schemaValidator/userRefSchema')
-const userschema = require('../middleware/schemaValidator/userSchema')
-// const userSchema = require('../middleware/schemaValidator/userSchema')
+const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
@@ -8,6 +7,8 @@ const UserService = require('../services/userService')
 const userService = new UserService()
 const UserPreference = require('../models/userPreference')
 const UserSongArtist = require('../models/userSongArtist')
+const UserPlaylist = require('../models/userPlaylist')
+const PlaylistTrack = require('../models/playlistTrack')
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
 
@@ -163,9 +164,108 @@ class ProfileController {
     }
   }
 
+  /* Playlist Methods
+      - Create Playlist
+      - Update Playlist
+      - Delete Playlist
+      - Get Playlist
+      - Add tracks to playlist
+      - Remove tracks from playlist
+      - Get playlist tracks
+  */
+  async createPlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      req.body.user_id = req.decoded.id
+      const playlistData = await commonService.create(UserPlaylist, req.body)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async updatePlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const condition = { id: req.params.playlist_id, user_id: req.decoded.id }
+      const playlistData = await commonService.update(UserPlaylist, req.body, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async deletePlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.deletePlaylist.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const condition = { id: req.params.playlist_id, user_id: req.decoded.id }
+      const playlistData = await commonService.delete(UserPlaylist, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getPlaylist (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { user_id: req.decoded.id }
+      const playlistData = await commonService.findAndCountAll(UserPlaylist, condition,
+        ['id', 'name', 'description', 'createdAt', 'updatedAt'])
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, playlistData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async addTracks (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const params = []
+      req.body.track_ids.forEach(trackId => {
+        params.push({ playlist_id: req.params.playlist_id, track_id: trackId })
+      })
+      console.log(params)
+      const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    userschema.userShare.validateAsync(req.body).then(async () => {
+    userSchema.userShare.validateAsync(req.body).then(async () => {
       const sharedWith = req.body.shared_with
       try {
         if (!sharedWith) {
@@ -218,15 +318,32 @@ class ProfileController {
     }
   }
 
-  async getUserShareAsFriend (req, res) {
+  async deleteTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userschema.friend.validate(req.params)
+      const validationResult = await userSchema.tracks.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
+      const condition = { track_id: req.body.track_ids }
+      const playlistData = await commonService.delete(PlaylistTrack, condition)
+      console.log(playlistData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 
+  async getUserShareAsFriend (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await userSchema.friend.validate(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
       console.log('myfollowerIDs', myfollowersIDs)
@@ -234,6 +351,24 @@ class ProfileController {
       const postData = await userService.getUserSharedAsFriendPost(myfollowersIDs, sharedWith)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getPlaylistTracks (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { user_id: req.decoded.id, id: req.params.playlist_id }
+      const playlistData = await commonService.findOne(UserPlaylist, condition,
+        ['id', 'name', 'description', 'created_at', 'updated_at'])
+      console.log(playlistData)
+      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.dataValues.id },
+        ['track_id', 'created_at', 'updated_at'])
+      console.log(trackData)
+      trackData.playlist = playlistData
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

@@ -1,8 +1,6 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserPost = require('../models/userPost')
-// const SaveArtist = require('../models/saveArtist')
-// const UserFollower = require('../models/userFollower')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')

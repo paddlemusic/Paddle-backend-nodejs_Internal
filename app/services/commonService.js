@@ -32,6 +32,14 @@ class CommonService {
     })
   }
 
+  findAndCountAll (table, condition, attributes) {
+    return new Promise((resolve, reject) => {
+      table.findAndCountAll({ where: condition, attributes: attributes })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   delete (table, condition) {
     return new Promise((resolve, reject) => {
       table.destroy({ where: condition })
@@ -46,10 +54,7 @@ class CommonService {
         where: condition,
         raw: true,
         defaults: attributes
-      })
-        .then(result => {
-          return resolve(result)
-        })
+      }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
@@ -62,17 +67,21 @@ class CommonService {
             return this.update(table, params, condition)
           }
           return this.create(table, params)
-        }).then(result => {
-          resolve(result)
-        })
+        }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
 
-  getPagination (page, pageSize) {
-    const limit = pageSize ? +pageSize : null
-    const offset = page ? page * pageSize : 0
-    return { limit, offset }
+  bulkCreate (table, params) {
+    return new Promise((resolve, reject) => {
+      table.bulkCreate(params, { ignoreDuplicates: true })
+        .then(result => resolve(result))
+        .catch(err => {
+          (err.original.code === '23505' || err.original.code === '23503')
+            ? resolve(err)
+            : reject(err)
+        })
+    })
   }
 }
 

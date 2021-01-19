@@ -558,11 +558,11 @@ router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContolle
 /**
  * @swagger
  *
- * /userShare:
+ * /user/playlist/create:
  *   post:
  *     tags :
  *      - user
- *     summary: This resource will be used to create post from end user as a SHARE TO ALL post OR as SHARE TO FRIEND post.
+ *     summary: Create a Playlist.
  *     produces:
  *       - application/json
  *     consumes:
@@ -574,69 +574,215 @@ router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContolle
  *          type: string
  *          required: true
  *        - in: body
- *          name : track_id
- *          description: track Id or music id.
+ *          name: body
+ *          required: true
  *          schema:
- *          type: string
- *          required : true
- *        - in: body
- *          name : caption
- *          description: caption.
- *          schema:
- *          type: string
- *        - in: body
- *          name : shared_with
- *          description: Shared with friend OR all  .
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *     responses:
+ *          default:
+ *              description: Create playlist response object.
+ */
+router.post('/playlist/create', authenticate.verifyToken, profileContoller.createPlaylist)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/update/{playlist_id}:
+ *   put:
+ *     tags :
+ *      - user
+ *     summary: Update a Playlist's name and description.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
  *          schema:
  *          type: string
  *          required: true
- *     description: >
- *       In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  name:
+ *                      type: string
+ *                  description:
+ *                      type: string
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
  */
-
-router.post('/userShare', auth.verifyToken, profileContoller.userShare)
+router.put('/playlist/update/:playlist_id', authenticate.verifyToken, profileContoller.updatePlaylist)
 
 /**
  * @swagger
  *
- * /getPostToAll:
- *   get:
+ * /user/playlist/delete/{playlist_id}:
+ *   delete:
  *     tags :
  *      - user
- *     summary: FOR SHARED TO ALL POST RESPONSE.
- *     description: >
- *      This resource will be used to get SHARED TO ALL post response from the end user .
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
+ *     summary: Delete a Playlist.
  *     produces:
  *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: Delete playlist response object.
  */
-
-router.get('/getPostToAll', authenticate.verifyToken, profileContoller.getUserShareAsPost)
+router.delete('/playlist/delete/:playlist_id', authenticate.verifyToken, profileContoller.deletePlaylist)
 
 /**
  * @swagger
  *
- * /getPostToFriend/{shared_with}:
+ * /user/playlist:
  *   get:
  *     tags :
  *      - user
- *     summary: FOR SHARED TO FRIEND POST RESPONSE.
- *     description: >
- *      This resource will be used to get SHARED TO FRIEND post response from the end user .
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
+ *     summary: List all Playlists.
  *     produces:
  *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: List all Playlists response object.
  */
+router.get('/playlist', authenticate.verifyToken, profileContoller.getPlaylist)
 
-router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileContoller.getUserShareAsFriend)
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/addTracks:
+ *   put:
+ *     tags :
+ *      - user
+ *     summary: Add tracks to playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  track_ids:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                          unique: true
+ *     responses:
+ *          default:
+ *              description: Add tracks to playlist response object.
+ */
+router.put('/playlist/:playlist_id/addTracks', authenticate.verifyToken, profileContoller.addTracks)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/deleteTracks:
+ *   delete:
+ *     tags :
+ *      - user
+ *     summary: Delete tracks from a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  track_ids:
+ *                      type: array
+ *                      items:
+ *                          type: string
+ *                          unique: true
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
+ */
+router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, profileContoller.deleteTracks)
+
+/**
+ * @swagger
+ *
+ * /user/playlist/{playlist_id}/tracks:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Delete tracks from a Playlist.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: playlist_id
+ *          type: integer
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
+ */
+router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
+
 module.exports = router

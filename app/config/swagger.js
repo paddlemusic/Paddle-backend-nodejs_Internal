@@ -21,7 +21,7 @@ const options = {
         }
       ]
     },
-    host: `http://${process.env.HOST}:${process.env.PORT}`,
+    host: `${process.env.HOST}:${process.env.PORT}`,
     basePath: '/paddle/api/v1',
     tags: [{
       name: 'user',
