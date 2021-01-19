@@ -60,6 +60,16 @@ router.post('/createPost', authenticate.verifyToken, homePageController.createUs
  *        schema:
  *        type: string
  *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
  *     produces:
  *       - application/json
  */

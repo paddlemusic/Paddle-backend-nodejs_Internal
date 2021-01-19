@@ -34,16 +34,15 @@ class HomePageController {
   async getUserPosts (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      // const validationResult = await schema.follow.validate(req.params)
-      // if (validationResult.error) {
-      //   util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-      //   return
-      // }
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
 
       const myfollowingData = await userService.getUserFollowing(req.decoded)
+      // const sharedWithData = await commonService.findAll(UserPost, { user_id: req.decoded.id }, ['shared_with'])
+      // const sharedWithId = sharedWithData.map(data => { return data.shared_with })
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      const postData = await userService.getUserPost(myfollowersIDs, null)
-      console.log('MyFollower:', postData)
+
+      const postData = await userService.getUserPost(myfollowersIDs, pagination)
+      console.log('postData:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
       console.log(err)

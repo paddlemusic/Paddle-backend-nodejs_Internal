@@ -26,7 +26,7 @@ class CommonService {
 
   findAll (table, condition, attributes) {
     return new Promise((resolve, reject) => {
-      table.findAll({ where: condition, attributes: attributes })
+      table.findAll({ where: condition, raw: true, attributes: attributes })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -67,6 +67,12 @@ class CommonService {
         })
         .catch(err => reject(err))
     })
+  }
+
+  getPagination (page, pageSize) {
+    const limit = pageSize ? +pageSize : null
+    const offset = page ? page * pageSize : 0
+    return { limit, offset }
   }
 }
 

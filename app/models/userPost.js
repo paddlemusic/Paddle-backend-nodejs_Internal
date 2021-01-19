@@ -19,6 +19,11 @@ const UserPost = sequelize.define('User_Post', {
   shared_with: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: true
   }
 },
 {

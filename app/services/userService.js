@@ -195,9 +195,10 @@ class UserService {
   }
 
   getUserFollowing (params) {
+    const userId = params.id
     return new Promise((resolve, reject) => {
       UserFollower.findAll({
-        where: { follower_id: params.id },
+        where: { follower_id: userId },
         attributes: ['follower_id'],
         raw: true
       }).then(result => resolve(result))
@@ -222,17 +223,17 @@ class UserService {
     })
   }
 
-  getUserPost (follwersId, sharedWith) {
+  getUserPost (follwersId, pagination) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
-      UserPost.findAll({
+      UserPost.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
         where: {
           user_id: follwersId,
-          shared_with: sharedWith,
-          // 2021-01-19 14:49:53
-          // moment().subtract(400, 'seconds').toDate()
+          // shared_with: sharedWith
           updated_at: {
-            $gte: moment().subtract(400, 'seconds').toDate()
+            [Op.gte]: moment().subtract(5, 'days').toDate()
           }
         },
         attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
