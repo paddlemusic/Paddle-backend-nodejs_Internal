@@ -250,6 +250,20 @@ class UserService {
     })
   }
 
+  getMyRecentPosts (userId) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        where: { user_id: userId },
+        order: [
+          ['created_at', 'DESC']
+        ],
+        attributes: ['track_id', 'caption', 'shared_with', 'created_at'],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   getUserSharedAsFriendPost (follwersId, sharedWith) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {

@@ -374,5 +374,16 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async getRecentPosts (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 module.exports = ProfileController
