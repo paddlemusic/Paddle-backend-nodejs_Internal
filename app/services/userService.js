@@ -253,9 +253,11 @@ class UserService {
     })
   }
 
-  getMyRecentPosts (userId) {
+  getMyRecentPosts (userId, pagination) {
     return new Promise((resolve, reject) => {
       UserPost.findAll({
+        //       limit: pagination.limit,
+        //        offset: pagination.offset,
         where: { user_id: userId },
         order: [
           ['created_at', 'DESC']

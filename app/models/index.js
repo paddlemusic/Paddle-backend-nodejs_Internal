@@ -12,9 +12,9 @@ sequelize.authenticate().then(() => {
 }).catch(err => {
   console.error('Unable to connect to the database:', err)
 })
-// sequelize.sync()
-// .then(function (instance) {
-//   return instance.updateAttributes({ syncedAt: sequelize.fn('NOW') })
-// })
+/* sequelize.sync()
+  .then(function (instance) {
+    return instance.updateAttributes({ syncedAt: sequelize.fn('NOW') })
+  }) */
 
 module.exports = sequelize

@@ -588,7 +588,7 @@ router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContolle
  *          name : shared_with
  *          description: Shared with friend OR all  .
  *          schema:
- *          type: string
+ *          type: integer
  *          required: true
  *     description: >
  *       In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
@@ -612,6 +612,16 @@ router.post('/userShare', auth.verifyToken, profileContoller.userShare)
  *        schema:
  *        type: string
  *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
  *     produces:
  *       - application/json
  */
@@ -869,6 +879,34 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, p
  *              description: Delete tracks from playlists response object.
  */
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
-
+/**
+ * @swagger
+ *
+ * /getRecentPosts:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: To Get Posts By End User.
+ *     description: >
+ *      This resource will be used to get all the POST(share to all OR share to friend) detail from the end user organized by most recent to least recent .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+  *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
 router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
 module.exports = router
