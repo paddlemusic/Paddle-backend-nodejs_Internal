@@ -11,7 +11,7 @@ async function startServer () {
   const app = express()
   // cron.schedule('* * * * *', async function () {
   //   const result = await userService.updateTableUsingCron(UserPost)
-  // console.log(' Running Cron Job', result)
+  //   console.log(' Running Cron Job', result)
   // })
   app.set('views', path.join(__dirname, 'views'))
   app.set('view engine', 'pug')
