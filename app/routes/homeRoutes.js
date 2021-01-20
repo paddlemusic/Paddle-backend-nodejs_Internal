@@ -37,7 +37,7 @@ const authenticate = require('../middleware/authenticate')
  *          name : shared_with
  *          description: Shared with Friend/EveryOne .
  *          schema:
- *          type: string
+ *          type: integer
  *          required: true
  *     description: >
  *       In case of shared with everyone=> value = null, shared with friend => value = userId(whom to share)

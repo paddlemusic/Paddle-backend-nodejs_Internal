@@ -221,15 +221,18 @@ class UserService {
     })
   }
 
-  getUserPost (follwersId, pagination) {
-    console.log('ffffffffffff', follwersId)
+  getUserPost (follwersId, userId, pagination) {
+    console.log('ffffffffffff', follwersId, userId)
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
         limit: pagination.limit,
         offset: pagination.offset,
         where: {
-          user_id: follwersId,
-          // shared_with: sharedWith
+          [Op.or]: [
+            { user_id: follwersId },
+            { shared_with: userId },
+            { shared_with: null }
+          ],
           updated_at: {
             [Op.gte]: moment().subtract(5, 'days').toDate()
           }
