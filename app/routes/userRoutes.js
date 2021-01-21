@@ -390,8 +390,8 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
 /**
  * @swagger
  *
- * /trackArtist/{type}:
- *   post:
+ * /userMedia/topSongsArtists/{type}:
+ *   put:
  *     tags :
  *      - user
  *     summary: My TOP SONGS and TOP ARTISTS.
@@ -410,24 +410,38 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
- *          name : ids
+ *          name: data
  *          description: Tracks Or artist Ids.
- *          required : true
+ *          required: true
  *          schema:
  *            type: array
  *            items :
  *               $ref: '#/definitions/TrackArtistIds'
- *            example:
- *               - "5"
- *     definitions:
- *       TrackArtistIds :
- *       type : string
- *     description: >
- *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ *            example: [{
+ *                  "media_id": "1",
+ *                  "media_image": "",
+ *                  "media_name": "Artist1",
+ *                  "meta_data": ""
+ *                  }]
+ *   definitions:
+ *     TrackArtistIds:
+ *      type: "object"
+ *      properties:
+ *          media_id:
+ *            type: string
+ *            required:  true
+ *          media_image:
+ *            type: string
+ *          media_name:
+ *            type: string
+ *          meta_data:
+ *            type: string
+ *   description: >
+ *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  *     produces:
  *       - application/json
  */
-router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.saveTrackArtist)
+router.put('/userMedia/topSongsArtists/:media_type', authenticate.verifyToken, profileContoller.createUserMedia)
 
 /**
  * @swagger
@@ -469,7 +483,7 @@ router.post('/trackArtist/:type', authenticate.verifyToken, profileContoller.sav
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
-router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileContoller.deleteTrackArtist)
+router.delete('/deleteUserMedia/:media_type', authenticate.verifyToken, profileContoller.deleteUserMedia)
 
 /**
  * @swagger
@@ -511,7 +525,7 @@ router.delete('/deleteTrackArtist/:type', authenticate.verifyToken, profileConto
  *     produces:
  *       - application/json
  */
-router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.savedSongArtist)
+// router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.savedSongArtist)
 
 /**
  * @swagger
@@ -553,7 +567,7 @@ router.post('/saveSongArtist/:type', authenticate.verifyToken, profileContoller.
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
-router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
+// router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
 
 /**
  * @swagger
@@ -784,5 +798,7 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, p
  *              description: Delete tracks from playlists response object.
  */
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
+
+/** **************************************************************************** */
 
 module.exports = router
