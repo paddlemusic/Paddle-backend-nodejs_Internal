@@ -229,9 +229,9 @@ class UserService {
         offset: pagination.offset,
         where: {
           [Op.or]: [
-            { user_id: follwersId }
-            //            { shared_with: userId },
-            //          { shared_with: null }
+            { user_id: follwersId },
+            { shared_with: userId },
+            { shared_with: null }
           ],
           updated_at: {
             [Op.gte]: moment().subtract(5, 'days').toDate()
@@ -240,7 +240,9 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with"')],
+        //,
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","media_id","caption"`)],
         raw: true,
         include: [{
           model: User,

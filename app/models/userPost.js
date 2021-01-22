@@ -13,7 +13,7 @@ const UserPost = sequelize.define('User_Post', {
   },
   media_image: {
     type: DataTypes.STRING,
-    allowNull: true // required
+    allowNull: true
   },
   media_name: {
     type: DataTypes.STRING,
@@ -25,14 +25,14 @@ const UserPost = sequelize.define('User_Post', {
   },
   media_type: {
     type: DataTypes.INTEGER,
-    allowNull: false // required
+    allowNull: true
   },
   caption: {
     type: DataTypes.STRING,
     allowNull: true
   },
   shared_with: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: true
   },
   is_active: {
