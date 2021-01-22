@@ -83,7 +83,7 @@ router.post('/verify_otp', userController.verifyOTP)
  * @swagger
  *
  * /login:
- *   get:
+ *   post:
  *     tags:
  *      - user
  *     summary: For Login.
@@ -103,7 +103,7 @@ router.post('/verify_otp', userController.verifyOTP)
  *     produces:
  *       - application/json
  */
-router.get('/login', userController.login)
+router.post('/login', userController.login)
 
 /**
  * @swagger
@@ -175,7 +175,7 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  * @swagger
  *
  * /forgotPassword:
- *   get:
+ *   post:
  *     tags :
  *      - user
  *     summary: Forgot Password OTP Generation.
@@ -190,7 +190,7 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  *     produces:
  *       - application/json
  */
-router.get('/forgotPassword', userController.forgotPassword)
+router.post('/forgotPassword', userController.forgotPassword)
 
 /**
  * @swagger
@@ -239,7 +239,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  * @swagger
  *
  * /resend_Otp:
- *   get:
+ *   post:
  *     tags :
  *      - user
  *     summary: Resend OTP Verification.
@@ -254,7 +254,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  *     produces:
  *       - application/json
  */
-router.get('/resend_Otp', userController.resendOtp)
+router.post('/resend_Otp', userController.resendOtp)
 
 /**
  * @swagger
