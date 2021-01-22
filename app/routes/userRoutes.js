@@ -83,7 +83,7 @@ router.post('/verify_otp', userController.verifyOTP)
  * @swagger
  *
  * /login:
- *   get:
+ *   post:
  *     tags:
  *      - user
  *     summary: For Login.
@@ -103,7 +103,7 @@ router.post('/verify_otp', userController.verifyOTP)
  *     produces:
  *       - application/json
  */
-router.get('/login', userController.login)
+router.post('/login', userController.login)
 
 /**
  * @swagger
@@ -175,7 +175,7 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  * @swagger
  *
  * /forgotPassword:
- *   get:
+ *   post:
  *     tags :
  *      - user
  *     summary: Forgot Password OTP Generation.
@@ -190,7 +190,7 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  *     produces:
  *       - application/json
  */
-router.get('/forgotPassword', userController.forgotPassword)
+router.post('/forgotPassword', userController.forgotPassword)
 
 /**
  * @swagger
@@ -239,7 +239,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  * @swagger
  *
  * /resend_Otp:
- *   get:
+ *   post:
  *     tags :
  *      - user
  *     summary: Resend OTP Verification.
@@ -254,7 +254,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  *     produces:
  *       - application/json
  */
-router.get('/resend_Otp', userController.resendOtp)
+router.post('/resend_Otp', userController.resendOtp)
 
 /**
  * @swagger
@@ -516,7 +516,7 @@ router.delete('/deleteUserMedia/:media_type', authenticate.verifyToken, profileC
  *            items :
  *               $ref: '#/definitions/TrackArtistIds'
  *            example:
- *               - "5"
+ *               - "6"
  *     definitions:
  *       TrackArtistIds :
  *       type : string
@@ -563,11 +563,106 @@ router.delete('/deleteUserMedia/:media_type', authenticate.verifyToken, profileC
  *               - "5"
  *     definitions:
  *       TrackArtistIds :
- *       type : string
+ *       type : array
  *     description: >
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 // router.post('/deleteSongArtist/:type', authenticate.verifyToken, profileContoller.deleteSongArtist)
+
+/**
+ * @swagger
+ *
+ * /userShare:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: This resource will be used to create post from end user as a SHARE TO ALL post OR as SHARE TO FRIEND post.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: body
+ *          name : track_id
+ *          description: track Id or music id.
+ *          schema:
+ *          type: string
+ *          required : true
+ *        - in: body
+ *          name : caption
+ *          description: caption.
+ *          schema:
+ *          type: string
+ *        - in: body
+ *          name : shared_with
+ *          description: Shared with friend OR all  .
+ *          schema:
+ *          type: integer
+ *          required: true
+ *     description: >
+ *       In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ */
+
+router.post('/userShare', auth.verifyToken, profileContoller.userShare)
+
+/**
+ * @swagger
+ *
+ * /getPostToAll:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: FOR SHARED TO ALL POST RESPONSE.
+ *     description: >
+ *      This resource will be used to get SHARED TO ALL post response from the end user .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getPostToAll', authenticate.verifyToken, profileContoller.getUserShareAsPost)
+
+/**
+ * @swagger
+ *
+ * /getPostToFriend/{shared_with}:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: FOR SHARED TO FRIEND POST RESPONSE.
+ *     description: >
+ *      This resource will be used to get SHARED TO FRIEND post response from the end user .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileContoller.getUserShareAsFriend)
 
 /**
  * @swagger
@@ -799,6 +894,5 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, p
  */
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
 
-/** **************************************************************************** */
-
+router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
 module.exports = router

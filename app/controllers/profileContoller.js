@@ -153,12 +153,12 @@ class ProfileController {
       //   util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
       //   return
       // }
-
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       console.log('myfollowingdata', myfollowingData)
       const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
       console.log('myfollowerIDs', myfollowersIDs)
-      const postData = await userService.getUserPost(myfollowersIDs, null)
+      const postData = await userService.getUserPost(myfollowersIDs, req.decoded.id, pagination)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
@@ -248,6 +248,19 @@ class ProfileController {
       const mediaData = await commonService.bulkCreate(UserMedia, params)
       console.log('Data is:', mediaData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, mediaData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getRecentPosts (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      console.log(pagination)
+      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
