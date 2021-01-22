@@ -7,7 +7,7 @@ const UserPost = sequelize.define('User_Post', {
     allowNull: false
     // primaryKey: true
   },
-  track_id: {
+  media_id: {
     type: DataTypes.STRING,
     allowNull: false
   },

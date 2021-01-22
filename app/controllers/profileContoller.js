@@ -121,9 +121,13 @@ class ProfileController {
           console.log('share with everyone')
           const shareData = {
             user_id: req.decoded.id,
-            track_id: req.body.track_id,
+            media_id: req.body.media_id,
             caption: req.body.caption,
-            shared_with: null
+            shared_with: null,
+            media_image: req.body.media_image,
+            media_name: req.body.media_name,
+            meta_data: req.body.meta_data,
+            media_type: req.params.media_type
           }
           await commonService.create(UserShare, shareData)
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -131,9 +135,13 @@ class ProfileController {
           console.log('share with specific')
           const shareData = {
             user_id: req.decoded.id,
-            track_id: req.body.track_id,
+            media_id: req.body.media_id,
             caption: req.body.caption,
-            shared_with: req.body.shared_with
+            shared_with: req.body.shared_with,
+            media_image: req.body.media_image,
+            media_name: req.body.media_name,
+            meta_data: req.body.meta_data,
+            media_type: req.params.media_type
           }
           await commonService.create(UserShare, shareData)
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
