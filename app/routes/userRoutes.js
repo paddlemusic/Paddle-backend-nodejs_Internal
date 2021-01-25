@@ -832,7 +832,7 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *          type: string
  *          required: true
  *        - in: path
- *          name: type
+ *          name: media_type
  *          schema:
  *          type: integer
  *          required: true
@@ -896,6 +896,64 @@ router.post('/userShare/:media_type', auth.verifyToken, profileContoller.userSha
  */
 
 router.get('/getPostToAll', authenticate.verifyToken, profileContoller.getUserShareAsPost)
+
+/**
+ * @swagger
+ *
+ * /getPostToFriend/{shared_with}:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: FOR SHARED TO FRIEND POST RESPONSE.
+ *     description: >
+ *      This resource will be used to get SHARED TO FRIEND post response from the end user .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: shared_with
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileContoller.getUserShareAsFriend)
+
+/**
+ * @swagger
+ *
+ * /getRecentPosts:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: To Get Posts By End User.
+ *     description: >
+ *      This resource will be used to get all the POST(share to all OR share to friend) detail from the end user organized by most recent to least recent .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+  *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
 
 /** **************************************************************************** */
 

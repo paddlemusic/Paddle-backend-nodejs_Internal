@@ -53,6 +53,6 @@ UserPost.belongsTo(User, {
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
-// UserPost.sync({ alter: true })
+// UserPost.sync()
 
 module.exports = UserPost

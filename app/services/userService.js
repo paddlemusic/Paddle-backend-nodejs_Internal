@@ -264,7 +264,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['track_id', 'caption', 'shared_with', 'created_at'],
+        attributes: ['media_id', 'caption', 'shared_with', 'created_at'],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
@@ -276,7 +276,8 @@ class UserService {
     return new Promise((resolve, reject) => {
       UserPost.findAll({
         where: { user_id: follwersId, shared_with: sharedWith },
-        attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","media_id","caption"`)],
         raw: true,
         include: [{
           model: User,
