@@ -837,7 +837,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRece
  *          default:
  *              description: Get list of niversities response object.
  */
-router.get('/university', authenticate.verifyToken, userController.getUniversity)
+router.get('/university', userController.getUniversity)
 
 /**
  * @swagger
@@ -852,12 +852,7 @@ router.get('/university', authenticate.verifyToken, userController.getUniversity
  *     consumes:
  *        - application/json
  *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
-  *        - in: path
+ *        - in: path
  *          name: type
  *          schema:
  *          type: integer
