@@ -51,14 +51,20 @@ const schema = {
     new_password: Joi.string().min(6).max(26).required()
   }),
   userShare: Joi.object().keys({
-    track_id: Joi.string().required(),
+    media_id: Joi.string().required(),
     caption: Joi.string().allow(null).allow(''),
-    shared_with: Joi.string().allow(null).allow('').required()
+    media_image: Joi.string().allow('').allow(null),
+    media_name: Joi.string().allow('').allow(null),
+    meta_data: Joi.string().allow('').allow(null),
+    shared_with: Joi.number().allow(null).required()
   }),
   userPost: Joi.object().keys({
-    track_id: Joi.string().required(),
+    media_id: Joi.string().required(),
     caption: Joi.string().allow(null).allow(''),
-    shared_with: Joi.number().allow(null).allow('').required()
+    media_image: Joi.string().allow('').allow(null),
+    media_name: Joi.string().allow('').allow(null),
+    meta_data: Joi.string().allow('').allow(null),
+    shared_with: Joi.number().allow(null).required()
   }),
   friend: Joi.object().keys({
     shared_with: Joi.number().min(1).required()
