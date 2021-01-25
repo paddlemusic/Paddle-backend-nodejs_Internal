@@ -46,10 +46,10 @@ class HomePageController {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
 
       const myfollowingData = await userService.getUserFollowing(req.decoded)
-      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
       const userId = req.decoded.id
-      const postData = await userService.getUserPost(myfollowersIDs, userId, pagination)
-      console.log('postData:', myfollowersIDs, userId)
+      const postData = await userService.getUserPost(myfollowingIDs, userId, pagination)
+      console.log('postData:', myfollowingIDs, userId)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
       console.log(err)
