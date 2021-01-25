@@ -899,4 +899,6 @@ router.get('/getPostToAll', authenticate.verifyToken, profileContoller.getUserSh
 
 /** **************************************************************************** */
 
+router.get('/getProfile/:userId', authenticate.verifyToken, profileContoller.getProfile)
+
 module.exports = router
