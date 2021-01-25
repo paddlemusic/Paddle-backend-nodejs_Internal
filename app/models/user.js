@@ -1,5 +1,6 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
+const University = require('./university')
 
 const User = sequelize.define('User', {
   name: {
@@ -73,6 +74,13 @@ const User = sequelize.define('User', {
 {
   freezeTableName: true,
   underscored: true
+})
+
+User.belongsTo(University,{
+  sourceKey: 'id',
+  foreignKey: 'university_code',
+  onDelete: 'Cascade',
+  onUpdate: 'Cascade'
 })
 
 module.exports = User
