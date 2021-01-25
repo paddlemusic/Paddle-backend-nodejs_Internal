@@ -12,6 +12,15 @@ const User = sequelize.define('User', {
     allowNull: true,
     unique: true
   },
+  biography: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  is_privacy: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: true,

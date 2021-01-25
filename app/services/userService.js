@@ -266,7 +266,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['track_id', 'caption', 'shared_with', 'created_at'],
+        attributes: ['media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'created_at'],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))

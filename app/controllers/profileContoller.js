@@ -234,8 +234,12 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
-  /** ************************************************************ */
 
+  /** ************************************************************ */
+  /* UserMedia Methods
+      - Create UserMedia - covers Top Songs, Top Artsts
+      - Delete UserMedia
+  */
   async createUserMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -304,11 +308,12 @@ class ProfileController {
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
+      const userId = req.params.userId
       const body = {
-
+        user_id: userId
       }
-      await profileService.getProfile(body)
-      // util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+      const profileData = await profileService.getProfile(body)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
