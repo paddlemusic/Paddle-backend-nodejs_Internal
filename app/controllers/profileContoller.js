@@ -156,10 +156,8 @@ class ProfileController {
       // }
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const myfollowingData = await userService.getUserFollowing(req.decoded)
-      console.log('myfollowingdata', myfollowingData)
-      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      console.log('myfollowerIDs', myfollowersIDs)
-      const postData = await userService.getUserPost(myfollowersIDs, req.decoded.id, pagination)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
+      const postData = await userService.getUserPost(myfollowingIDs, req.decoded.id, pagination)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
@@ -195,10 +193,9 @@ class ProfileController {
         return
       }
       const myfollowingData = await userService.getUserFollowing(req.decoded)
-      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      console.log('myfollowerIDs', myfollowersIDs)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
       const sharedWith = req.params.shared_with
-      const postData = await userService.getUserSharedAsFriendPost(myfollowersIDs, sharedWith)
+      const postData = await userService.getUserSharedAsFriendPost(myfollowingIDs, sharedWith)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
@@ -285,6 +282,18 @@ class ProfileController {
       }
       const result = await commonService.delete(UserMedia, params)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, result)
+    } catch (err) {
+      console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async userSearch (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userName = req.params.name
+      const userList = await userService.getUsers(userName)
+      console.log(userList)
     } catch (err) {
       console.log('err is:', err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

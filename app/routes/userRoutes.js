@@ -955,6 +955,8 @@ router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileCon
  */
 router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
 
+router.get('/userSearch/:name', profileContoller.userSearch)
+
 /** **************************************************************************** */
 
 module.exports = router

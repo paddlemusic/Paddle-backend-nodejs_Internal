@@ -309,6 +309,21 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  getUsers (username) {
+    return new Promise((resolve, reject) => {
+      User.findAll({
+        where: {
+          name: {
+            [Op.ilike]: username
+          }
+        },
+        attributes: ['user_id', 'name', 'profile_picture'],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = UserService
