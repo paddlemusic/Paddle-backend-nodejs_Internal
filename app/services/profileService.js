@@ -1,6 +1,8 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserMedia = require('../models/userMedia')
+// const Sequelize = require('sequelize')
+// const Op = Sequelize.Op
 
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
@@ -46,6 +48,22 @@ class ProfileService {
       }
     })
   }
+
+  // getUsersByName (username) {
+  //   console.log('username is:', username)
+  //   return new Promise((resolve, reject) => {
+  //     User.findAndCountAll({
+  //       where: {
+  //         name: {
+  //           [Op.iLike]: '%' + username + '%'
+  //         }
+  //       },
+  //       attributes: ['id', 'name', 'profile_picture'],
+  //       raw: true
+  //     }).then(result => resolve(result))
+  //       .catch(err => reject(err))
+  //   })
+  // }
 }
 
 module.exports = ProfileService

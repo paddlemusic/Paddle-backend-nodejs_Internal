@@ -10,9 +10,11 @@ const UserService = require('../services/userService')
 const userService = new UserService()
 const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
+const User = require('../models/user')
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
-
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 const UserMedia = require('../models/userMedia')
 
 class ProfileController {
@@ -118,39 +120,32 @@ class ProfileController {
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     userSchema.userShare.validateAsync(req.body).then(async () => {
-      const sharedWith = req.body.shared_with
       try {
-        if (!sharedWith) {
-          console.log('share with everyone')
-          const shareData = {
-            user_id: req.decoded.id,
-            media_id: req.body.media_id,
-            caption: req.body.caption,
-            shared_with: null,
-            media_image: req.body.media_image,
-            media_name: req.body.media_name,
-            meta_data: req.body.meta_data,
-            media_type: req.params.media_type
-          }
-          await commonService.create(UserShare, shareData)
-          util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
-        } else {
-          console.log('share with specific')
-          const shareData = {
-            user_id: req.decoded.id,
-            media_id: req.body.media_id,
-            caption: req.body.caption,
-            shared_with: req.body.shared_with,
-            media_image: req.body.media_image,
-            media_name: req.body.media_name,
-            meta_data: req.body.meta_data,
-            media_type: req.params.media_type
-          }
-          await commonService.create(UserShare, shareData)
-          util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+        const validationResult = await userSchema.userShare.validate(req.body)
+        if (validationResult.error) {
+          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+          return
         }
+        if (Number(req.decoded.id) === Number(req.body.shared_with)) {
+          util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+          return
+        }
+        const params = {
+          user_id: req.decoded.id,
+          media_id: req.body.media_id,
+          caption: req.body.caption,
+          shared_with: req.body.shared_with,
+          media_image: req.body.media_image,
+          media_name: req.body.media_name,
+          meta_data: req.body.meta_data,
+          media_type: req.params.media_type
+        }
+
+        console.log('params are:', params)
+        await commonService.create(UserShare, params)
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
       } catch (err) {
-        console.log('err is:', err)
+        console.log(err)
         util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
       }
     })
@@ -166,10 +161,8 @@ class ProfileController {
       // }
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const myfollowingData = await userService.getUserFollowing(req.decoded)
-      console.log('myfollowingdata', myfollowingData)
-      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      console.log('myfollowerIDs', myfollowersIDs)
-      const postData = await userService.getUserPost(myfollowersIDs, req.decoded.id, pagination)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
+      const postData = await userService.getUserPost(myfollowingIDs, req.decoded.id, pagination)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
@@ -205,10 +198,9 @@ class ProfileController {
         return
       }
       const myfollowingData = await userService.getUserFollowing(req.decoded)
-      const myfollowersIDs = myfollowingData.map(data => { return data.follower_id })
-      console.log('myfollowerIDs', myfollowersIDs)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
       const sharedWith = req.params.shared_with
-      const postData = await userService.getUserSharedAsFriendPost(myfollowersIDs, sharedWith)
+      const postData = await userService.getUserSharedAsFriendPost(myfollowingIDs, sharedWith)
       console.log('MyFollower:', postData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
@@ -305,6 +297,24 @@ class ProfileController {
     }
   }
 
+  async userSearch (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userName = req.query.name
+      const condition = {
+        name: {
+          [Op.iLike]: '%' + userName + '%'
+        }
+      }
+      const userList = await commonService.findAndCountAll(User, condition, ['id', 'name', 'profile_picture'])
+      // console.log(JSON.stringify(userList, null, 2))
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
+    } catch (err) {
+      console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -320,4 +330,5 @@ class ProfileController {
     }
   }
 }
+
 module.exports = ProfileController
