@@ -813,6 +813,32 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, p
  */
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
 
+router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
+
+/**
+ * @swagger
+ *
+ * /user/university:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Get list of universities.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *     responses:
+ *          default:
+ *              description: Get list of niversities response object.
+ */
+router.get('/university', userController.getUniversity)
+
 /**
  * @swagger
  *
@@ -826,11 +852,6 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *     consumes:
  *        - application/json
  *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
  *        - in: path
  *          name: media_type
  *          schema:
@@ -958,5 +979,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRece
 router.get('/userSearch/:name', profileContoller.userSearch)
 
 /** **************************************************************************** */
+
+router.get('/getProfile/:userId', authenticate.verifyToken, profileContoller.getProfile)
 
 module.exports = router

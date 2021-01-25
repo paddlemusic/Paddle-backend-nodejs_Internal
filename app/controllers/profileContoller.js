@@ -3,6 +3,9 @@ const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
+
+const ProfileService = require('../services/profileService')
+const profileService = new ProfileService()
 const UserService = require('../services/userService')
 const userService = new UserService()
 const UserPlaylist = require('../models/userPlaylist')
@@ -221,8 +224,12 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
-  /** ************************************************************ */
 
+  /** ************************************************************ */
+  /* UserMedia Methods
+      - Create UserMedia - covers Top Songs, Top Artsts
+      - Delete UserMedia
+  */
   async createUserMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -296,8 +303,23 @@ class ProfileController {
       console.log(userList)
     } catch (err) {
       console.log('err is:', err)
+    }
+  }
+
+  async getProfile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userId = req.params.userId
+      const body = {
+        user_id: userId
+      }
+      const profileData = await profileService.getProfile(body)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
+    } catch (err) {
+      console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
 }
+
 module.exports = ProfileController

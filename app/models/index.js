@@ -12,7 +12,7 @@ sequelize.authenticate().then(() => {
 }).catch(err => {
   console.error('Unable to connect to the database:', err)
 })
-// sequelize.sync()
+// sequelize.sync({ alter: true })
 /*  .then(function (instance) {
     return instance.updateAttributes({ syncedAt: sequelize.fn('NOW') })
   }) */

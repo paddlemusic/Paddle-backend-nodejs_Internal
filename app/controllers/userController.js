@@ -8,6 +8,7 @@ const schema = require('../middleware/schemaValidator/userSchema')
 const userService = new UserService()
 const commonService = new CommonService()
 const UserFollower = require('../models/userFollower')
+const University = require('../models/university')
 
 class UserController {
   async signup (req, res) {
@@ -387,6 +388,18 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
+  }
+
+  async getUniversity (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await commonService.findAll(University, {})
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
   }
 }
 module.exports = UserController
