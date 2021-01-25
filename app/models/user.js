@@ -76,7 +76,7 @@ const User = sequelize.define('User', {
   underscored: true
 })
 
-User.belongsTo(University,{
+User.belongsTo(University, {
   sourceKey: 'id',
   foreignKey: 'university_code',
   onDelete: 'Cascade',

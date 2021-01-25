@@ -3,167 +3,19 @@ const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
+
+const ProfileService = require('../services/profileService')
+const profileService = new ProfileService()
 const UserService = require('../services/userService')
 const userService = new UserService()
-const UserPreference = require('../models/userPreference')
-const UserSongArtist = require('../models/userSongArtist')
 const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
 
+const UserMedia = require('../models/userMedia')
+
 class ProfileController {
-  async saveTrackArtist (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      if (req.params.type === '1') {
-        const validationResult = await schema.track.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        req.body.user_id = req.decoded.id
-        const trackIds = req.body.ids
-        const trackData = await commonService.upsert(UserPreference, { user_id: req.decoded.id, track_ids: trackIds }, { user_id: req.decoded.id })
-        console.log('Data is:', trackData)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.trackAdded, {})
-      } else if (req.params.type === '2') {
-        const validationResult = await schema.artist.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        req.body.user_id = req.decoded.id
-        const artistIds = req.body.ids
-        const artistData = await commonService.upsert(UserPreference, { user_id: req.decoded.id, artist_ids: artistIds }, { user_id: req.decoded.id })
-        console.log('Data is:', artistData)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.artistAdded, {})
-      }
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
-  async deleteTrackArtist (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      const userId = req.decoded.id
-      if (req.params.type === '1') {
-        const validationResult = await schema.track.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        const trackIds = req.body.ids
-        const result = await commonService.findOne(UserPreference, { user_id: userId }, ['track_ids'])
-        const arr = result.track_ids
-        const mTrackArr = arr.filter(function (item) {
-          return !trackIds.includes(item)
-        })
-        const updateRes = await commonService.update(UserPreference, { track_ids: mTrackArr }, { user_id: req.decoded.id })
-        util.successResponse(res, config.constants.SUCCESS, langMsg.trackDeleted, {})
-
-        console.log('REsult is:', updateRes)
-      } else if (req.params.type === '2') {
-        const validationResult = await schema.artist.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        const artistIds = req.body.ids
-        const result = await commonService.findOne(UserPreference, { user_id: userId }, ['artist_ids'])
-        const arr = result.artist_ids
-        console.log('Arr:', arr, artistIds)
-        const mArtistArr = arr.filter(function (item) {
-          return !artistIds.includes(item)
-        })
-        const updateRes = await commonService.update(UserPreference, { artist_ids: mArtistArr }, { user_id: req.decoded.id })
-        console.log('REsult is:', updateRes)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.artistDeleted, {})
-      }
-    } catch (err) {
-      console.log('err is:', err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
-  async savedSongArtist (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      if (req.params.type === '1') {
-        const validationResult = await schema.track.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        req.body.user_id = req.decoded.id
-        console.log(req.decoded.id)
-        const trackIds = req.body.ids
-        const trackData = await commonService.upsert(UserSongArtist, { user_id: req.decoded.id, track_ids: trackIds }, { user_id: req.decoded.id })
-        console.log('Data is:', trackData)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.trackAdded, {})
-      } else if (req.params.type === '2') {
-        const validationResult = await schema.artist.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        req.body.user_id = req.decoded.id
-        const artistIds = req.body.ids
-        const artistData = await commonService.upsert(UserSongArtist, { user_id: req.decoded.id, artist_ids: artistIds }, { user_id: req.decoded.id })
-        console.log('Data is:', artistData)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.artistAdded, {})
-      }
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
-  async deleteSongArtist (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      const userId = req.decoded.id
-      if (req.params.type === '1') {
-        const validationResult = await schema.track.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        const trackIds = req.body.ids
-        const result = await commonService.findOne(UserSongArtist, { user_id: userId }, ['track_ids'])
-        const arr = result.track_ids
-        const mTrackArr = arr.filter(function (item) {
-          return !trackIds.includes(item)
-        })
-        const updateRes = await commonService.update(UserSongArtist, { track_ids: mTrackArr }, { user_id: req.decoded.id })
-        util.successResponse(res, config.constants.SUCCESS, langMsg.trackDeleted, {})
-
-        console.log('REsult is:', updateRes)
-      } else if (req.params.type === '2') {
-        const validationResult = await schema.artist.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        const artistIds = req.body.ids
-        const result = await commonService.findOne(UserSongArtist, { user_id: userId }, ['artist_ids'])
-        const arr = result.artist_ids
-        console.log('Arr:', arr, artistIds)
-        const mArtistArr = arr.filter(function (item) {
-          return !artistIds.includes(item)
-        })
-        const updateRes = await commonService.update(UserSongArtist, { artist_ids: mArtistArr }, { user_id: req.decoded.id })
-        console.log('REsult is:', updateRes)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.artistDeleted, {})
-      }
-    } catch (err) {
-      console.log('err is:', err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
   /* Playlist Methods
       - Create Playlist
       - Update Playlist
@@ -272,9 +124,13 @@ class ProfileController {
           console.log('share with everyone')
           const shareData = {
             user_id: req.decoded.id,
-            track_id: req.body.track_id,
+            media_id: req.body.media_id,
             caption: req.body.caption,
-            shared_with: null
+            shared_with: null,
+            media_image: req.body.media_image,
+            media_name: req.body.media_name,
+            meta_data: req.body.meta_data,
+            media_type: req.params.media_type
           }
           await commonService.create(UserShare, shareData)
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -282,9 +138,13 @@ class ProfileController {
           console.log('share with specific')
           const shareData = {
             user_id: req.decoded.id,
-            track_id: req.body.track_id,
+            media_id: req.body.media_id,
             caption: req.body.caption,
-            shared_with: req.body.shared_with
+            shared_with: req.body.shared_with,
+            media_image: req.body.media_image,
+            media_name: req.body.media_name,
+            meta_data: req.body.meta_data,
+            media_type: req.params.media_type
           }
           await commonService.create(UserShare, shareData)
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -374,6 +234,36 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+  /** ************************************************************ */
+
+  async createUserMedia (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.userMedia.validate(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      req.body.user_id = req.decoded.id
+      const data = req.body.data
+      const params = data.map((item) => {
+        return {
+          user_id: req.decoded.id,
+          media_id: item.media_id,
+          media_image: item.media_image,
+          media_name: item.media_name,
+          meta_data: item.meta_data,
+          media_type: req.params.media_type
+        }
+      })
+      const mediaData = await commonService.bulkCreate(UserMedia, params)
+      console.log('Data is:', mediaData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, mediaData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 
   async getRecentPosts (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -382,6 +272,43 @@ class ProfileController {
       console.log(pagination)
       const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async deleteUserMedia (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userId = req.decoded.id
+      // if (req.params.type === '1') {
+      const validationResult = await schema.deleteMedia.validate(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const params = {
+        user_id: userId,
+        media_id: req.body.media_id,
+        media_type: req.params.media_type
+      }
+      const result = await commonService.delete(UserMedia, params)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, result)
+    } catch (err) {
+      console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getProfile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const body = {
+
+      }
+      await profileService.getProfile(body)
+      // util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

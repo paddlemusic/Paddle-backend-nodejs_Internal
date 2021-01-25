@@ -16,33 +16,43 @@ const authenticate = require('../middleware/authenticate')
  *       - application/json
  *     consumes:
  *        - application/json
- *     parameters:
+  *     parameters:
  *        - in: header
  *          name: Authorization
  *          schema:
  *          type: string
  *          required: true
- *        - in: body
- *          name : track_id
- *          description: track Id or music id.
- *          schema:
- *          type: string
- *          required : true
- *        - in: body
- *          name : caption
- *          description: caption.
- *          schema:
- *          type: string
- *        - in: body
- *          name : shared_with
- *          description: Shared with Friend/EveryOne .
+ *        - in: path
+ *          name: type
  *          schema:
  *          type: integer
  *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  media_id:
+ *                      type: string
+ *                      required: true
+ *                  caption:
+ *                      type: string
+ *                  media_image:
+ *                      type: string
+ *                      required: false
+ *                  meta_data:
+ *                      type: string
+ *                      required: false
+ *                  shared_with:
+ *                      type: integer
+ *                      required: true
  *     description: >
  *       In case of shared with everyone=> value = null, shared with friend => value = userId(whom to share)
  */
-router.post('/createPost', authenticate.verifyToken, homePageController.createUserPost)
+router.post('/createPost/:media_type', authenticate.verifyToken, homePageController.createUserPost)
 
 /**
  * @swagger
@@ -99,6 +109,6 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *     produces:
  *       - application/json
  */
-router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
+// router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 
 module.exports = router

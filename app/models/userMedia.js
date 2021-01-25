@@ -1,19 +1,21 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
-const User = require('../models/user')
-const UserPost = sequelize.define('User_Post', {
+const User = require('./user')
+
+const UserMedia = sequelize.define('User_Media', {
   user_id: {
     type: DataTypes.INTEGER,
-    allowNull: false
-    // primaryKey: true
+    allowNull: false, // required,
+    unique: 'user_id_media_id_media_type'
   },
   media_id: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false, // required,
+    unique: 'user_id_media_id_media_type'
   },
   media_image: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true // required
   },
   media_name: {
     type: DataTypes.STRING,
@@ -25,20 +27,8 @@ const UserPost = sequelize.define('User_Post', {
   },
   media_type: {
     type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  caption: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  shared_with: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
-  is_active: {
-    type: DataTypes.BOOLEAN,
-    allowNull: true,
-    defaultValue: true
+    allowNull: false, // required
+    unique: 'user_id_media_id_media_type'
   }
 },
 {
@@ -46,13 +36,13 @@ const UserPost = sequelize.define('User_Post', {
   underscored: true
 })
 
-UserPost.belongsTo(User, {
+UserMedia.belongsTo(User, {
   sourceKey: 'id',
-  // as: 'post',
   foreignKey: 'user_id',
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
-// UserPost.sync({ alter: true })
 
-module.exports = UserPost
+// UserMedia.removeAttribute('id')
+// UserMedia.sync()
+module.exports = UserMedia

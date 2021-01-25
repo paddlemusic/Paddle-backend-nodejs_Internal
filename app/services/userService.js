@@ -197,7 +197,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       UserFollower.findAll({
         where: { follower_id: userId },
-        attributes: ['follower_id'],
+        attributes: ['user_id'],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
@@ -221,15 +221,17 @@ class UserService {
     })
   }
 
-  getUserPost (follwersId, userId, pagination) {
-    console.log('ffffffffffff', follwersId, userId)
+  // where (User_Post.user_id = following_ids) and (User_Post.shared_with = null OR User_Post.shared_with = user_id)
+
+  getUserPost (followingId, userId, pagination) {
+    console.log('ffffffffffff', followingId, userId)
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
         limit: pagination.limit,
         offset: pagination.offset,
         where: {
+          [Op.and]: { user_id: followingId },
           [Op.or]: [
-            { user_id: follwersId },
             { shared_with: userId },
             { shared_with: null }
           ],
@@ -240,7 +242,9 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: [Sequelize.literal('"User_Post"."id","user_id","name","profile_picture","track_id","caption","shared_with"')],
+        //,
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","media_id","caption"`)],
         raw: true,
         include: [{
           model: User,
