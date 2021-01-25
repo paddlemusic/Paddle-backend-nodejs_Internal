@@ -3,6 +3,7 @@ const UserService = require('../services/userService')
 const User = require('../models/user')
 const CommonService = require('../services/commonService')
 const util = require('../utils/utils')
+const country = require('../utils/country')
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
 const userService = new UserService()
@@ -395,6 +396,18 @@ class UserController {
     try {
       const data = await commonService.findAll(University, {})
       console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getCountryCallingCode (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await country.getCachedCountryCallingCode()// commonService.findAll(University, {})
+      // console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
