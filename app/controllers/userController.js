@@ -406,8 +406,7 @@ class UserController {
   async getCountryCallingCode (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const data = await country.getCachedCountryCallingCode()// commonService.findAll(University, {})
-      // console.log(data)
+      const data = await country.getCachedCountryCallingCode()
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)

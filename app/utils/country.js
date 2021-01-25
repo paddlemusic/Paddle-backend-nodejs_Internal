@@ -1,37 +1,27 @@
 const https = require('https')
 let cachedCountryCallingCode
 
-const getCountryCallingCode = async () => {
-  let countries
-  const options = {
-    hostname: 'restcountries.eu',
-    port: 443,
-    path: '/v2/all?fields=name;callingCodes',
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    }
-  }
-
-  const req = https.request(options, res => {
-    console.log(`statusCode: ${res.statusCode}`)
-    console.log('message: ', res.statusMessage)
-    res.on('data', d => {
-      // process.stdout.write(d)
-      countries += d
-    })
-    res.on('error', d => {
-      process.stdout.write(d)
-    })
+const getCountryCallingCode = () => {
+  let data = ''
+  let response
+  return new Promise((resolve, reject) => {
+    https.get('https://restcountries.eu/rest/v2/all?fields=name;callingCodes;flag', (res) => {
+      res.setEncoding('utf8')
+      res.on('data', function (chunk) {
+        data += chunk
+      })
+      res.on('end', function () {
+        try {
+          response = JSON.parse(data)
+        } catch (e) {
+          reject(e)
+        }
+        resolve(response)
+      })
+    }).on('error', (e) => {
+      reject(e.message)
+    }).end()
   })
-  req.on('error', error => {
-    console.error(error)
-  })
-
-  // req.write(body)
-  req.end()
-  return countries.length ? countries : new Error('Unable to fetch')
 }
 
 const getCachedCountryCallingCode = async () => {
@@ -42,7 +32,8 @@ const getCachedCountryCallingCode = async () => {
     countryCallingCode = countryCallingCode.map(country => {
       return {
         name: country.name,
-        callingCode: country.callingCodes[0]
+        callingCode: country.callingCodes[0],
+        flag: country.flag
       }
     })
     cachedCountryCallingCode = countryCallingCode
