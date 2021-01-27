@@ -91,6 +91,7 @@ class UserController {
             isActive: loginResponse.dataValues.is_active
           }
           const token = await util.generateJwtToken(payload)
+          await commonService.update(User, { device_token: token }, { email: req.body.email })
           loginResponse.dataValues.token = token
           delete loginResponse.dataValues.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
@@ -408,6 +409,17 @@ class UserController {
     try {
       const data = await country.getCachedCountryCallingCode()
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async logout (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await commonService.update(User, { device_token: null }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.logOut, {})
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
