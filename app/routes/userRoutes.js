@@ -8,6 +8,8 @@ const profileContoller = new ProfileController()
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
 
+const uploadMiddleware = require('../middleware/upload')
+
 /**
  * @swagger
  * /signup:
@@ -1037,5 +1039,7 @@ router.get('/userSearch', profileContoller.userSearch)
  */
 
 router.get('/getProfile/:userId', authenticate.verifyToken, profileContoller.getProfile)
+
+router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileContoller.uploadFile)
 
 module.exports = router

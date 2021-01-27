@@ -33,6 +33,11 @@ module.exports = {
     sendgridApiKey: process.env.SENDGRID_API_KEY,
     fromEmail: process.env.FROM_EMAIL
   },
+  AWS: {
+    id: process.env.AWS_ID,
+    secret: process.env.AWS_SECRET,
+    bucketName: process.env.AWS_BUCKET_NAME
+  },
   port: port,
   messages: messages,
   constants: constants
