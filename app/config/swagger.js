@@ -32,6 +32,14 @@ const options = {
       }
     },
     {
+      name: 'profile',
+      description: 'Everything about profile',
+      externalDocs: {
+        description: 'Find out more',
+        url: 'http://swagger.io'
+      }
+    },
+    {
       name: 'home',
       description: 'Everything about Home feed',
       externalDocs: {

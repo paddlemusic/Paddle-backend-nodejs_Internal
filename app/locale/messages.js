@@ -30,6 +30,7 @@ module.exports = {
     trackAdded: 'Track added successfully',
     artistAdded: 'Artist added successfully',
     trackDeleted: 'Track deleted successfully',
-    artistDeleted: 'Artist deleted successfully'
+    artistDeleted: 'Artist deleted successfully',
+    logOut: 'User logged out successfully'
   }
 }
