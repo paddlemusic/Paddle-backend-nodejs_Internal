@@ -997,4 +997,29 @@ router.get('/countries', userController.getCountryCallingCode)
 
 router.get('/getProfile/:userId', authenticate.verifyToken, profileContoller.getProfile)
 
+/**
+ * @swagger
+ *
+ * /user/getAccountDetails:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Get User Account details.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Get user account details response object.
+ */
+
+router.get('/getAccountDetails', authenticate.verifyToken, profileContoller.getAccountDetails)
+
 module.exports = router

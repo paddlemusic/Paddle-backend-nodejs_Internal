@@ -12,6 +12,7 @@ const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
+const User = require('../models/user')
 
 const UserMedia = require('../models/userMedia')
 
@@ -313,6 +314,18 @@ class ProfileController {
         user_id: userId
       }
       const profileData = await profileService.getProfile(body)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getAccountDetails (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const attributes = ['id', 'name', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography']
+      const profileData = await commonService.findOne(User, { id: req.decoded.id }, attributes)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
