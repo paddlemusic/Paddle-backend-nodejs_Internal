@@ -4,6 +4,8 @@ const ProfileController = require('../controllers/profileController')
 const profileController = new ProfileController()
 const authenticate = require('../middleware/authenticate')
 
+const uploadMiddleware = require('../middleware/upload')
+
 /**
  * @swagger
  *
@@ -619,4 +621,31 @@ router.get('/userSearch', profileController.userSearch)
  */
 
 router.get('/getProfile/:userId', authenticate.verifyToken, profileController.getProfile)
+
+router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
+
+/**
+ * @swagger
+ *
+ * /user/getAccountDetails:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Get User Account details.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Get user account details response object.
+ */
+
+router.get('/getAccountDetails', authenticate.verifyToken, profileController.getAccountDetails)
 module.exports = router
