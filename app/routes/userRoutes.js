@@ -814,34 +814,34 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, p
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileContoller.getPlaylistTracks)
 
 /**
-* @swagger
-*
-* /getRecentPosts:
-* get:
-* tags :
-* - user
-* summary: To Get Posts By End User.
-* description: >
-* This resource will be used to get all the POST(share to all OR share to friend) detail from the end user organized by most recent to least recent .
-* parameters:
-* - in: header
-* name: Authorization
-* schema:
-* type: string
-* required: true
-* - in: query
-* name: page
-* schema:
-* type: integer
-* required: false
-* - in: query
-* name: pageSize
-* schema:
-* type: integer
-* required: false
-* produces:
-* - application/json
-*/
+ * @swagger
+ *
+ * /getRecentPosts:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: To Get Posts By End User.
+ *     description: >
+ *      This resource will be used to get all the POST(share to all OR share to friend) detail from the end user organized by most recent to least recent .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+  *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
 router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
 
 /**
@@ -988,34 +988,22 @@ router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileCon
 /**
  * @swagger
  *
- * /getRecentPosts:
+ * /userSearch:
  *   get:
  *     tags :
  *      - user
- *     summary: To Get Posts By End User.
+ *     summary: T0 search user through name.
  *     description: >
- *      This resource will be used to get all the POST(share to all OR share to friend) detail from the end user organized by most recent to least recent .
+ *      This resource will be used to search user on the basis of name in search bar .
  *     parameters:
- *      - in: header
- *        name: Authorization
+ *      - in: path
+ *        name: name
  *        schema:
  *        type: string
  *        required: true
-  *      - in: query
- *        name: page
- *        schema:
- *        type: integer
- *        required: false
- *      - in: query
- *        name: pageSize
- *        schema:
- *        type: integer
- *        required: false
  *     produces:
  *       - application/json
  */
-router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRecentPosts)
-
 router.get('/userSearch', profileContoller.userSearch)
 
 /** **************************************************************************** */
