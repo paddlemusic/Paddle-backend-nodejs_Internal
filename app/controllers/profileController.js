@@ -17,6 +17,15 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const UserMedia = require('../models/userMedia')
 
+const uuid = require('uuid')
+const AWS = require('aws-sdk')
+
+const s3 = new AWS.S3({
+  accessKeyId: config.AWS.id,
+  secretAccessKey: config.AWS.secret
+
+})
+
 class ProfileController {
   /* Playlist Methods
       - Create Playlist
@@ -326,6 +335,26 @@ class ProfileController {
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async uploadFile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const myFile = req.file.originalname.split('.')
+      const fileType = myFile[myFile.length - 1]
+      console.log('req:', req.file)
+
+      const params = {
+        Bucket: config.AWS.bucketName, // pass your bucket name
+        Key: `${uuid()}.${fileType}`, // file will be saved as testBucket/contacts.csv
+        Body: req.file.buffer
+      }
+      const data = await s3.upload(params).promise()
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (error) {
+      console.log('Error is:', error)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }

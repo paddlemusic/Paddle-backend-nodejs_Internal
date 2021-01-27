@@ -8,6 +8,8 @@ const userController = new UserController()
 const auth = require('../middleware/authenticate')
 const authenticate = require('../middleware/authenticate')
 
+const uploadMiddleware = require('../middleware/upload')
+
 /**
  * @swagger
  * /signup:
@@ -399,12 +401,6 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  *       - application/json
  *     consumes:
  *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
  *     responses:
  *          default:
  *              description: Get list of niversities response object.
@@ -428,5 +424,7 @@ router.get('/university', userController.getUniversity)
  *              description: Get list of niversities response object.
  */
 router.get('/countries', userController.getCountryCallingCode)
+
+router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileContoller.uploadFile)
 
 module.exports = router
