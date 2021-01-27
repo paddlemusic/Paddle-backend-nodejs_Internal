@@ -15,6 +15,7 @@ const config = require('../config/index')
 const UserShare = require('../models/userPost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+
 const UserMedia = require('../models/userMedia')
 
 const uuid = require('uuid')
@@ -355,6 +356,18 @@ class ProfileController {
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (error) {
       console.log('Error is:', error)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getAccountDetails (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const attributes = ['id', 'name', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography']
+      const profileData = await commonService.findOne(User, { id: req.decoded.id }, attributes)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
+    } catch (err) {
+      console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
