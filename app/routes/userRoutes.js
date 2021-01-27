@@ -856,12 +856,6 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileContoller.getRece
  *       - application/json
  *     consumes:
  *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
  *     responses:
  *          default:
  *              description: Get list of niversities response object.
