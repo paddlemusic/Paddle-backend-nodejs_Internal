@@ -151,10 +151,29 @@ class UserService {
   editDetails (params) {
     return new Promise((resolve, reject) => {
       console.log(params)
-      const userAttribute = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'is_verified']
+      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
       User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
         .then(result => resolve(result))
-        .catch(err => reject(err))
+        .catch(err => {
+          if (err.original.code === '23505' || err.original.code === 23505) {
+            switch (err.errors[0].path) {
+              case 'phone_number':
+                reject(new CustomError('Phone number is already registered.'))
+                break
+              case 'email':
+                reject(new CustomError('Email address is already registered.'))
+                break
+              case 'username':
+                reject(new CustomError('Username is already registered.'))
+                break
+              default:
+                reject(err)
+            }
+          } else {
+            console.log(err)
+            reject(err)
+          }
+        })
     })
   }
 
