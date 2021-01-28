@@ -156,7 +156,7 @@ router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
 /**
  * @swagger
  *
- * /following:
+ * /user/following:
  *   get:
  *     tags :
  *      - user
@@ -166,8 +166,11 @@ router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
  *     parameters:
  *      - in: header
  *        name: Authorization
- *     produces:
- *       - application/json
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
  */
 router.get('/following', auth.verifyToken, userController.getFollowing)
 
@@ -220,7 +223,7 @@ router.post('/resetPassword', userController.resetPassword)
 /**
  * @swagger
  *
- * /followers:
+ * /user/followers:
  *   get:
  *     tags :
  *      - user
@@ -230,8 +233,11 @@ router.post('/resetPassword', userController.resetPassword)
  *     parameters:
  *      - in: header
  *        name: Authorization
- *     produces:
- *       - application/json
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
  */
 router.get('/followers', auth.verifyToken, userController.getFollowers)
 
