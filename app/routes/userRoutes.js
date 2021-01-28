@@ -259,7 +259,7 @@ router.post('/resend_Otp', userController.resendOtp)
 /**
  * @swagger
  *
- * /edit_details:
+ * /user/edit_details:
  *   put:
  *     tags :
  *      - user
@@ -273,23 +273,24 @@ router.post('/resend_Otp', userController.resendOtp)
  *        type: string
  *        required: true
  *      - in: body
- *        name : name
- *        type: string
+ *        name: body
  *        required: true
- *      - in: body
- *        name : username
- *        type: string
- *        required: true
- *      - in: body
- *        name : email
- *        type: string
- *        required: true
- *      - in: body
- *        name : phone_number
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
+ *        schema:
+ *           type: object
+ *           properties:
+ *               name:
+ *                   type: string
+ *               username:
+ *                   type: string
+ *               phone_number:
+ *                   type: string
+ *               date_of_birth:
+ *                   type: string
+ *               biography:
+ *                   type: string
+ *     responses:
+ *          default:
+ *              description: Update account deatails response object.
  */
 
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
