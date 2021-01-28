@@ -13,21 +13,14 @@ const PlaylistTrack = require('../models/playlistTrack')
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 
+const s3Bucket = require('../services/s3Bucket')
+
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
 const UserMedia = require('../models/userMedia')
-
-const uuid = require('uuid')
-const AWS = require('aws-sdk')
-
-const s3 = new AWS.S3({
-  accessKeyId: config.AWS.id,
-  secretAccessKey: config.AWS.secret
-
-})
 
 class ProfileController {
   /* Playlist Methods
@@ -365,16 +358,16 @@ class ProfileController {
   async uploadFile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
+      if (!req.file) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.failed)
+      }
       const myFile = req.file.originalname.split('.')
       const fileType = myFile[myFile.length - 1]
-      console.log('req:', req.file)
-
-      const params = {
-        Bucket: config.AWS.bucketName, // pass your bucket name
-        Key: `${uuid()}.${fileType}`, // file will be saved as testBucket/contacts.csv
-        Body: req.file.buffer
+      const body = {
+        fileType: fileType,
+        buffer: req.file.buffer
       }
-      const data = await s3.upload(params).promise()
+      const data = await s3Bucket.uploadToS3(body)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (error) {
       console.log('Error is:', error)
