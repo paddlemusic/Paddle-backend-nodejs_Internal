@@ -430,4 +430,6 @@ router.get('/university', userController.getUniversity)
  */
 router.get('/countries', userController.getCountryCallingCode)
 
+router.get('/isUsernameAvailable', userController.isUsernameAvailable)
+
 module.exports = router

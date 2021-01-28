@@ -328,6 +328,20 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  isUsernameAvailable (username) {
+    return new Promise((resolve, reject) => {
+      User.findOne(
+        {
+          where: {
+            username: username // { [Op.iLike]: username }
+          },
+          attributes: ['username']
+        }
+      ).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = UserService

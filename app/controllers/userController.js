@@ -432,5 +432,17 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async isUsernameAvailable (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await userService.isUsernameAvailable(req.query.username)
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { is_available: data === null })
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 module.exports = UserController
