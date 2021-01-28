@@ -418,7 +418,7 @@ class UserController {
   async logout (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const data = await commonService.update(User, { device_token: null }, { id: req.decoded.id })
+      await commonService.update(User, { device_token: null }, { id: req.decoded.id })
       util.successResponse(res, config.constants.SUCCESS, langMsg.logOut, {})
     } catch (err) {
       console.log(err)
