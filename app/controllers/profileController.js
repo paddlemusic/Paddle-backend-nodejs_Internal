@@ -11,6 +11,8 @@ const userService = new UserService()
 const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
 const User = require('../models/user')
+const UserFollower = require('../models/userFollower')
+
 const config = require('../config/index')
 const UserShare = require('../models/userPost')
 const Sequelize = require('sequelize')
@@ -327,12 +329,32 @@ class ProfileController {
 
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
+    let profileData
     try {
       const userId = req.params.userId
       const body = {
-        user_id: userId
+        user_id: userId // (5)
       }
-      const profileData = await profileService.getProfile(body)
+      if (req.decoded.id /* 1 */ === userId) {
+        profileData = await profileService.getProfile(body)
+      } else {
+        const userDetail = await commonService.findOne(User, { id: body.user_id }, ['is_privacy'])
+        if (!userDetail.is_privacy) {
+          profileData = await profileService.getProfile(body)
+        } else {
+          const result = await commonService.findOne(UserFollower, { user_id: userId, follower_id: req.decoded.id }) // user (1) is following user(5) or not
+          console.log('result is:', result)
+          if (result) {
+            profileData = await profileService.getProfile(body)
+          } else {
+            profileData = await profileService.getProfile(body)
+            console.log('Profile data is:', profileData)
+            delete profileData.topSong
+            delete profileData.topArtist
+            delete profileData.recentPost
+          }
+        }
+      }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
@@ -366,6 +388,24 @@ class ProfileController {
       const attributes = ['id', 'name', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography']
       const profileData = await commonService.findOne(User, { id: req.decoded.id }, attributes)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async checkUserPrivacy (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userId = req.decoded.id
+      const validationResult = await userSchema.userPrivacy.validate(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      // const attributes = ['is_privacy']
+      const isUserPrivacyOn = await commonService.update(User, { is_privacy: req.body.is_privacy }, { id: userId })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, isUserPrivacyOn)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

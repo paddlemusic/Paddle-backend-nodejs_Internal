@@ -78,6 +78,9 @@ const schema = {
   }),
   tracks: Joi.object().keys({
     track_ids: Joi.array().items(Joi.string()).unique()
+  }),
+  userPrivacy: Joi.object().keys({
+    is_privacy: Joi.boolean().required()
   })
 }
 

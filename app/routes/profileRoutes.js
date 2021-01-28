@@ -622,8 +622,6 @@ router.get('/userSearch', profileController.userSearch)
 
 router.get('/getProfile/:userId', authenticate.verifyToken, profileController.getProfile)
 
-router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
-
 /**
  * @swagger
  *
@@ -648,4 +646,7 @@ router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profil
  */
 
 router.get('/getAccountDetails', authenticate.verifyToken, profileController.getAccountDetails)
+
+router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
+router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUserPrivacy)
 module.exports = router

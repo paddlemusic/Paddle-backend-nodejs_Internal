@@ -18,7 +18,7 @@ class CommonService {
 
   findOne (table, condition, attributes) {
     return new Promise((resolve, reject) => {
-      table.findOne({ where: condition, attributes: attributes })
+      table.findOne({ where: condition, attributes: attributes, raw: true })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

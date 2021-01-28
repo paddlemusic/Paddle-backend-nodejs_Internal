@@ -12,18 +12,18 @@ const userService = new UserService()
 
 class ProfileService {
   async getProfile (params) {
-    console.log('Params is:', params)
-    // return new Promise((resolve, reject) => {
-    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['name', 'id', 'profile_picture'])
+    // let userDetail, topSongDetails, topArtistDetails, recentPostsDetails, pagination, follwerDetails, followingDetails
+    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['name', 'id', 'profile_picture', 'is_privacy'])
+    console.log('Params is:', JSON.stringify(userDetail, null, 2))
+
     const follwerDetails = await UserFollower.findAndCountAll({
       where: { user_id: params.user_id },
       raw: true
     })
-    const follwingDetails = await UserFollower.findAndCountAll({
+    const followingDetails = await UserFollower.findAndCountAll({
       where: { follower_id: params.user_id },
       raw: true
     })
-
     const topSongDetails = await commonService.findOne(UserMedia, { user_id: params.user_id, media_type: 1 },
       ['media_id', 'media_name', 'media_image', 'meta_data'])
 
@@ -35,11 +35,12 @@ class ProfileService {
     const data = {
       userDetail,
       follower: follwerDetails.count,
-      following: follwingDetails.count,
+      following: followingDetails.count,
       topSong: topSongDetails,
       topArtist: topArtistDetails,
       recentPost: recentPostsDetails
     }
+
     return new Promise((resolve, reject) => {
       if (data) {
         resolve(data)
