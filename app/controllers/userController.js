@@ -19,6 +19,8 @@ class UserController {
       req.body.password = passwordHash
       const signupData = await userService.signup(req.body)
       //  const otp = await util.sendOTP(signupData.dataValues.phone_number)
+      const username = [signupData.dataValues.name.replace(' ', '_'), signupData.dataValues.id].join('_')
+      await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
       const otp = await util.sendEmail(signupData.dataValues.email, signupData.dataValues.name)
       if (otp) {
         const otpJwt = await util.getJwtFromOtp(otp.otp)
@@ -37,6 +39,8 @@ class UserController {
       delete signupData.dataValues.device_token
       delete signupData.dataValues.verification_token
       delete signupData.dataValues.social_user_id
+      delete signupData.dataValues.reset_password_token
+      delete signupData.dataValues.reset_password_expires
       util.successResponse(res, config.constants.SUCCESS, langMsg.signupSuccess, signupData.dataValues)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
