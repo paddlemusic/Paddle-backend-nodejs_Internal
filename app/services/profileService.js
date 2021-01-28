@@ -13,9 +13,12 @@ const userService = new UserService()
 class ProfileService {
   async getProfile (params) {
     // let userDetail, topSongDetails, topArtistDetails, recentPostsDetails, pagination, follwerDetails, followingDetails
-    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['name', 'id', 'profile_picture', 'is_privacy'])
-    console.log('Params is:', JSON.stringify(userDetail, null, 2))
+    // const userDetail = await commonService.findOne(User, { id: params.user_id }, ['name', 'id', 'profile_picture', 'is_privacy'])
+    // console.log('Params is:', JSON.stringify(userDetail, null, 2))
 
+    console.log('Params is:', params)
+    // return new Promise((resolve, reject) => {
+    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['id', 'name', 'username', 'profile_picture', 'is_privacy'])
     const follwerDetails = await UserFollower.findAndCountAll({
       where: { user_id: params.user_id },
       raw: true
