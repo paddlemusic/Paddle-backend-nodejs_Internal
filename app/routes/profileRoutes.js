@@ -627,10 +627,10 @@ router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profil
 /**
  * @swagger
  *
- * /user/getAccountDetails:
+ * /profile/getAccountDetails:
  *   get:
  *     tags :
- *      - user
+ *      - profile
  *     summary: Get User Account details.
  *     produces:
  *       - application/json
