@@ -6,7 +6,7 @@ const schema = require('../middleware/schemaValidator/userSchema')
 const UserPost = require('../models/userPost')
 const UserService = require('../services/userService')
 const userService = new UserService()
-const UniversityTrending = require('../models/universityTrending')
+// const UniversityTrending = require('../models/universityTrending')
 
 class HomePageController {
   async createUserPost (req, res) {
