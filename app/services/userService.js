@@ -334,7 +334,7 @@ class UserService {
       User.findOne(
         {
           where: {
-            username: username // { [Op.iLike]: username }
+            username: username
           },
           attributes: ['username']
         }

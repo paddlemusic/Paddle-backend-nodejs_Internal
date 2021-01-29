@@ -430,6 +430,22 @@ router.get('/university', userController.getUniversity)
  */
 router.get('/countries', userController.getCountryCallingCode)
 
-router.get('/isUsernameAvailable', userController.isUsernameAvailable)
+/**
+ * @swagger
+ *
+ * /user/isUsernameAvailable:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Check if username is available or not.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     responses:
+ *          default:
+ *              description: isUsernameAvailable response object.
+ */
+router.get('/isUsernameAvailable', auth.verifyToken, userController.isUsernameAvailable)
 
 module.exports = router
