@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 
-const serviceAccount = require('../paddle-300111-firebase-adminsdk-dskg2-d101c170c7.json')
+const serviceAccount = require('../paddle-300111-firebase-adminsdk-dskg2-ef2ccbf2d1.json')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

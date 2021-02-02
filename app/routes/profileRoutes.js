@@ -648,5 +648,32 @@ router.get('/getProfile/:userId', authenticate.verifyToken, profileController.ge
 router.get('/getAccountDetails', authenticate.verifyToken, profileController.getAccountDetails)
 
 router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
+
+/**
+ * @swagger
+ *
+ * /checkPrivacy:
+ *   put:
+ *     tags :
+ *      - profile
+ *     summary: Toggle Privacy Settings.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: is_privacy
+ *        description: privacy on and off
+ *        schema:
+ *        type: boolean
+ *        required: true
+ */
+
 router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUserPrivacy)
 module.exports = router
