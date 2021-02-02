@@ -13,26 +13,19 @@ const UniversityTrending = sequelize.define('University_Trending', {
     allowNull: false,
     unique: 'university_id_media_id_media_type'
   },
-  media_image: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  media_name: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  meta_data: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
   media_type: {
     type: DataTypes.INTEGER,
     allowNull: false,
     unique: 'university_id_media_id_media_type'
   },
+  media_metadata: {
+    type: DataTypes.JSON,
+    allowNull: true
+  },
   count: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    defaultValue: 0
   }
 },
 {
@@ -49,6 +42,6 @@ UniversityTrending.belongsTo(University, {
 
 UniversityTrending.removeAttribute('id')
 
-// UniversityTrending.sync()
+// UniversityTrending.sync({ force: true })
 
 module.exports = UniversityTrending
