@@ -8,6 +8,7 @@ const notificationService = require('../services/notificationService')
 const User = require('../models/user')
 const UserService = require('../services/userService')
 const userService = new UserService()
+// const UniversityTrending = require('../models/universityTrending')
 
 class HomePageController {
   async createUserPost (req, res) {

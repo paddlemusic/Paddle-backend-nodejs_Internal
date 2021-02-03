@@ -7,10 +7,10 @@ class CommonService {
     })
   }
 
-  update (table, params, condition) {
+  update (table, params, condition, returning = false) {
     console.log('IN UPDATE:')
     return new Promise((resolve, reject) => {
-      table.update(params, { where: condition, returning: false })
+      table.update(params, { where: condition, returning: returning })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -18,7 +18,7 @@ class CommonService {
 
   findOne (table, condition, attributes) {
     return new Promise((resolve, reject) => {
-      table.findOne({ where: condition, attributes: attributes })
+      table.findOne({ where: condition, attributes: attributes, raw: true })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

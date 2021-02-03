@@ -156,7 +156,7 @@ router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
 /**
  * @swagger
  *
- * /following:
+ * /user/following:
  *   get:
  *     tags :
  *      - user
@@ -166,8 +166,11 @@ router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
  *     parameters:
  *      - in: header
  *        name: Authorization
- *     produces:
- *       - application/json
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
  */
 router.get('/following', auth.verifyToken, userController.getFollowing)
 
@@ -220,7 +223,7 @@ router.post('/resetPassword', userController.resetPassword)
 /**
  * @swagger
  *
- * /followers:
+ * /user/followers:
  *   get:
  *     tags :
  *      - user
@@ -230,8 +233,11 @@ router.post('/resetPassword', userController.resetPassword)
  *     parameters:
  *      - in: header
  *        name: Authorization
- *     produces:
- *       - application/json
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Update playlist response object.
  */
 router.get('/followers', auth.verifyToken, userController.getFollowers)
 
@@ -259,7 +265,7 @@ router.post('/resend_Otp', userController.resendOtp)
 /**
  * @swagger
  *
- * /edit_details:
+ * /user/edit_details:
  *   put:
  *     tags :
  *      - user
@@ -273,23 +279,24 @@ router.post('/resend_Otp', userController.resendOtp)
  *        type: string
  *        required: true
  *      - in: body
- *        name : name
- *        type: string
+ *        name: body
  *        required: true
- *      - in: body
- *        name : username
- *        type: string
- *        required: true
- *      - in: body
- *        name : email
- *        type: string
- *        required: true
- *      - in: body
- *        name : phone_number
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
+ *        schema:
+ *           type: object
+ *           properties:
+ *               name:
+ *                   type: string
+ *               username:
+ *                   type: string
+ *               phone_number:
+ *                   type: string
+ *               date_of_birth:
+ *                   type: string
+ *               biography:
+ *                   type: string
+ *     responses:
+ *          default:
+ *              description: Update account deatails response object.
  */
 
 router.put('/edit_details', auth.verifyToken, userController.editDetails)
@@ -443,5 +450,23 @@ router.get('/countries', userController.getCountryCallingCode)
  *       - application/json
  */
 router.post('/logout', auth.verifyToken, userController.logout)
+
+/**
+ * @swagger
+ *
+ * /user/isUsernameAvailable:
+ *   get:
+ *     tags :
+ *      - user
+ *     summary: Check if username is available or not.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     responses:
+ *          default:
+ *              description: isUsernameAvailable response object.
+ */
+router.get('/isUsernameAvailable', auth.verifyToken, userController.isUsernameAvailable)
 
 module.exports = router
