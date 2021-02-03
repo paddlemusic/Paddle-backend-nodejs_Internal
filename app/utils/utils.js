@@ -88,7 +88,7 @@ const sendEmail = async function (toEmail, name) {
     })
     console.log(otp)
     const mailOptions = {
-      to: 'simnankhan1994@gmail.com',
+      to: 'eresh.sharma@algoworks.com',
       from: config.SENDGRID.fromEmail,
       subject: 'Password change request',
       text: `Hi ${name} \n 
