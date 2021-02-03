@@ -323,6 +323,9 @@ class ProfileController {
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let profileData
+    // console.log('User id', req.params.userId)
+    // console.log('Decoded id', req.decoded.id)
+
     try {
       const userId = req.params.userId
       const body = {

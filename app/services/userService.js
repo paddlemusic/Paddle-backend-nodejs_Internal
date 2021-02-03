@@ -117,14 +117,27 @@ class UserService {
       console.log('params are:', params)
       User.create(params)
         .then(result => resolve(result.get({ plain: true })))
-        .catch(err => reject(err))
+        .catch(err => {
+          if (err.original.code === '23505' || err.original.code === 23505) {
+            switch (err.errors[0].path) {
+              case 'email':
+                reject(new CustomError('Email address is already registered.'))
+                break
+              default:
+                reject(err)
+            }
+          } else {
+            console.log(err)
+            reject(err)
+          }
+        })
     })
   }
 
   isUserAlreadyExist (params) {
     return new Promise((resolve, reject) => {
       const userAttribute = ['name', 'username', 'email', 'phophone_number', 'date_of_birth', 'social_user_id',
-        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token']
+        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token', 'id']
       User.findOne({ where: params, raw: true }, { attribute: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))

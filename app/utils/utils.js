@@ -35,6 +35,7 @@ const generateJwtToken = function (payload) {
       role: payload.role,
       is_active: payload.isActive
     }
+    // console.log('token data is:', data)
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
       if (err) {
         console.log(err)
