@@ -65,6 +65,33 @@ const auth = require('../middleware/authenticate')
 
 router.post('/addMedia', auth.verifyToken, chartController.addMedia)
 
+/**
+ * @swagger
+ *
+ * /getchart/{type}:
+ *   get:
+ *     tags :
+ *      - chart
+ *     summary: Get Charts for Tracks/Artist.
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *   description: >
+ *    Shows user saved song and artists
+ *     produces:
+ *       - application/json
+ */
 router.get('/getchart/:type', auth.verifyToken, chartController.fetchChart)
 
 module.exports = router
