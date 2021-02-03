@@ -448,4 +448,25 @@ router.get('/countries', userController.getCountryCallingCode)
  */
 router.get('/isUsernameAvailable', auth.verifyToken, userController.isUsernameAvailable)
 
+/**
+ * @swagger
+ *
+ * /logout:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: LOGOUT.
+ *     description: >
+ *      This resource will be used to logout users by destroying device token.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.post('/logout', auth.verifyToken, userController.logout)
+
 module.exports = router
