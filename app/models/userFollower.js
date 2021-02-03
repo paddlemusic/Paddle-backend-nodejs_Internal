@@ -34,6 +34,14 @@ UserFollower.belongsTo(User, {
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
+
+UserFollower.belongsTo(User, {
+  sourceKey: 'id',
+  as: 'following',
+  foreignKey: 'user_id',
+  onDelete: 'Cascade',
+  onUpdate: 'Cascade'
+})
 UserFollower.removeAttribute('id')
 module.exports = UserFollower
 

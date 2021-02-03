@@ -3,7 +3,7 @@ const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
-
+const notificationService = require('../services/notificationService')
 const ProfileService = require('../services/profileService')
 const profileService = new ProfileService()
 const UserService = require('../services/userService')
@@ -150,9 +150,25 @@ class ProfileController {
           meta_data: req.body.meta_data,
           media_type: req.params.media_type
         }
-
         console.log('params are:', params)
         await commonService.create(UserShare, params)
+        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+        const payload = {
+          message: {
+            notification: {
+              title: 'Paddle Notification ',
+              body: followerName.dataValues.name + ' ' + ' shared a post with you'
+            }
+          }
+        }
+        if (req.body.shared_with === null) {
+          const followingData = await userService.getFollowing(req.decoded)
+          const followingToken = followingData.rows.map(follower => { return follower.device_token })
+          await notificationService.sendNotification(followingToken, payload)
+        } else {
+          const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
+          await notificationService.sendNotification(sharedwithToken, payload)
+        }
         util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
       } catch (err) {
         console.log(err)

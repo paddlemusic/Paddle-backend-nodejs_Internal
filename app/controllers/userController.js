@@ -2,7 +2,9 @@ const authenticate = require('../middleware/authenticate')
 const UserService = require('../services/userService')
 const User = require('../models/user')
 const CommonService = require('../services/commonService')
+const notificationService = require('../services/notificationService')
 const util = require('../utils/utils')
+const firebase = require('../utils/firebase')
 const country = require('../utils/country')
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
@@ -10,6 +12,8 @@ const userService = new UserService()
 const commonService = new CommonService()
 const UserFollower = require('../models/userFollower')
 const University = require('../models/university')
+const { token } = require('morgan')
+// const utils = require('../utils/utils')
 
 class UserController {
   async signup (req, res) {
@@ -315,6 +319,19 @@ class UserController {
         return
       }
       await commonService.create(UserFollower, params)
+      const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+      // const followingData = await userService.getFollowing(req.decoded)
+      // const followingToken = followingData.rows.map(follower => { return follower.device_token })
+      const sharedwithToken = await commonService.findAll(User, { id: req.params.user_id }, ['device_token'])
+      const payload = {
+        message: {
+          notification: {
+            title: 'Paddle Notification ',
+            body: followerName.dataValues.name + ' ' + ' started following you'
+          }
+        }
+      }
+      await notificationService.sendNotification(sharedwithToken, payload)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
@@ -418,8 +435,8 @@ class UserController {
   async logout (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const data = await commonService.update(User, { device_token: null }, { id: req.decoded.id })
-      util.successResponse(res, config.constants.SUCCESS, langMsg.logOut, {})
+      await commonService.update(User, { device_token: null }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.logOut)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

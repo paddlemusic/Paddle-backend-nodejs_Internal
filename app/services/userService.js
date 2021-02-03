@@ -162,7 +162,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { follower_id: params.id },
-        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
+        attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture","followed"."device_token"')],
         raw: true,
         include: [{
           model: User,
@@ -306,6 +306,23 @@ class UserService {
         }
 
       ).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getFollowingTokens (params) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { user_id: params.id },
+        attributes: [Sequelize.literal('"following"."name","following"."device_token" as "device_token","follower_id"')],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          // attributes: [],
+          as: 'following'
+        }]
+      }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }

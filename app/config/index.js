@@ -38,6 +38,9 @@ module.exports = {
     secret: process.env.AWS_SECRET,
     bucketName: process.env.AWS_BUCKET_NAME
   },
+  FIREBASE: {
+    vapidKey: process.env.VAPID_KEY
+  },
   port: port,
   messages: messages,
   constants: constants
