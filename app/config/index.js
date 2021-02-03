@@ -25,9 +25,9 @@ module.exports = {
     callbackURL: process.env.FACEBOOK_CALLBACK_URL
   },
   GOOGLE: {
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+    clientId: process.env.GOOGLE_CLIENT_ID
+    // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
   SENDGRID: {
     sendgridApiKey: process.env.SENDGRID_API_KEY,

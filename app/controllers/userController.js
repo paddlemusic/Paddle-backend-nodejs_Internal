@@ -1,4 +1,4 @@
-const authenticate = require('../middleware/authenticate')
+// const authenticate = require('../middleware/authenticate')
 const UserService = require('../services/userService')
 const User = require('../models/user')
 const CommonService = require('../services/commonService')
@@ -208,11 +208,13 @@ class UserController {
 
   async socialMediaSignup (req, res) {
     console.log('IN controller')
+    let socialData, userExistData
+    const langMsg = config.messages[req.app.get('lang')]
     try {
-      const langMsg = config.messages[req.app.get('lang')]
       if (req.user) {
         console.log('User is:', req.user)
-        const token = authenticate.getToken({ _id: req.user.id })
+
+        // const token = authenticate.getToken({ _id: req.user.id })
         const userData = {
           name: req.user.displayName,
           username: req.user.id,
@@ -220,28 +222,51 @@ class UserController {
           email: req.user.emails[0].value || req.user.email,
           role: '1'
         }
-        const isUserExist = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
-        console.log('isUserExist:', isUserExist)
+        userExistData = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
+        console.log('isUserExist:', userExistData)
         console.log('msg:', config.messages.en.loginSuccess)
-        if (isUserExist) {
+        if (userExistData) {
+          const data = {
+            id: userExistData.id,
+            email: req.user.emails[0].value || req.user.email,
+            role: '1',
+            isActive: true
+          }
+          const token = await util.generateJwtToken(data)
+          userExistData.token = token
+          // console.log('userExistData:', userExistData)
           util.successResponse(res, config.constants.SUCCESS,
-            langMsg.loginSuccess, { token: token })
+            langMsg.loginSuccess, userExistData)
         } else {
           try {
-            const data = await userService.socialMediaSignup(userData)
-            if (data) {
+            socialData = await userService.socialMediaSignup(userData)
+            // console.log('socialData:', socialData)
+            if (socialData) {
+              const username = [socialData.name.replace(' ', '_'), socialData.id].join('_')
+              await commonService.update(User, { username: username }, { id: socialData.id })
+              const data = {
+                id: socialData.id,
+                email: req.user.emails[0].value || req.user.email,
+                role: '1',
+                isActive: true
+              }
+              const token = await util.generateJwtToken(data)
+              socialData.token = token
               util.successResponse(res, config.constants.SUCCESS,
-                langMsg.loginSuccess, { token: token })
+                langMsg.loginSuccess, socialData)
             }
           } catch (err) {
-            console.log('Error1 is:', err)
-            throw err
+            const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
+            const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+            util.failureResponse(res, errorCode, errorMessage)
           }
         }
       }
     } catch (err) {
-      console.log('Error is:', err)
-      throw err
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      // console.log('Error is:', err)
+      // throw err
     }
   }
 
