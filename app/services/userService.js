@@ -116,7 +116,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       console.log('params are:', params)
       User.create(params)
-        .then(result => resolve(result))
+        .then(result => resolve(result.get({ plain: true })))
         .catch(err => reject(err))
     })
   }
@@ -125,7 +125,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       const userAttribute = ['name', 'username', 'email', 'phophone_number', 'date_of_birth', 'social_user_id',
         'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token']
-      User.findOne({ where: params }, { attribute: userAttribute })
+      User.findOne({ where: params, raw: true }, { attribute: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

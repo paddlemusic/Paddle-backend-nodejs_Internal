@@ -204,6 +204,7 @@ class UserController {
 
   async socialMediaSignup (req, res) {
     console.log('IN controller')
+    let socialData, userExistData
     try {
       const langMsg = config.messages[req.app.get('lang')]
       if (req.user) {
@@ -216,18 +217,23 @@ class UserController {
           email: req.user.emails[0].value || req.user.email,
           role: '1'
         }
-        const isUserExist = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
-        console.log('isUserExist:', isUserExist)
+        userExistData = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
+        console.log('isUserExist:', userExistData)
         console.log('msg:', config.messages.en.loginSuccess)
-        if (isUserExist) {
+        if (userExistData) {
+          userExistData.token = token
+          console.log('userExistData:', userExistData)
+
           util.successResponse(res, config.constants.SUCCESS,
-            langMsg.loginSuccess, { token: token })
+            langMsg.loginSuccess, userExistData)
         } else {
           try {
-            const data = await userService.socialMediaSignup(userData)
-            if (data) {
+            socialData = await userService.socialMediaSignup(userData)
+            console.log('socialData:', socialData)
+            if (socialData) {
+              socialData.token = token
               util.successResponse(res, config.constants.SUCCESS,
-                langMsg.loginSuccess, { token: token })
+                langMsg.loginSuccess, socialData)
             }
           } catch (err) {
             console.log('Error1 is:', err)
