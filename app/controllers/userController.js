@@ -10,6 +10,7 @@ const userService = new UserService()
 const commonService = new CommonService()
 const UserFollower = require('../models/userFollower')
 const University = require('../models/university')
+const UserRating = require('../models/userRating')
 
 class UserController {
   async signup (req, res) {
@@ -439,6 +440,37 @@ class UserController {
       const data = await userService.isUsernameAvailable(req.query.username)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, { is_available: data === null })
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async rateApp (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.rateApp.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      validationResult.user_id = req.decoded.id
+      const data = await commonService.createOrUpdate(UserRating, validationResult)
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getRateApp (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await commonService.findOne(UserRating, { user_id: req.decoded.id })
+      console.log(data)
+      delete data.user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

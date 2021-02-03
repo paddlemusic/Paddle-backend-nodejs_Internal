@@ -448,4 +448,8 @@ router.get('/countries', userController.getCountryCallingCode)
  */
 router.get('/isUsernameAvailable', auth.verifyToken, userController.isUsernameAvailable)
 
+router.post('/rateApp', auth.verifyToken, userController.rateApp)
+
+router.get('/rateApp', auth.verifyToken, userController.getRateApp)
+
 module.exports = router

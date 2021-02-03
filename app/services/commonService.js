@@ -89,6 +89,14 @@ class CommonService {
         })
     })
   }
+
+  createOrUpdate (table, params) {
+    return new Promise((resolve, reject) => {
+      table.upsert(params, { returning: false })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 
 module.exports = CommonService
