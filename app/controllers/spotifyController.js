@@ -5,7 +5,6 @@ const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/spotifySchema')
 const UserState = require('../models/userState')
 const https = require('https')
-// const UserRating = require('../models/userRating')
 
 class SpotifyController {
   async saveSpotifyState (req, res) {
@@ -32,14 +31,7 @@ class SpotifyController {
     try {
       const AUTH_HEADER = 'Basic ' +
                   Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
-      console.log(AUTH_HEADER)
-      console.log(config.constants.SPOTIFY.CLIENT_ID)
-      console.log(config.constants.SPOTIFY.CLIENT_SECRET)
-      const data = JSON.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: req.body.refresh_token
-      })
-      console.log(data)
+
       const options = {
         hostname: config.constants.SPOTIFY.URI,
         port: 443,
@@ -50,22 +42,70 @@ class SpotifyController {
           Authorization: AUTH_HEADER
         }
       }
-      console.log(options)
+
+      let result = ''
       const request = https.request(options, response => {
         console.log(`statusCode: ${res.statusCode}`)
-
         response.on('data', d => {
           process.stdout.write(d)
+          result += d
+        })
+        response.on('end', () => {
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, JSON.parse(result))
         })
       })
       request.on('error', error => {
         console.error(error)
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.failed)
       })
 
-      // request.write(data)
       request.end()
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+  async swapToken (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const AUTH_HEADER = 'Basic ' +
+                  Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
+
+      const queryString = `?grant_type=authorization_code&code=${req.body.auth_code}&redirect_uri=${config.constants.SPOTIFY.CLIENT_CALLBACK_URL}&code_verifier=${req.body.code_verifier}`
+
+      const options = {
+        hostname: config.constants.SPOTIFY.URI,
+        port: 443,
+        path: '/api/token' + queryString,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: AUTH_HEADER
+        }
+      }
+
+      let result = ''
+      const request = https.request(options, response => {
+        console.log(`statusCode: ${response.statusCode}`)
+        console.log(response.url)
+        console.log(response.path)
+
+        response.on('data', d => {
+          process.stdout.write(d)
+          result += d
+        })
+
+        response.on('end', () => {
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, JSON.parse(result))
+        })
+      })
+      request.on('error', error => {
+        console.error(error)
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.failed)
+      })
+
+      request.end()
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
