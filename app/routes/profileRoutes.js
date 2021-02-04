@@ -676,4 +676,33 @@ router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profil
  */
 
 router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUserPrivacy)
+
+/**
+ * @swagger
+ *
+ * /userMedia/getSaveSongsArtists/{type}:
+ *   get:
+ *     tags :
+ *      - profile
+ *     summary: Get SAVED SONGS and SAVED ARTISTS.
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *   description: >
+ *    Shows user saved song and artists
+ *     produces:
+ *       - application/json
+ */
+router.get('/userMedia/getSaveSongsArtists/:media_type', authenticate.verifyToken, profileController.getUserMedia)
 module.exports = router

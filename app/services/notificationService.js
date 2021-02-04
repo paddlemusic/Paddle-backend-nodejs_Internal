@@ -1,5 +1,4 @@
 const admin = require('firebase-admin')
-
 const serviceAccount = require('../paddle-300111-firebase-adminsdk-dskg2-ef2ccbf2d1.json')
 
 admin.initializeApp({
@@ -8,11 +7,15 @@ admin.initializeApp({
 })
 
 async function sendNotification (deviceTokens, payload) {
+  console.log('from notification service', deviceTokens)
   const tokens = []
-  deviceTokens.forEach((token) => {
+  /* deviceTokens.forEach((token) => {
     if (token.device_token) {
       tokens.push(token.device_token)
     }
+  }) */
+  deviceTokens.forEach(token => {
+    tokens.push(token)
   })
   console.log(tokens)
   const messageNotification = payload
@@ -30,6 +33,7 @@ async function sendNotification (deviceTokens, payload) {
     return 0
   }
 }
+
 module.exports = {
   sendNotification
 }

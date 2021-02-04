@@ -3,7 +3,7 @@ const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
-
+const notificationService = require('../services/notificationService')
 const ProfileService = require('../services/profileService')
 const profileService = new ProfileService()
 const UserService = require('../services/userService')
@@ -145,9 +145,25 @@ class ProfileController {
           meta_data: req.body.meta_data,
           media_type: req.params.media_type
         }
-
         console.log('params are:', params)
         await commonService.create(UserShare, params)
+        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+        const payload = {
+          message: {
+            notification: {
+              title: 'Paddle Notification ',
+              body: followerName.dataValues.name + ' ' + ' shared a post with you'
+            }
+          }
+        }
+        if (req.body.shared_with === null) {
+          const followingData = await userService.getFollowing(req.decoded)
+          const followingToken = followingData.rows.map(follower => { return follower.device_token })
+          await notificationService.sendNotification(followingToken, payload)
+        } else {
+          const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
+          await notificationService.sendNotification(sharedwithToken, payload)
+        }
         util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
       } catch (err) {
         console.log(err)
@@ -323,6 +339,9 @@ class ProfileController {
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let profileData
+    // console.log('User id', req.params.userId)
+    // console.log('Decoded id', req.decoded.id)
+
     try {
       const userId = req.params.userId
       const body = {
@@ -399,6 +418,19 @@ class ProfileController {
       // const attributes = ['is_privacy']
       const isUserPrivacyOn = await commonService.update(User, { is_privacy: req.body.is_privacy }, { id: userId })
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, isUserPrivacyOn)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getUserMedia (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (req.decoded.id) {
+        const savedSongArtists = await commonService.findAndCountAll(UserMedia, { user_id: req.decoded.id, media_type: req.params.media_type }, ['media_id', 'media_image', 'media_name', 'meta_data'])
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, savedSongArtists)
+      }
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

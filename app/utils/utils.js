@@ -35,6 +35,7 @@ const generateJwtToken = function (payload) {
       role: payload.role,
       is_active: payload.isActive
     }
+    // console.log('token data is:', data)
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
       if (err) {
         console.log(err)
@@ -87,7 +88,7 @@ const sendEmail = async function (toEmail, name) {
     })
     console.log(otp)
     const mailOptions = {
-      to: 'simnankhan1994@gmail.com',
+      to: 'eresh.sharma@algoworks.com',
       from: config.SENDGRID.fromEmail,
       subject: 'Password change request',
       text: `Hi ${name} \n 

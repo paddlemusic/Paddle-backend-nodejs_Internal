@@ -87,8 +87,9 @@ exports.googleSignIn = function (req, res, next) {
 exports.facebookSignIn = function (req, res, next) {
   const langMsg = config.messages[req.app.get('lang')]
   passport.authenticate('facebook-token', function (err, user, info) {
-    // console.error(err);
+    console.log('User is:', user)
     if (err) {
+      console.log('Err is:', err)
       util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.invalidToken)
     }
     if (user) {
@@ -109,7 +110,7 @@ exports.verifyToken = (req, res, next) => {
         console.log(LangMsg.invalidToken)
         util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
       } else {
-        console.log(decoded)
+        // console.log('DEcoded is:', decoded)
         if (Number(decoded.role) !== 1) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
         } else if (!decoded.is_active) {

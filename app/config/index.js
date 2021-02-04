@@ -25,9 +25,9 @@ module.exports = {
     callbackURL: process.env.FACEBOOK_CALLBACK_URL
   },
   GOOGLE: {
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL
+    clientId: process.env.GOOGLE_CLIENT_ID
+    // clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
   SENDGRID: {
     sendgridApiKey: process.env.SENDGRID_API_KEY,
@@ -38,6 +38,9 @@ module.exports = {
     secret: process.env.AWS_SECRET,
     bucketName: process.env.AWS_BUCKET_NAME,
     region: process.env.AWS_REGION
+  },
+  FIREBASE: {
+    vapidKey: process.env.VAPID_KEY
   },
   port: port,
   messages: messages,

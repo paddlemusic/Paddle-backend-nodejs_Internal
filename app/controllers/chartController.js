@@ -7,7 +7,7 @@ const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/chartSchema')
 const User = require('../models/user')
 
-class HomePageController {
+class ChartController {
   async addMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -46,4 +46,4 @@ class HomePageController {
     }
   }
 }
-module.exports = HomePageController
+module.exports = ChartController
