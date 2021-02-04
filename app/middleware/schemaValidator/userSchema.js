@@ -8,7 +8,7 @@ const schema = {
   signup: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(15),
-    phone_number: Joi.string().trim().max(14).min(10).required(),
+    phone_number: Joi.string().trim().max(16).min(10).required(),
     email: Joi.string().trim().email().required(),
     university_code: Joi.number().min(1),
     password: Joi.string().trim().min(8).max(30).required()
@@ -81,6 +81,10 @@ const schema = {
   }),
   userPrivacy: Joi.object().keys({
     is_privacy: Joi.boolean().required()
+  }),
+  rateApp: Joi.object().keys({
+    rating: Joi.number().min(0).max(5).required(),
+    feedback: Joi.string().max(300).trim()
   })
 }
 
