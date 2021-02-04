@@ -12,6 +12,7 @@ const schema = {
     email: Joi.string().trim().email().required(),
     university_code: Joi.number().min(1),
     password: Joi.string().trim().min(8).max(30).required()
+
   }),
   sendOTP: Joi.object().keys({
     email: Joi.string().trim().email().required()
@@ -38,7 +39,8 @@ const schema = {
     phone_number: Joi.string().trim().max(14).min(10).required(),
     // email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
-    bio: Joi.string().trim().alphanum().max(300)
+    // bio: Joi.string().trim().alphanum().max(300)
+    bio: Joi.string().trim().max(300).allow(null).allow('')
   }),
   follow: Joi.object().keys({
     user_id: Joi.number().min(1).required()
