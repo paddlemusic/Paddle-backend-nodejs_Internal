@@ -27,8 +27,8 @@ class SpotifyController {
   }
 
   async refreshToken (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
     try {
+      console.log(req.body)
       const AUTH_HEADER = 'Basic ' +
                   Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
 
@@ -51,29 +51,29 @@ class SpotifyController {
           result += d
         })
         response.on('end', () => {
-          util.successResponse(res, config.constants.SUCCESS, langMsg.success, JSON.parse(result))
+          res.status(response.statusCode).json(JSON.parse(result))
         })
       })
       request.on('error', error => {
         console.error(error)
-        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.failed)
+        res.status(500).json()
       })
 
       request.end()
     } catch (err) {
       console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      res.status(500).json()
     }
   }
 
   async swapToken (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
     try {
       const AUTH_HEADER = 'Basic ' +
                   Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
 
-      const queryString = `?grant_type=authorization_code&code=${req.body.auth_code}&redirect_uri=${config.constants.SPOTIFY.CLIENT_CALLBACK_URL}&code_verifier=${req.body.code_verifier}`
+      const queryString = `?grant_type=authorization_code&code=${req.body.code}&redirect_uri=${config.constants.SPOTIFY.CLIENT_CALLBACK_URL}&code_verifier=${req.body.code_verifier}`
 
+      console.log(req.body)
       const options = {
         hostname: config.constants.SPOTIFY.URI,
         port: 443,
@@ -88,8 +88,6 @@ class SpotifyController {
       let result = ''
       const request = https.request(options, response => {
         console.log(`statusCode: ${response.statusCode}`)
-        console.log(response.url)
-        console.log(response.path)
 
         response.on('data', d => {
           process.stdout.write(d)
@@ -97,18 +95,18 @@ class SpotifyController {
         })
 
         response.on('end', () => {
-          util.successResponse(res, config.constants.SUCCESS, langMsg.success, JSON.parse(result))
+          res.status(response.statusCode).json(JSON.parse(result))
         })
       })
       request.on('error', error => {
         console.error(error)
-        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.failed)
+        res.status(500).json()
       })
 
       request.end()
     } catch (err) {
       console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      res.status(500).json()
     }
   }
 }

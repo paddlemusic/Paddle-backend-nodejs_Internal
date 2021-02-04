@@ -5,7 +5,7 @@ const spotifyController = new SpotifyController()
 const auth = require('../middleware/authenticate')
 
 router.put('/saveState', auth.verifyToken, spotifyController.saveSpotifyState)
-router.get('/refreshToken', auth.verifyToken, spotifyController.refreshToken)
-router.get('/swapToken', auth.verifyToken, spotifyController.swapToken)
+router.post('/refreshToken', spotifyController.refreshToken)
+router.post('/swapToken', spotifyController.swapToken)
 
 module.exports = router
