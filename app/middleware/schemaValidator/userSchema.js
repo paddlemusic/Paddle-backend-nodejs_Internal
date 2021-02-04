@@ -81,6 +81,10 @@ const schema = {
   }),
   userPrivacy: Joi.object().keys({
     is_privacy: Joi.boolean().required()
+  }),
+  rateApp: Joi.object().keys({
+    rating: Joi.number().min(0).max(5).required(),
+    feedback: Joi.string().max(300).trim()
   })
 }
 
