@@ -45,12 +45,13 @@ class SpotifyController {
 
       let result = ''
       const request = https.request(options, response => {
-        console.log(`statusCode: ${res.statusCode}`)
+        console.log(`statusCode: ${response.statusCode}`)
         response.on('data', d => {
-          process.stdout.write(d)
+          // process.stdout.write(d)
           result += d
         })
         response.on('end', () => {
+          console.log(JSON.parse(result))
           res.status(response.statusCode).json(JSON.parse(result))
         })
       })
@@ -90,11 +91,12 @@ class SpotifyController {
         console.log(`statusCode: ${response.statusCode}`)
 
         response.on('data', d => {
-          process.stdout.write(d)
+          // process.stdout.write(d)
           result += d
         })
 
         response.on('end', () => {
+          console.log(JSON.parse(result))
           res.status(response.statusCode).json(JSON.parse(result))
         })
       })
