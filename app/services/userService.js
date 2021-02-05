@@ -101,7 +101,7 @@ class UserService {
   login (params) {
     return new Promise((resolve, reject) => {
       const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
-        'password', 'is_verified', 'is_active', 'createdAt', 'updatedAt']
+        'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt']
       const criteria = {
         role: 1,
         email: params.email

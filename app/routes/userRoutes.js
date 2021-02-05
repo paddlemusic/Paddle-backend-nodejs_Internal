@@ -47,7 +47,7 @@ const authenticate = require('../middleware/authenticate')
  *        name: university_code
  *        schema:
  *        type: integer
- *        required: true
+ *        required: false
  *     produces:
  *       - application/json
  */
@@ -279,21 +279,31 @@ router.post('/resend_Otp', userController.resendOtp)
  *        type: string
  *        required: true
  *      - in: body
- *        name: body
- *        required: true
+ *        name: name
  *        schema:
- *           type: object
- *           properties:
- *               name:
- *                   type: string
- *               username:
- *                   type: string
- *               phone_number:
- *                   type: string
- *               date_of_birth:
- *                   type: string
- *               biography:
- *                   type: string
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: username
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: phone_number
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: date_of_birth
+ *        schema:
+ *        type: string
+ *        required: false
+ *      - in: body
+ *        name: bio
+ *        schema:
+ *        type: string
+ *        required: false
+ *        nullable: true
  *     responses:
  *          default:
  *              description: Update account deatails response object.
