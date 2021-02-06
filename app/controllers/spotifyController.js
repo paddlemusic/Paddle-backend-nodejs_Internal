@@ -2,6 +2,7 @@ const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
 const config = require('../config/index')
+const SPOTIFY = require('../config/constants').SPOTIFY
 const schema = require('../middleware/schemaValidator/spotifySchema')
 const UserState = require('../models/userState')
 const https = require('https')
@@ -30,31 +31,37 @@ class SpotifyController {
     try {
       console.log(req.body)
       const AUTH_HEADER = 'Basic ' +
-                  Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
+                  Buffer.from(`${SPOTIFY.CLIENT_ID}:${SPOTIFY.CLIENT_SECRET}`).toString('base64')
+      const queryParam = [
+        'grant_type=refresh_token',
+        `refresh_token=${req.body.refresh_token}`
+      ].join('&')
 
       const options = {
-        hostname: config.constants.SPOTIFY.URI,
-        port: 443,
-        path: `/api/token?grant_type=refresh_token&refresh_token=${req.body.refresh_token}`,
+        hostname: SPOTIFY.URI,
+        path: '/api/token' + '?' + queryParam,
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           Authorization: AUTH_HEADER
         }
       }
+      console.log(options)
 
       let result = ''
       const request = https.request(options, response => {
         console.log(`statusCode: ${response.statusCode}`)
-        response.on('data', d => {
-          // process.stdout.write(d)
-          result += d
+
+        response.on('data', dataStream => {
+          result += dataStream
         })
+
         response.on('end', () => {
           console.log(JSON.parse(result))
           res.status(response.statusCode).json(JSON.parse(result))
         })
       })
+
       request.on('error', error => {
         console.error(error)
         res.status(500).json()
@@ -70,15 +77,19 @@ class SpotifyController {
   async swapToken (req, res) {
     try {
       const AUTH_HEADER = 'Basic ' +
-                  Buffer.from(`${config.constants.SPOTIFY.CLIENT_ID}:${config.constants.SPOTIFY.CLIENT_SECRET}`).toString('base64')
+                  Buffer.from(`${SPOTIFY.CLIENT_ID}:${SPOTIFY.CLIENT_SECRET}`).toString('base64')
 
-      const queryString = `?grant_type=authorization_code&code=${req.body.code}&redirect_uri=${config.constants.SPOTIFY.CLIENT_CALLBACK_URL}&code_verifier=${req.body.code_verifier}`
-
+      const queryParam = [
+        'grant_type=authorization_code',
+        `code=${req.body.code}`,
+        `redirect_uri=${SPOTIFY.CLIENT_CALLBACK_URL}`,
+        `code_verifier=${req.body.code_verifier}`
+      ].join('&')
       console.log(req.body)
+
       const options = {
-        hostname: config.constants.SPOTIFY.URI,
-        port: 443,
-        path: '/api/token' + queryString,
+        hostname: SPOTIFY.URI,
+        path: '/api/token' + '?' + queryParam,
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -90,16 +101,21 @@ class SpotifyController {
       const request = https.request(options, response => {
         console.log(`statusCode: ${response.statusCode}`)
 
-        response.on('data', d => {
-          // process.stdout.write(d)
-          result += d
+        response.on('data', dataStream => {
+          result += dataStream
         })
 
         response.on('end', () => {
           console.log(JSON.parse(result))
           res.status(response.statusCode).json(JSON.parse(result))
         })
+
+        response.on('', () => {
+          console.log(JSON.parse(result))
+          res.status(response.statusCode).json(JSON.parse(result))
+        })
       })
+
       request.on('error', error => {
         console.error(error)
         res.status(500).json()
