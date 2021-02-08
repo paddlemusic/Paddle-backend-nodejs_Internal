@@ -100,7 +100,7 @@ class UserController {
             isActive: loginResponse.dataValues.is_active
           }
           const token = await util.generateJwtToken(payload)
-          await commonService.update(User, { device_token: token }, { email: req.body.email })
+          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.dataValues.token = token
           delete loginResponse.dataValues.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)

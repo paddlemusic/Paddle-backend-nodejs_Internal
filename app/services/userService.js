@@ -16,6 +16,7 @@ class UserService {
   signup (params) {
     return new Promise((resolve, reject) => {
       params.role = 1 // 1->User, 2->Admin
+      params.email = params.email.toLowerCase()
       console.log(params)
       User.create(params)
         .then(result => resolve(result))
@@ -104,7 +105,7 @@ class UserService {
         'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt']
       const criteria = {
         role: 1,
-        email: params.email
+        email: (params.email).toLowerCase()
       }
       User.findOne({ where: criteria, attributes: userAttribute })
         .then(result => resolve(result))
