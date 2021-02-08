@@ -2,7 +2,7 @@
 const UserService = require('../services/userService')
 const User = require('../models/user')
 const CommonService = require('../services/commonService')
-const notificationService = require('../services/notificationService')
+// const notificationService = require('../services/notificationService')
 const util = require('../utils/utils')
 // const firebase = require('../utils/firebase')
 const country = require('../utils/country')
@@ -352,7 +352,7 @@ class UserController {
         return
       }
       await commonService.create(UserFollower, params)
-      const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+      // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
 
       // const sharedwithToken = await commonService.findAll(User, { id: req.params.user_id }, ['device_token'])
       // const payload = {
