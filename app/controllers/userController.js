@@ -13,6 +13,7 @@ const commonService = new CommonService()
 const UserFollower = require('../models/userFollower')
 const University = require('../models/university')
 const UserRating = require('../models/userRating')
+const LikeUnlike = require('../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
 
@@ -512,6 +513,50 @@ class UserController {
       console.log(data)
       delete data.user_id
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async likePost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+
+    const validationResult = await schema.likePost.validateAsync(req.body)
+    if (validationResult.error) {
+      util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      return
+    }
+    const alreadyLiked = await commonService.findOne(LikeUnlike, { user_id: req.decoded.id, media_type: req.query.media_type, media_id: req.body.media_id, is_liked: true })
+    // console.log(alreadyLiked)
+    try {
+      if (alreadyLiked) {
+        console.log('dhappqa')
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+        return
+      } else {
+        const params = {
+          user_id: req.decoded.id,
+          is_liked: true,
+          media_type: req.query.media_type,
+          media_id: req.body.media_id
+        }
+        const data = await commonService.create(LikeUnlike, params)
+        console.log(data)
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async unlikePost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await commonService.update(LikeUnlike, { is_liked: false }, { user_id: req.decoded.id })
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

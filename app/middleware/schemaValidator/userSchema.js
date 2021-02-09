@@ -40,7 +40,7 @@ const schema = {
     // email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
     // bio: Joi.string().trim().alphanum().max(300)
-    bio: Joi.string().trim().max(300).allow(null).allow('')
+    biography: Joi.string().trim().max(300).allow(null).allow('')
   }),
   follow: Joi.object().keys({
     user_id: Joi.number().min(1).required()
@@ -83,6 +83,9 @@ const schema = {
   }),
   userPrivacy: Joi.object().keys({
     is_privacy: Joi.boolean().required()
+  }),
+  likePost: Joi.object().keys({
+    media_id: Joi.string().required()
   }),
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),

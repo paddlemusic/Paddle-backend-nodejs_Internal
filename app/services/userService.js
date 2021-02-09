@@ -1,6 +1,7 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserPost = require('../models/userPost')
+const LikeUnlike = require('../models/likePost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
@@ -165,7 +166,7 @@ class UserService {
   editDetails (params) {
     return new Promise((resolve, reject) => {
       console.log(params)
-      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
+      const userAttribute = ['id', 'name', 'username', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
       User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => {
@@ -231,6 +232,16 @@ class UserService {
       UserFollower.findAll({
         where: { follower_id: userId },
         attributes: ['user_id'],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getLikes (params) {
+    return new Promise((resolve, reject) => {
+      LikeUnlike.findAndCountAll({
+        where: { is_liked: true, media_type: params.media_type, media_id: params.media_id },
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))

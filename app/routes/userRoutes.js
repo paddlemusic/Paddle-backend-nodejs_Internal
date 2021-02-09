@@ -481,5 +481,8 @@ router.get('/rateApp', auth.verifyToken, userController.getRateApp)
  *       - application/json
  */
 router.post('/logout', auth.verifyToken, userController.logout)
+router.put('/like', auth.verifyToken, userController.likePost)
+// router.get('/getlikes', userController.getLikes)
+router.put('/unlike', auth.verifyToken, userController.unlikePost)
 
 module.exports = router
