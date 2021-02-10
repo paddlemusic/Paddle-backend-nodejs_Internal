@@ -111,4 +111,6 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  */
 // router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 
+router.post('/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
+
 module.exports = router

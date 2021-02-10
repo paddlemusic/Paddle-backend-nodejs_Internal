@@ -1,6 +1,7 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
 const User = require('../models/user')
+// const LikePost = require('../models/likePost')
 const UserPost = sequelize.define('User_Post', {
   user_id: {
     type: DataTypes.INTEGER,
@@ -57,6 +58,9 @@ UserPost.belongsTo(User, {
   onDelete: 'Cascade',
   onUpdate: 'Cascade'
 })
-// UserPost.sync()
+
+// UserPost.hasOne(LikePost)
+
+// UserPost.sync({ alter: true })
 
 module.exports = UserPost

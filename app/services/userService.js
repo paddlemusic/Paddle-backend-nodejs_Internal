@@ -2,8 +2,9 @@ const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserPost = require('../models/userPost')
 const LikeUnlike = require('../models/likePost')
-const CommonService = require('../services/commonService')
-const commonService = new CommonService()
+const LikePost = require('../models/likePost')
+// const CommonService = require('../services/commonService')
+// const commonService = new CommonService()
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
@@ -298,6 +299,26 @@ class UserService {
           attributes: []
           // as: 'post'
         }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUserPostLike (postId) {
+    return new Promise((resolve, reject) => {
+      LikePost.findAll({
+        // limit: pagination.limit,
+        // offset: pagination.offset,
+        where: {
+          post_id: postId
+        },
+        // order: [
+        //   ['created_at', 'DESC']
+        // ],
+        //,
+        // attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        // "media_image","media_name","meta_data","meta_data2","media_type","caption"`)],
+        raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
