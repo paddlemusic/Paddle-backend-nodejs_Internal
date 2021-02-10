@@ -137,9 +137,7 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
  *   put:
  *     tags :
  *      - profile
- *     summary: Add tracks to playlist.
- *     produces:
- *       - application/json
+ *     summary: To Add Tracks To Playlist.
  *     consumes:
  *        - application/json
  *     parameters:
@@ -156,31 +154,44 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
  *          name: media_type
  *          type: integer
  *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
- *          name: body
+ *          name: data
+ *          description: Tracks Or artist Ids.
  *          required: true
  *          schema:
- *              type: object
- *              properties:
- *                  track_ids:
- *                      type: array
- *                      items:
- *                          type: string
- *                          unique: true
- *                  media_image:
- *                       type: string
- *                  media_name:
- *                       type: string
- *                  meta_data:
- *                       type: string
- *                  meta_data2:
- *                       type: string
- *     responses:
- *          default:
- *              description: Add tracks to playlist response object.
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example: [{
+ *                  "media_id": "1",
+ *                  "media_image": "",
+ *                  "media_name": "Artist1",
+ *                  "meta_data": "",
+ *                  "meta_data2": ""
+ *                  }]
+ *   definitions:
+ *     TrackArtistIds:
+ *      type: "object"
+ *      properties:
+ *          media_id:
+ *            type: string
+ *            required:  true
+ *          media_image:
+ *            type: string
+ *          media_name:
+ *            type: string
+ *          meta_data:
+ *            type: string
+ *          meta_data2:
+ *            type: string
+ *   description: >
+ *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ *     produces:
+ *       - application/json
  */
-router.put('/playlist/:playlist_id/:type/addTracks', authenticate.verifyToken, profileController.addTracks)
 
+router.put('/playlist/:playlist_id/:type/addTracks', authenticate.verifyToken, profileController.addTracks)
 /**
  * @swagger
  *

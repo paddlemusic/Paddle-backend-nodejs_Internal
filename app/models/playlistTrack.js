@@ -5,13 +5,17 @@ const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = sequelize.define('Playlist_Track', {
   playlist_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    unique: 'unique_playlist_track_id'
+    allowNull: false
+    // unique: 'unique_playlist_track_id'
   },
-  track_id: {
+  /* track_id: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: 'unique_playlist_track_id'
+  }, */
+  media_id: {
+    type: DataTypes.STRING,
+    allowNull: false
   },
   media_image: {
     type: DataTypes.STRING,

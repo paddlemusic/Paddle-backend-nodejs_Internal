@@ -80,11 +80,13 @@ const schema = {
     playlist_id: Joi.number().min(1).required()
   }),
   tracks: Joi.object().keys({
-    track_ids: Joi.array().items(Joi.string()).unique(),
-    media_image: Joi.string().allow('').allow(null),
-    media_name: Joi.string().allow('').allow(null),
-    meta_data: Joi.string().allow('').allow(null),
-    meta_data2: Joi.string().allow('').allow(null)
+    tracksData: Joi.array().items(Joi.object().keys({
+      media_id: Joi.string().required(),
+      media_image: Joi.string().allow('').allow(null),
+      media_name: Joi.string().allow('').allow(null),
+      meta_data: Joi.string().allow('').allow(null),
+      meta_data2: Joi.string().allow('').allow(null)
+    }))
   }),
   userPrivacy: Joi.object().keys({
     is_privacy: Joi.boolean().required()

@@ -104,7 +104,7 @@ class ProfileController {
   async addTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      /*      const validationResult = await userSchema.tracks.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -112,6 +112,25 @@ class ProfileController {
       const params = []
       req.body.track_ids.forEach(trackId => {
         params.push({ playlist_id: req.params.playlist_id, track_id: trackId, media_image: req.body.media_image, media_name: req.body.media_name, meta_data: req.body.meta_data, meta_data2: req.body.meta_data2, media_type: req.params.media_type })
+      }) */
+      // changes by simnan
+      const validationResult = await userSchema.tracks.validate(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      req.body.user_id = req.decoded.id
+      const data = req.body.tracksData
+      const params = data.map((item) => {
+        return {
+          playlist_id: req.params.playlist_id,
+          media_id: item.media_id,
+          media_image: item.media_image,
+          media_name: item.media_name,
+          meta_data: item.meta_data,
+          meta_data2: item.meta_data,
+          media_type: req.params.media_type
+        }
       })
       console.log(params)
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
