@@ -91,6 +91,10 @@ const schema = {
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),
     feedback: Joi.string().max(300).trim()
+  }),
+  likeUnlikePost: Joi.object().keys({
+    post_id: Joi.number().required(),
+    type: Joi.string().required()
   })
 }
 

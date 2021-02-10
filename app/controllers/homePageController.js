@@ -4,7 +4,7 @@ const commonService = new CommonService()
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
 const UserPost = require('../models/userPost')
-const LikeUnlike = require('../models/likePost')
+const LikePost = require('../models/likePost')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
 const UserService = require('../services/userService')
@@ -75,10 +75,57 @@ class HomePageController {
       console.log('logs count', userId)
       console.log('logs count', postData.rows[0].media_type)
       console.log('logs count', postData.rows[0].media_id) */
-      const likes = await commonService.findAndCountAll(LikeUnlike, { media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true }, ['user_id'])
-      console.log('postData', postData)
-      postData.rows[0].likes = likes.count
+      // const likes = await commonService.findAndCountAll(LikePost, { media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true }, ['user_id'])
+      // console.log('postData', postData)
+      // postData.rows[0].likes = likes.count
+
+      const postIds = postData.rows.map(post => { return post.id })
+      console.log('postIds', postIds)
+      const postLikeData = await userService.getUserPostLike(postIds)
+      console.log('postLikeData', postLikeData)
+
+      postData.rows.forEach((post, index) => {
+        let count = 0
+        let likedByMe = false
+        postLikeData.forEach(likeData => {
+          if (post.id === likeData.post_id) {
+            count++
+          }
+          if (req.decoded.id === likeData.user_id) {
+            likedByMe = true
+          }
+        })
+        postData.rows[index].like_count = count
+        postData.rows[index].liked_by_me = likedByMe
+      })
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async likeUnlikePost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.likeUnlikePost.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const param = {
+        user_id: req.decoded.id,
+        post_id: req.params.post_id
+      }
+      if (req.params.type === 'like') {
+        const data = await commonService.findOrCreate(LikePost, param)
+        console.log(data)
+      } else {
+        const data = await commonService.delete(LikePost, param)
+        console.log(data)
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
