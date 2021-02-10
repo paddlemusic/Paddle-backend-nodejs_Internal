@@ -32,6 +32,7 @@ class HomePageController {
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
+        meta_data2: req.body.meta_data,
         media_type: req.params.media_type
       }
 

@@ -295,7 +295,12 @@ class ProfileController {
       const myMediaids = myLikeData.map(data => { return data.media_id })
       console.log(myMediaids)
       const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination, myMediaids, myMediaTypes)
-      console.log('myrecentposts', myRecentPosts)
+      // console.log('myrecentposts', myRecentPosts)
+      myMediaTypes.forEach(async (num1, index) => {
+        const num2 = myMediaids[index]
+        const likes = await commonService.findAndCountAll(LikeUnlike, { media_type: num1, media_id: num2, is_liked: true })
+        console.log('myrecentpostslikes', likes.count)
+      })
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
     } catch (err) {
       console.log(err)
