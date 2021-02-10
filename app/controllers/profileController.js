@@ -3,13 +3,14 @@ const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
-const notificationService = require('../services/notificationService')
+// const notificationService = require('../services/notificationService')
 const ProfileService = require('../services/profileService')
 const profileService = new ProfileService()
 const UserService = require('../services/userService')
 const userService = new UserService()
 const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
+const LikeUnlike = require('../models/likePost')
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 
@@ -147,7 +148,8 @@ class ProfileController {
         }
         console.log('params are:', params)
         await commonService.create(UserShare, params)
-        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+        // push notification section
+        /*        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
         const payload = {
           message: {
             notification: {
@@ -163,7 +165,7 @@ class ProfileController {
         } else {
           const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
           await notificationService.sendNotification(sharedwithToken, payload)
-        }
+        } */
         util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
       } catch (err) {
         console.log(err)
@@ -287,7 +289,13 @@ class ProfileController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       console.log(pagination)
-      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination)
+      const myLikeData = await commonService.findAll(LikeUnlike, { user_id: req.decoded.id }, ['media_type', 'media_id'])
+      const myMediaTypes = myLikeData.map(data => { return data.media_type })
+      console.log(myMediaTypes)
+      const myMediaids = myLikeData.map(data => { return data.media_id })
+      console.log(myMediaids)
+      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination, myMediaids, myMediaTypes)
+      console.log('myrecentposts', myRecentPosts)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
     } catch (err) {
       console.log(err)

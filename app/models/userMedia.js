@@ -25,6 +25,10 @@ const UserMedia = sequelize.define('User_Media', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  meta_data2: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   media_type: {
     type: DataTypes.INTEGER,
     allowNull: false, // required

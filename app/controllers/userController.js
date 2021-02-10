@@ -531,7 +531,6 @@ class UserController {
     // console.log(alreadyLiked)
     try {
       if (alreadyLiked) {
-        console.log('dhappqa')
         util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
         return
       } else {

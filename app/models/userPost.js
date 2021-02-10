@@ -23,6 +23,10 @@ const UserPost = sequelize.define('User_Post', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  meta_data2: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   media_type: {
     type: DataTypes.INTEGER,
     allowNull: true

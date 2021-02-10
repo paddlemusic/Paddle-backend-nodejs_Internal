@@ -25,7 +25,7 @@ const LikePost = sequelize.define('Like_Post', {
   underscored: true
 })
 
-// UserState.removeAttribute('id')
+// LikePost.removeAttribute('id')
 
 LikePost.belongsTo(User, {
   sourceKey: 'id',

@@ -2,6 +2,8 @@ const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserPost = require('../models/userPost')
 const LikeUnlike = require('../models/likePost')
+const CommonService = require('../services/commonService')
+const commonService = new CommonService()
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
@@ -288,7 +290,7 @@ class UserService {
         ],
         //,
         attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
-        "media_image","media_name","meta_data","media_id","caption"`)],
+        "media_image","media_name","meta_data","meta_data2","media_type","caption"`)],
         raw: true,
         include: [{
           model: User,
@@ -301,8 +303,9 @@ class UserService {
     })
   }
 
-  getMyRecentPosts (userId, pagination) {
+  getMyRecentPosts (userId, pagination, myMediaids, myMediaTypes) {
     return new Promise((resolve, reject) => {
+      // const likes = commonService.findAndCountAll(LikeUnlike, { media_type: myMediaTypes, media_id: myMediaids, is_liked: true })
       UserPost.findAll({
         limit: pagination.limit,
         offset: pagination.offset,
@@ -310,8 +313,9 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'created_at'],
+        attributes: ['media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at'],
         raw: true
+        // result.likes=likes
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })

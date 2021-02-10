@@ -4,6 +4,7 @@ const commonService = new CommonService()
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
 const UserPost = require('../models/userPost')
+const LikeUnlike = require('../models/likePost')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
 const UserService = require('../services/userService')
@@ -69,7 +70,13 @@ class HomePageController {
       const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
       const userId = req.decoded.id
       const postData = await userService.getUserPost(myfollowingIDs, userId, pagination)
-      console.log('postData:', myfollowingIDs, userId)
+      /* const likes = await commonService.findAndCountAll(LikeUnlike, { user_id: req.decoded.id, media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true })
+      console.log('logs count', userId)
+      console.log('logs count', postData.rows[0].media_type)
+      console.log('logs count', postData.rows[0].media_id) */
+      const likes = await commonService.findAndCountAll(LikeUnlike, { media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true }, ['user_id'])
+      console.log('postData', postData)
+      postData.rows[0].likes = likes.count
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
       console.log(err)

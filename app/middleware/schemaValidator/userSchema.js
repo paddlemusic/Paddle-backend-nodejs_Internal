@@ -36,7 +36,7 @@ const schema = {
   editDetails: Joi.object().keys({
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(30).required(),
-    phone_number: Joi.string().trim().max(14).min(10).required(),
+    phone_number: Joi.string().trim().max(17).min(10).required(),
     // email: Joi.string().trim().email().required(),
     date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
     // bio: Joi.string().trim().alphanum().max(300)
@@ -66,6 +66,7 @@ const schema = {
     media_image: Joi.string().allow('').allow(null),
     media_name: Joi.string().allow('').allow(null),
     meta_data: Joi.string().allow('').allow(null),
+    meta_data2: Joi.string().allow('').allow(null),
     shared_with: Joi.number().allow(null).required()
   }),
   friend: Joi.object().keys({
