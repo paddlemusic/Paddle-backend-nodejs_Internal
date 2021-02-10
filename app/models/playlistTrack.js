@@ -12,6 +12,26 @@ const PlaylistTrack = sequelize.define('Playlist_Track', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: 'unique_playlist_track_id'
+  },
+  media_image: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  media_name: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  meta_data: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  meta_data2: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  media_type: {
+    type: DataTypes.INTEGER,
+    allowNull: true
   }
 },
 {

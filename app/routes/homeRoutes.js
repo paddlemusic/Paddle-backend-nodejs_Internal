@@ -46,6 +46,9 @@ const authenticate = require('../middleware/authenticate')
  *                  meta_data:
  *                      type: string
  *                      required: false
+ *                  meta_data2:
+ *                      type: string
+ *                      required: false
  *                  shared_with:
  *                      type: integer
  *                      required: true
@@ -111,6 +114,6 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  */
 // router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 
-router.post('/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
+router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
 
 module.exports = router

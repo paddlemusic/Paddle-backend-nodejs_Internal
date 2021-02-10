@@ -334,7 +334,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at'],
+        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at'],
         raw: true
         // result.likes=likes
       }).then(result => resolve(result))
