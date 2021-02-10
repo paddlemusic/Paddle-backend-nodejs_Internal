@@ -8,6 +8,7 @@ const LikePost = require('../models/likePost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
+const sequelize = require('../models')
 
 class CustomError extends Error {
   constructor (message) {
@@ -302,6 +303,59 @@ class UserService {
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
+  }
+
+  async getHomePosts (userId, followingIds, pagination) {
+    // try {
+    const rawQuery =
+              `SELECT
+              COUNT(up.id) OVER(),
+              up.id ,
+              up.media_id ,
+              up.media_name ,
+              up.media_image ,
+              up.media_type ,
+              up.meta_data ,
+              up.meta_data2 ,
+              up.user_id ,
+              up.caption ,
+              up.shared_with ,
+              up.created_at ,
+              up.updated_at ,
+              u."name" ,
+              u.profile_picture ,
+              COUNT(lp.user_id) as like_count
+            FROM
+              "User_Post" up
+            INNER JOIN "User" u ON
+              u.id = up.user_id
+            LEFT JOIN "Like_Post" lp ON
+              lp.post_id = up.id
+            WHERE
+              up.user_id IN (${followingIds})
+              AND (up.shared_with = ${userId}
+                OR up.shared_with IS NULL)
+              AND up.created_at >= NOW() - INTERVAL '5' DAY
+            GROUP BY
+              up.id ,
+              u."name" ,
+              u.profile_picture
+            ORDER BY
+              up.created_at DESC
+            LIMIT ${pagination.limit}
+            OFFSET ${pagination.offset}
+            `
+
+    const data = await sequelize.query(rawQuery, {
+      raw: true
+      // type: Sequelize.QueryTypes.SELECT
+    })
+    // console.log('data - - -', data)
+    return data
+    // } catch (error) {
+    //   // logger.error(error)
+    //   throw error
+    // }
   }
 
   getUserPostLike (postId) {
