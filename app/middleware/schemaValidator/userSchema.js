@@ -89,6 +89,9 @@ const schema = {
       meta_data2: Joi.string().allow('').allow(null)
     }))
   }),
+  deleteTrack: Joi.object().keys({
+    track_ids: Joi.array().items(Joi.string()).unique()
+  }),
   userPrivacy: Joi.object().keys({
     is_privacy: Joi.boolean().required()
   }),

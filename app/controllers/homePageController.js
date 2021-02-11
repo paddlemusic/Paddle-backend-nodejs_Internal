@@ -62,51 +62,51 @@ class HomePageController {
     }
   }
 
-  // async getUserPosts (req, res) {
-  //   const langMsg = config.messages[req.app.get('lang')]
-  //   try {
-  //     const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-
-  //     const myfollowingData = await userService.getUserFollowing(req.decoded)
-  //     const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
-  //     const userId = req.decoded.id
-  //     const postData = await userService.getUserPost(myfollowingIDs, userId, pagination)
-  //     /* const likes = await commonService.findAndCountAll(LikeUnlike, { user_id: req.decoded.id, media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true })
-  //     console.log('logs count', userId)
-  //     console.log('logs count', postData.rows[0].media_type)
-  //     console.log('logs count', postData.rows[0].media_id) */
-  //     // const likes = await commonService.findAndCountAll(LikePost, { media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true }, ['user_id'])
-  //     // console.log('postData', postData)
-  //     // postData.rows[0].likes = likes.count
-
-  //     const postIds = postData.rows.map(post => { return post.id })
-  //     console.log('postIds', postIds)
-  //     const postLikeData = await userService.getUserPostLike(postIds)
-  //     console.log('postLikeData', postLikeData)
-
-  //     postData.rows.forEach((post, index) => {
-  //       let count = 0
-  //       let likedByMe = false
-  //       postLikeData.forEach(likeData => {
-  //         if (post.id === likeData.post_id) {
-  //           count++
-  //         }
-  //         if (req.decoded.id === likeData.user_id) {
-  //           likedByMe = true
-  //         }
-  //       })
-  //       postData.rows[index].like_count = count
-  //       postData.rows[index].liked_by_me = likedByMe
-  //     })
-
-  //     util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
-  //   } catch (err) {
-  //     console.log(err)
-  //     util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-  //   }
-  // }
-
   async getUserPosts (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      const myfollowingData = await userService.getUserFollowing(req.decoded)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
+      const userId = req.decoded.id
+      const postData = await userService.getUserPost(myfollowingIDs, userId, pagination)
+      /* const likes = await commonService.findAndCountAll(LikeUnlike, { user_id: req.decoded.id, media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true })
+       console.log('logs count', userId)
+       console.log('logs count', postData.rows[0].media_type)
+       console.log('logs count', postData.rows[0].media_id) */
+      // const likes = await commonService.findAndCountAll(LikePost, { media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true }, ['user_id'])
+      // console.log('postData', postData)
+      // postData.rows[0].likes = likes.count
+
+      const postIds = postData.rows.map(post => { return post.id })
+      console.log('postIds', postIds)
+      const postLikeData = await userService.getUserPostLike(postIds)
+      console.log('postLikeData', postLikeData)
+
+      postData.rows.forEach((post, index) => {
+        let count = 0
+        let likedByMe = false
+        postLikeData.forEach(likeData => {
+          if (post.id === likeData.post_id) {
+            count++
+          }
+          if (req.decoded.id === likeData.user_id) {
+            likedByMe = true
+          }
+        })
+        postData.rows[index].like_count = count
+        postData.rows[index].liked_by_me = likedByMe
+      })
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  /* async getUserPosts (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
@@ -131,7 +131,7 @@ class HomePageController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  }
+  } */
 
   async likeUnlikePost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]

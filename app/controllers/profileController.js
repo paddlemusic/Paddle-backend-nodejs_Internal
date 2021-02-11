@@ -216,12 +216,12 @@ class ProfileController {
   async deleteTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      const validationResult = await userSchema.deleteTrack.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
-      const condition = { track_id: req.body.track_ids }
+      const condition = { media_id: req.body.track_ids }
       const playlistData = await commonService.delete(PlaylistTrack, condition)
       console.log(playlistData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -256,10 +256,10 @@ class ProfileController {
     try {
       const condition = { user_id: req.decoded.id, id: req.params.playlist_id }
       const playlistData = await commonService.findOne(UserPlaylist, condition,
-        ['id', 'name', 'description', 'created_at', 'updated_at'])
+        ['id', 'name', 'description', 'created_at', 'updated_at', 'image'])
       console.log(playlistData)
-      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.dataValues.id },
-        ['track_id', 'created_at', 'updated_at'])
+      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.id },
+        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at'])
       console.log(trackData)
       trackData.playlist = playlistData
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
