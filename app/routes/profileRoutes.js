@@ -133,7 +133,7 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
 /**
  * @swagger
  *
- * /playlist/{playlist_id}/{type}/addTracks:
+ * /playlist/{playlist_id}/{media_type}/addTracks:
  *   put:
  *     tags :
  *      - profile
@@ -191,7 +191,7 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
  *       - application/json
  */
 
-router.put('/playlist/:playlist_id/:type/addTracks', authenticate.verifyToken, profileController.addTracks)
+router.put('/playlist/:playlist_id/:media_type/addTracks', authenticate.verifyToken, profileController.addTracks)
 /**
  * @swagger
  *
