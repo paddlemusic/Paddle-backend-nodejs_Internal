@@ -60,15 +60,6 @@ const schema = {
     meta_data: Joi.string().allow('').allow(null),
     shared_with: Joi.number().allow(null).required()
   }),
-  userPost: Joi.object().keys({
-    media_id: Joi.string().required(),
-    caption: Joi.string().allow(null).allow(''),
-    media_image: Joi.string().allow('').allow(null),
-    media_name: Joi.string().allow('').allow(null),
-    meta_data: Joi.string().allow('').allow(null),
-    meta_data2: Joi.string().allow('').allow(null),
-    shared_with: Joi.number().allow(null).required()
-  }),
   friend: Joi.object().keys({
     shared_with: Joi.number().min(1).required()
   }),
@@ -92,10 +83,6 @@ const schema = {
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),
     feedback: Joi.string().max(300).trim()
-  }),
-  likeUnlikePost: Joi.object().keys({
-    post_id: Joi.number().required(),
-    type: Joi.string().required()
   })
 }
 

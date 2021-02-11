@@ -1,16 +1,21 @@
 const util = require('../utils/utils')
-const CommonService = require('../services/commonService')
-const commonService = new CommonService()
 const config = require('../config/index')
 const schema = require('../middleware/schemaValidator/userSchema')
+
 const UserPost = require('../models/userPost')
 const LikePost = require('../models/likePost')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
+
+const CommonService = require('../services/commonService')
+const commonService = new CommonService()
+
 const UserService = require('../services/userService')
+const userService = new UserService()
+
 const HomeService = require('../services/homeService')
 const homeService = new HomeService()
-const userService = new UserService()
+
 // const UniversityTrending = require('../models/universityTrending')
 
 class HomePageController {
