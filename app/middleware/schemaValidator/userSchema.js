@@ -73,8 +73,9 @@ const schema = {
     shared_with: Joi.number().min(1).required()
   }),
   playlist: Joi.object().keys({
-    name: Joi.string().trim().min(3).required(),
-    description: Joi.string().trim().allow(null).allow('')
+    name: Joi.string().max(50).trim().allow(null).allow(''),
+    description: Joi.string().max(200).trim().allow(null).allow(''),
+    image: Joi.string().trim().allow(null).allow('')
   }),
   deletePlaylist: Joi.object().keys({
     playlist_id: Joi.number().min(1).required()
