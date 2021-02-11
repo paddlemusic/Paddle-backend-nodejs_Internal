@@ -119,29 +119,51 @@ class HomeService {
   }
 
   async likePost (params) {
-    return new Promise((resolve, reject) => {
-      LikePost.findOrCreate({ where: params })
-        .then((result) => {
-          if (result[1]) {
-            return UserPost.findOne({ where: { id: params.post_id } })
-              .then(findResult => { return findResult.increment('like_count') })
-          }
-        }).then(result => resolve(result))
-        .catch(err => reject(err))
+    // return new Promise((resolve, reject) => {
+    //   sequelize.transaction(async t => {
+    //     LikePost.findOrCreate({ where: params, transaction: t })
+    //       .then((result) => {
+    //         if (result[1]) {
+    //           return UserPost.findOne({ where: { id: params.post_id }, transaction: t })
+    //             .then(findResult => { return findResult.increment('like_count', { transaction: t }) })
+    //         }
+    //       }).then(result => resolve(result))
+    //       .catch(err => reject(err))
+    //   })
+    // })
+    // try {
+    await sequelize.transaction(async (t) => {
+      const likePostResult = await LikePost.findOrCreate({ where: params, transaction: t })
+      if (likePostResult[1]) {
+        const findUserPostResult = await UserPost.findOne({ where: { id: params.post_id }, transaction: t })
+        await findUserPostResult.increment('like_count', { transaction: t })
+      }
+      return likePostResult[0]
     })
+    // } catch (error) {
+    //   throw error
+    // }
   }
 
   async unlikePost (params) {
-    return new Promise((resolve, reject) => {
-      LikePost.destroy({ where: params })
-        .then(result => {
-          console.log(result)
-          if (result) {
-            return UserPost.findOne({ where: { id: params.post_id } })
-              .then(findResult => { return findResult.decrement('like_count') })
-          }
-        }).then(result => resolve(result))
-        .catch(err => reject(err))
+    // return new Promise((resolve, reject) => {
+    //   LikePost.destroy({ where: params })
+    //     .then(result => {
+    //       console.log(result)
+    //       if (result) {
+    //         return UserPost.findOne({ where: { id: params.post_id } })
+    //           .then(findResult => { return findResult.decrement('like_count') })
+    //       }
+    //     }).then(result => resolve(result))
+    //     .catch(err => reject(err))
+    // })
+    await sequelize.transaction(async (t) => {
+      const likePostResult = await LikePost.destroy({ where: params, transaction: t })
+      if (likePostResult) {
+        const findUserPostResult = await UserPost.findOne({ where: { id: params.post_id }, transaction: t })
+        await findUserPostResult.decrement('like_count', { transaction: t })
+      }
+      return likePostResult
     })
   }
 
