@@ -39,6 +39,7 @@ class HomePageController {
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
+        meta_data2: req.body.meta_data,
         media_type: req.params.media_type
       }
 
@@ -81,7 +82,7 @@ class HomePageController {
       console.log('postIds', postIds)
 
       const likedByMePosts = await commonService
-                    .findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
+        .findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
       console.log(likedByMePosts)
       postData.rows.forEach((post, index) => {
         postData.rows[index].liked_by_me = false
@@ -156,7 +157,7 @@ class HomePageController {
         post_id: req.params.post_id
       }
       if (req.params.type === 'like') {
-        //const data = await commonService.findOrCreate(LikePost, param)
+        // const data = await commonService.findOrCreate(LikePost, param)
         const data = await homeService.likePost(param)
         console.log(data)
       } else {

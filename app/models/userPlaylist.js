@@ -11,6 +11,10 @@ const UserPlaylist = sequelize.define('User_Playlist', {
     type: DataTypes.INTEGER,
     allowNull: false
   },
+  image: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   description: {
     type: DataTypes.STRING,
     allowNull: true

@@ -104,14 +104,33 @@ class ProfileController {
   async addTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      /*      const validationResult = await userSchema.tracks.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       const params = []
       req.body.track_ids.forEach(trackId => {
-        params.push({ playlist_id: req.params.playlist_id, track_id: trackId })
+        params.push({ playlist_id: req.params.playlist_id, track_id: trackId, media_image: req.body.media_image, media_name: req.body.media_name, meta_data: req.body.meta_data, meta_data2: req.body.meta_data2, media_type: req.params.media_type })
+      }) */
+      // changes by simnan
+      const validationResult = await userSchema.tracks.validate(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      req.body.user_id = req.decoded.id
+      const data = req.body.tracksData
+      const params = data.map((item) => {
+        return {
+          playlist_id: req.params.playlist_id,
+          media_id: item.media_id,
+          media_image: item.media_image,
+          media_name: item.media_name,
+          meta_data: item.meta_data,
+          meta_data2: item.meta_data,
+          media_type: req.params.media_type
+        }
       })
       console.log(params)
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
@@ -197,12 +216,12 @@ class ProfileController {
   async deleteTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.tracks.validateAsync(req.body)
+      const validationResult = await userSchema.deleteTrack.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
-      const condition = { track_id: req.body.track_ids }
+      const condition = { media_id: req.body.track_ids }
       const playlistData = await commonService.delete(PlaylistTrack, condition)
       console.log(playlistData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -237,10 +256,10 @@ class ProfileController {
     try {
       const condition = { user_id: req.decoded.id, id: req.params.playlist_id }
       const playlistData = await commonService.findOne(UserPlaylist, condition,
-        ['id', 'name', 'description', 'created_at', 'updated_at'])
+        ['id', 'name', 'description', 'created_at', 'updated_at', 'image'])
       console.log(playlistData)
-      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.dataValues.id },
-        ['track_id', 'created_at', 'updated_at'])
+      const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.id },
+        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at'])
       console.log(trackData)
       trackData.playlist = playlistData
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
@@ -272,6 +291,7 @@ class ProfileController {
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
+          meta_data2: item.meta_data,
           media_type: req.params.media_type
         }
       })
@@ -289,13 +309,43 @@ class ProfileController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       console.log(pagination)
-      const myLikeData = await commonService.findAll(LikeUnlike, { user_id: req.decoded.id }, ['media_type', 'media_id'])
-      const myMediaTypes = myLikeData.map(data => { return data.media_type })
-      console.log(myMediaTypes)
-      const myMediaids = myLikeData.map(data => { return data.media_id })
-      console.log(myMediaids)
-      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination, myMediaids, myMediaTypes)
-      console.log('myrecentposts', myRecentPosts)
+      //    const myLikeData = await commonService.findAll(LikeUnlike, { user_id: req.decoded.id }, ['media_type', 'media_id'])
+      //    const myMediaTypes = myLikeData.map(data => { return data.media_type })
+      //    console.log(myMediaTypes)
+      //   const myMediaids = myLikeData.map(data => { return data.media_id })
+      //    console.log(myMediaids)
+      const myRecentPosts = await userService.getMyRecentPosts(req.decoded.id, pagination)
+      console.log(myRecentPosts)
+      // console.log('myrecentposts', myRecentPosts)
+      /*      myRecentPosts.forEach((index1) => {
+        myMediaTypes.forEach(async (num1, index2) => {
+          const num2 = myMediaids[index2]
+          likes = await commonService.findAndCountAll(LikeUnlike, { media_type: num1, media_id: num2, is_liked: true })
+          console.log('myrecentpostslikes', likes.count)
+        })
+        myRecentPosts[index1].like_count = likes.count
+      }) */
+      // myRecentPosts.forEach(async index => {
+      const postIds = myRecentPosts.map(post => { return post.id })
+      console.log('postIds', postIds)
+      const postLikeData = await userService.getUserPostLike(postIds)
+      console.log('postLikeData', postLikeData)
+
+      myRecentPosts.forEach((post, index1) => {
+        let count = 0
+        let likedByMe = false
+        postLikeData.forEach(likeData => {
+          if (post.id === likeData.post_id) {
+            count++
+          }
+          if (req.decoded.id === likeData.user_id) {
+            likedByMe = true
+          }
+        })
+        myRecentPosts[index1].like_count = count
+        myRecentPosts[index1].liked_by_me = likedByMe
+      })
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
     } catch (err) {
       console.log(err)
@@ -336,6 +386,24 @@ class ProfileController {
         }
       }
       const userList = await commonService.findAndCountAll(User, condition, ['id', 'name', 'profile_picture'])
+      // console.log(JSON.stringify(userList, null, 2))
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
+    } catch (err) {
+      console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async songartistSearch (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const userName = req.query.name
+      const condition = {
+        media_name: {
+          [Op.iLike]: '%' + userName + '%'
+        }
+      }
+      const userList = await commonService.findAndCountAll(UserMedia, condition, ['user_id', 'media_id', 'media_name', 'media_image', 'meta_data', 'media_type', 'meta_data2'])
       // console.log(JSON.stringify(userList, null, 2))
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
     } catch (err) {

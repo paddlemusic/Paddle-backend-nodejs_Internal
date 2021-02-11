@@ -133,13 +133,11 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
 /**
  * @swagger
  *
- * /playlist/{playlist_id}/addTracks:
+ * /playlist/{playlist_id}/{media_type}/addTracks:
  *   put:
  *     tags :
  *      - profile
- *     summary: Add tracks to playlist.
- *     produces:
- *       - application/json
+ *     summary: To Add Tracks To Playlist.
  *     consumes:
  *        - application/json
  *     parameters:
@@ -152,23 +150,48 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
  *          name: playlist_id
  *          type: integer
  *          required: true
+ *        - in: path
+ *          name: media_type
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
- *          name: body
+ *          name: data
+ *          description: Tracks Or artist Ids.
  *          required: true
  *          schema:
- *              type: object
- *              properties:
- *                  track_ids:
- *                      type: array
- *                      items:
- *                          type: string
- *                          unique: true
- *     responses:
- *          default:
- *              description: Add tracks to playlist response object.
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example: [{
+ *                  "media_id": "1",
+ *                  "media_image": "",
+ *                  "media_name": "Artist1",
+ *                  "meta_data": "",
+ *                  "meta_data2": ""
+ *                  }]
+ *   definitions:
+ *     TrackArtistIds:
+ *      type: "object"
+ *      properties:
+ *          media_id:
+ *            type: string
+ *            required:  true
+ *          media_image:
+ *            type: string
+ *          media_name:
+ *            type: string
+ *          meta_data:
+ *            type: string
+ *          meta_data2:
+ *            type: string
+ *   description: >
+ *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+ *     produces:
+ *       - application/json
  */
-router.put('/playlist/:playlist_id/addTracks', authenticate.verifyToken, profileController.addTracks)
 
+router.put('/playlist/:playlist_id/:media_type/addTracks', authenticate.verifyToken, profileController.addTracks)
 /**
  * @swagger
  *
@@ -506,7 +529,8 @@ router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verif
  *                  "media_id": "1",
  *                  "media_image": "",
  *                  "media_name": "Artist1",
- *                  "meta_data": ""
+ *                  "meta_data": "",
+ *                  "meta_data2": ""
  *                  }]
  *   definitions:
  *     TrackArtistIds:
@@ -520,6 +544,8 @@ router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verif
  *          media_name:
  *            type: string
  *          meta_data:
+ *            type: string
+ *          meta_data2:
  *            type: string
  *   description: >
  *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
@@ -582,7 +608,7 @@ router.delete('/userMedia/deleteSaveSongsArtists/:media_type', authenticate.veri
  *     description: >
  *      This resource will be used to search user on the basis of name in search bar .
  *     parameters:
- *      - in: path
+ *      - in: query
  *        name: name
  *        schema:
  *        type: string
@@ -591,6 +617,27 @@ router.delete('/userMedia/deleteSaveSongsArtists/:media_type', authenticate.veri
  *       - application/json
  */
 router.get('/userSearch', profileController.userSearch)
+
+/**
+ * @swagger
+ *
+ * /songartistSearch:
+ *   get:
+ *     tags :
+ *      - profile
+ *     summary: T0 search user through name.
+ *     description: >
+ *      This resource will be used to search user on the basis of name in search bar .
+ *     parameters:
+ *      - in: query
+ *        name: media_name
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/songartistSearch', profileController.songartistSearch)
 
 /**
  * @swagger

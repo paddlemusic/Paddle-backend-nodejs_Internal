@@ -30,10 +30,10 @@ class ProfileService {
       raw: true
     })
     const topSongDetails = await commonService.findOne(UserMedia, { user_id: params.user_id, media_type: 1 },
-      ['media_id', 'media_name', 'media_image', 'meta_data'])
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2'])
 
     const topArtistDetails = await commonService.findOne(UserMedia, { user_id: params.user_id, media_type: 2 },
-      ['media_id', 'media_name', 'media_image', 'meta_data'])
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2'])
     const pagination = commonService.getPagination(null, 0)
     const recentPostsDetails = await userService.getMyRecentPosts(params.user_id, pagination)
 
