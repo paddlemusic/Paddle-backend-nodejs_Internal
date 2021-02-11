@@ -44,6 +44,11 @@ const UserPost = sequelize.define('User_Post', {
     type: DataTypes.BOOLEAN,
     allowNull: true,
     defaultValue: true
+  },
+  like_count: {
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    defaultValue: 0
   }
 },
 {

@@ -8,6 +8,8 @@ const LikePost = require('../models/likePost')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
 const UserService = require('../services/userService')
+const HomeService = require('../services/homeService')
+const homeService = new HomeService()
 const userService = new UserService()
 // const UniversityTrending = require('../models/universityTrending')
 
@@ -69,7 +71,7 @@ class HomePageController {
   //     const myfollowingData = await userService.getUserFollowing(req.decoded)
   //     const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
   //     const userId = req.decoded.id
-  //     const postData = await userService.getUserPost(myfollowingIDs, userId, pagination)
+  //     const postData = await homeService.getUserPost(myfollowingIDs, userId, pagination)
   //     /* const likes = await commonService.findAndCountAll(LikeUnlike, { user_id: req.decoded.id, media_type: postData.rows[0].media_type, media_id: postData.rows[0].media_id, is_liked: true })
   //     console.log('logs count', userId)
   //     console.log('logs count', postData.rows[0].media_type)
@@ -80,7 +82,7 @@ class HomePageController {
 
   //     const postIds = postData.rows.map(post => { return post.id })
   //     console.log('postIds', postIds)
-  //     const postLikeData = await userService.getUserPostLike(postIds)
+  //     const postLikeData = await homeService.getUserPostLike(postIds)
   //     console.log('postLikeData', postLikeData)
 
   //     postData.rows.forEach((post, index) => {
@@ -113,18 +115,18 @@ class HomePageController {
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
 
-      const postData = await userService.getHomePosts(req.decoded.id, myfollowingIDs, pagination)
-      console.log(postData[0])
-      const postIds = postData[0].map(post => { return post.id })
-      const likedByMePosts = await commonService.findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
-      console.log(likedByMePosts)
-      postData[0].forEach((post, index) => {
-        likedByMePosts.forEach(likedPost => {
-          if (post.id === likedPost.post_id) {
-            postData[0][index].liked_by_me = true
-          }
-        })
-      })
+      const postData = await homeService.getHomePosts(req.decoded.id, myfollowingIDs, pagination)
+      console.log(postData)
+      // const postIds = postData[0].map(post => { return post.id })
+      // const likedByMePosts = await commonService.findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
+      // console.log(likedByMePosts)
+      // postData[0].forEach((post, index) => {
+      //   likedByMePosts.forEach(likedPost => {
+      //     if (post.id === likedPost.post_id) {
+      //       postData[0][index].liked_by_me = true
+      //     }
+      //   })
+      // })
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData[0])
     } catch (err) {
       console.log(err)
@@ -145,10 +147,11 @@ class HomePageController {
         post_id: req.params.post_id
       }
       if (req.params.type === 'like') {
-        const data = await commonService.findOrCreate(LikePost, param)
+        //const data = await commonService.findOrCreate(LikePost, param)
+        const data = await homeService.likePost(param)
         console.log(data)
       } else {
-        const data = await commonService.delete(LikePost, param)
+        const data = await homeService.unlikePost(param)
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})

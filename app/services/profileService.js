@@ -1,6 +1,8 @@
 const User = require('../models/user')
 const UserFollower = require('../models/userFollower')
 const UserMedia = require('../models/userMedia')
+const LikePost = require('../models/likePost')
+const UserPost = require('../models/userPost')
 // const Sequelize = require('sequelize')
 // const Op = Sequelize.Op
 
@@ -50,6 +52,26 @@ class ProfileService {
       } else {
         reject(new Error('Data is not coming'))
       }
+    })
+  }
+
+  async likePost (params) {
+    return new Promise((resolve, reject) => {
+      LikePost.findOrCreate({ where: params })
+        .then(_ => {
+          return UserPost.findOne({ where: { id: params.post_id } })
+            .then(findResult => { findResult.increment('like_count') })
+        }).catch(err => reject(err))
+    })
+  }
+
+  async unlikePost (params) {
+    return new Promise((resolve, reject) => {
+      LikePost.destroy({ where: params })
+        .then(_ => {
+          return UserPost.findOne({ where: { id: params.post_id } })
+            .then(findResult => { findResult.decrement('like_count') })
+        }).catch(err => reject(err))
     })
   }
 
