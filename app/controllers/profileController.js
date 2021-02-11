@@ -14,7 +14,7 @@ const profileService = new ProfileService()
 const UserService = require('../services/userService')
 const userService = new UserService()
 const s3Bucket = require('../services/s3Bucket')
-
+const LikePost = require('../models/likePost')
 const UserPlaylist = require('../models/userPlaylist')
 const PlaylistTrack = require('../models/playlistTrack')
 const User = require('../models/user')
@@ -327,23 +327,36 @@ class ProfileController {
       // myRecentPosts.forEach(async index => {
       const postIds = myRecentPosts.map(post => { return post.id })
       console.log('postIds', postIds)
-      const postLikeData = await userService.getUserPostLike(postIds)
-      console.log('postLikeData', postLikeData)
-
-      myRecentPosts.forEach((post, index1) => {
-        let count = 0
-        let likedByMe = false
-        postLikeData.forEach(likeData => {
-          if (post.id === likeData.post_id) {
-            count++
-          }
-          if (req.decoded.id === likeData.user_id) {
-            likedByMe = true
+      // const postLikeData = await userService.getUserPostLike(postIds)
+      // console.log('postLikeData', postLikeData)
+      // @@@@@
+      // updated by simnan
+      const likedByMePosts = await commonService
+        .findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
+      console.log(likedByMePosts)
+      myRecentPosts.forEach((post, index) => {
+        myRecentPosts[index].liked_by_me = false
+        likedByMePosts.forEach(likedPost => {
+          if (post.id === likedPost.post_id) {
+            myRecentPosts[index].liked_by_me = true
           }
         })
-        myRecentPosts[index1].like_count = count
-        myRecentPosts[index1].liked_by_me = likedByMe
       })
+
+      // myRecentPosts.forEach((post, index1) => {
+      // let count = 0
+      //  let likedByMe = false
+      //   postLikeData.forEach(likeData => {
+      //    if (post.id === likeData.post_id) {
+      //       count++
+      //     }
+      //     if (req.decoded.id === likeData.user_id) {
+      //       likedByMe = true
+      //     }
+      //   })
+      //   myRecentPosts[index1].like_count = count
+      //   myRecentPosts[index1].liked_by_me = likedByMe
+      // })
 
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, myRecentPosts)
     } catch (err) {

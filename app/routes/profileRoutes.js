@@ -157,19 +157,30 @@ router.get('/playlist', authenticate.verifyToken, profileController.getPlaylist)
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
  *          name: data
- *          description: Tracks Or artist Ids.
+ *          description: Tracks Or artist Data.
  *          required: true
  *          schema:
  *            type: array
  *            items :
  *               $ref: '#/definitions/TrackArtistIds'
- *            example: [{
- *                  "media_id": "1",
- *                  "media_image": "",
- *                  "media_name": "Artist1",
- *                  "meta_data": "",
- *                  "meta_data2": ""
- *                  }]
+ *            example: {
+ *                   "tracksData":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
  *   definitions:
  *     TrackArtistIds:
  *      type: "object"
@@ -389,18 +400,30 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
  *          name: data
- *          description: Tracks Or artist Ids.
+ *          description: Tracks Or artist Data.
  *          required: true
  *          schema:
  *            type: array
  *            items :
  *               $ref: '#/definitions/TrackArtistIds'
- *            example: [{
- *                  "media_id": "1",
- *                  "media_image": "",
- *                  "media_name": "Artist1",
- *                  "meta_data": ""
- *                  }]
+ *            example: {
+ *                   "tracksData":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
  *   definitions:
  *     TrackArtistIds:
  *      type: "object"
@@ -413,6 +436,8 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *          media_name:
  *            type: string
  *          meta_data:
+ *            type: string
+ *          meta_data2:
  *            type: string
  *   description: >
  *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
@@ -519,19 +544,30 @@ router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verif
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
  *        - in: body
  *          name: data
- *          description: Tracks Or artist Ids.
+ *          description: Tracks Or artist Data.
  *          required: true
  *          schema:
  *            type: array
  *            items :
  *               $ref: '#/definitions/TrackArtistIds'
- *            example: [{
- *                  "media_id": "1",
- *                  "media_image": "",
- *                  "media_name": "Artist1",
- *                  "meta_data": "",
- *                  "meta_data2": ""
- *                  }]
+ *            example: {
+ *                   "data":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
  *   definitions:
  *     TrackArtistIds:
  *      type: "object"

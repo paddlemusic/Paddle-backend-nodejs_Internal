@@ -113,6 +113,36 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *       - application/json
  */
 // router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
+/**
+ * @swagger
+ *
+ * /likeunlike/{post_id}/{type}:
+ *   post:
+ *     tags :
+ *      - home
+ *     summary: LIKE OR UNLIKE .
+ *     description: >
+ *      This resource will be used ffor liking and unliking .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: post_id
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: type
+ *        schema:
+ *        type: string
+ *        required: true
+ *        description: (type = like) to like a post & (type=unlike) to unlike a post
+ *     produces:
+ *       - application/json
+ */
 
 router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
 
