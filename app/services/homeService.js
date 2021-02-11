@@ -4,7 +4,7 @@ const User = require('../models/user')
 const LikePost = require('../models/likePost')
 const UserPost = require('../models/userPost')
 const sequelize = require('../models')
-const Sequelize = require('sequelize').Op
+const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
 // const CommonService = require('./commonService')
@@ -35,7 +35,7 @@ class HomeService {
         ],
         //,
         attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
-        "media_image","media_name","meta_data","meta_data2","media_type","caption"`)],
+        "media_image","media_name","meta_data","meta_data2","media_type","caption", "like_count"`)],
         raw: true,
         include: [{
           model: User,
