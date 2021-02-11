@@ -1,6 +1,11 @@
 const schema = require('../middleware/schemaValidator/userRefSchema')
+const profileSchema = require('../middleware/schemaValidator/profileSchema')
 const userSchema = require('../middleware/schemaValidator/userSchema')
 const util = require('../utils/utils')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+const config = require('../config/index')
+
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
 // const notificationService = require('../services/notificationService')
@@ -8,19 +13,13 @@ const ProfileService = require('../services/profileService')
 const profileService = new ProfileService()
 const UserService = require('../services/userService')
 const userService = new UserService()
-const UserPlaylist = require('../models/userPlaylist')
-const PlaylistTrack = require('../models/playlistTrack')
-const LikeUnlike = require('../models/likePost')
-const User = require('../models/user')
-const UserFollower = require('../models/userFollower')
-
 const s3Bucket = require('../services/s3Bucket')
 
-const config = require('../config/index')
+const UserPlaylist = require('../models/userPlaylist')
+const PlaylistTrack = require('../models/playlistTrack')
+const User = require('../models/user')
+const UserFollower = require('../models/userFollower')
 const UserShare = require('../models/userPost')
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op
-
 const UserMedia = require('../models/userMedia')
 
 class ProfileController {
@@ -36,7 +35,7 @@ class ProfileController {
   async createPlaylist (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      const validationResult = await profileSchema.playlist.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -54,7 +53,7 @@ class ProfileController {
   async updatePlaylist (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.playlist.validateAsync(req.body)
+      const validationResult = await profileSchema.playlist.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -72,7 +71,7 @@ class ProfileController {
   async deletePlaylist (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.deletePlaylist.validateAsync(req.params)
+      const validationResult = await profileSchema.deletePlaylist.validateAsync(req.params)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -114,7 +113,7 @@ class ProfileController {
         params.push({ playlist_id: req.params.playlist_id, track_id: trackId, media_image: req.body.media_image, media_name: req.body.media_name, meta_data: req.body.meta_data, meta_data2: req.body.meta_data2, media_type: req.params.media_type })
       }) */
       // changes by simnan
-      const validationResult = await userSchema.tracks.validate(req.body)
+      const validationResult = await profileSchema.tracks.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -216,7 +215,7 @@ class ProfileController {
   async deleteTracks (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.deleteTrack.validateAsync(req.body)
+      const validationResult = await profileSchema.deleteTrack.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -277,7 +276,7 @@ class ProfileController {
   async createUserMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.userMedia.validate(req.body)
+      const validationResult = await schema.userMedia.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -358,7 +357,7 @@ class ProfileController {
     try {
       const userId = req.decoded.id
       // if (req.params.type === '1') {
-      const validationResult = await schema.deleteMedia.validate(req.body)
+      const validationResult = await schema.deleteMedia.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -486,7 +485,7 @@ class ProfileController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const userId = req.decoded.id
-      const validationResult = await userSchema.userPrivacy.validate(req.body)
+      const validationResult = await userSchema.userPrivacy.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
