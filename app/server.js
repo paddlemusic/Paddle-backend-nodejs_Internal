@@ -2,10 +2,6 @@ const express = require('express')
 const config = require('../app/config')
 const loader = require('./loaders/loader')
 const path = require('path')
-const cron = require('node-cron')
-const UserService = require('./services/userService')
-const userService = new UserService()
-const UserPost = require('./models/userPost')
 
 async function startServer () {
   const app = express()

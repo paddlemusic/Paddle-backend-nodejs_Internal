@@ -1,7 +1,7 @@
 
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
-const config = require('../config/index')
+const config = require('../../../config/index')
 
 const s3 = new AWS.S3({
   accessKeyId: config.AWS.id,

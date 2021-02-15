@@ -1,9 +1,9 @@
-const util = require('../utils/utils')
-const config = require('../config/index')
-const schema = require('../middleware/schemaValidator/userSchema')
+const util = require('../../../utils/utils')
+const config = require('../../../config/index')
+const schema = require('../schemaValidator/userSchema')
 
-const UserPost = require('../models/userPost')
-const LikePost = require('../models/likePost')
+const UserPost = require('../../../models/userPost')
+const LikePost = require('../../../models/likePost')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
 

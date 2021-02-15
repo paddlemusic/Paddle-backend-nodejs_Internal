@@ -1,8 +1,8 @@
-const User = require('../models/user')
-const UserFollower = require('../models/userFollower')
-const UserPost = require('../models/userPost')
-const LikeUnlike = require('../models/likePost')
-const LikePost = require('../models/likePost')
+const User = require('../../../models/user')
+const UserFollower = require('../../../models/userFollower')
+const UserPost = require('../../../models/userPost')
+const LikeUnlike = require('../../../models/likePost')
+// const LikePost = require('../models/likePost')
 // const CommonService = require('../services/commonService')
 // const commonService = new CommonService()
 const Sequelize = require('sequelize')
@@ -278,7 +278,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at'],
+        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'like_count'],
         raw: true
         // result.likes=likes
       }).then(result => resolve(result))

@@ -1,9 +1,9 @@
-const User = require('../models/user')
+const User = require('../../../models/user')
 // const UserFollower = require('../models/userFollower')
 // const UserMedia = require('../models/userMedia')
-const LikePost = require('../models/likePost')
-const UserPost = require('../models/userPost')
-const sequelize = require('../models')
+const LikePost = require('../../../models/likePost')
+const UserPost = require('../../../models/userPost')
+const sequelize = require('../../../models')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')

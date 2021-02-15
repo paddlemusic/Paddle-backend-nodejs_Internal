@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const SpotifyController = require('../controllers/spotifyController')
 const spotifyController = new SpotifyController()
-const auth = require('../middleware/authenticate')
+const auth = require('../../../middleware/authenticate')
 
 router.put('/saveState', auth.verifyToken, spotifyController.saveSpotifyState)
 router.post('/refreshToken', spotifyController.refreshToken)

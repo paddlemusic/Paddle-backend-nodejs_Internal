@@ -1,10 +1,10 @@
-const util = require('../utils/utils')
+const util = require('../../../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
-const config = require('../config/index')
-const SPOTIFY = require('../config/constants').SPOTIFY
-const schema = require('../middleware/schemaValidator/spotifySchema')
-const UserState = require('../models/userState')
+const config = require('../../../config/index')
+const SPOTIFY = require('../../../config/constants').SPOTIFY
+const schema = require('../schemaValidator/spotifySchema')
+const UserState = require('../../../models/userState')
 const https = require('https')
 
 class SpotifyController {

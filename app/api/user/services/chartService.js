@@ -1,4 +1,4 @@
-const UniversityTrending = require('../models/universityTrending')
+const UniversityTrending = require('../../../models/universityTrending')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
