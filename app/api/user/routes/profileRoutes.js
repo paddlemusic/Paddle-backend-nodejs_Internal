@@ -1,10 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const ProfileController = require('../controllers/profileController')
+const ProfileController = require('../../../controllers/profileController')
 const profileController = new ProfileController()
-const authenticate = require('../middleware/authenticate')
+const authenticate = require('../../../middleware/authenticate')
 
-const uploadMiddleware = require('../middleware/upload')
+const uploadMiddleware = require('../../../middleware/upload')
 
 /**
  * @swagger

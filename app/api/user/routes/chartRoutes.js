@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const ChartController = require('../controllers/chartController')
+const ChartController = require('../../../controllers/chartController')
 const chartController = new ChartController()
-const auth = require('../middleware/authenticate')
+const auth = require('../../../middleware/authenticate')
 
 /**
  * @swagger

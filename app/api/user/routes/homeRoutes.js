@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const HomePageController = require('../controllers/homePageController')
+const HomePageController = require('../../../controllers/homePageController')
 const homePageController = new HomePageController()
-const authenticate = require('../middleware/authenticate')
+const authenticate = require('../../../middleware/authenticate')
 
 /**
  * @swagger
