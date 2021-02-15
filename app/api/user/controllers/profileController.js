@@ -233,7 +233,7 @@ class ProfileController {
   async getUserShareAsFriend (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await userSchema.friend.validate(req.params)
+      const validationResult = await userSchema.friend.validateAsync(req.params)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return

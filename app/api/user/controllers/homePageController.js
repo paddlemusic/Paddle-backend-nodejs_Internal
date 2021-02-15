@@ -1,6 +1,6 @@
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
-const schema = require('../schemaValidator/userSchema')
+const schema = require('../schemaValidator/homeSchema')
 
 const UserPost = require('../../../models/userPost')
 const LikePost = require('../../../models/likePost')
@@ -22,7 +22,7 @@ class HomePageController {
   async createUserPost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.userPost.validate(req.body)
+      const validationResult = await schema.userPost.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -76,6 +76,7 @@ class HomePageController {
 
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
+      console.log('myfollowingIDs is: ', myfollowingIDs)
 
       const postData = await homeService.getUserPost(myfollowingIDs, req.decoded.id, pagination)
       const postIds = postData.rows.map(post => { return post.id })
@@ -83,7 +84,8 @@ class HomePageController {
 
       const likedByMePosts = await commonService
         .findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
-      console.log(likedByMePosts)
+      console.log('likedByMePosts', likedByMePosts)
+
       postData.rows.forEach((post, index) => {
         postData.rows[index].liked_by_me = false
         likedByMePosts.forEach(likedPost => {
@@ -109,6 +111,8 @@ class HomePageController {
       //   postData.rows[index].like_count = count
       //   postData.rows[index].liked_by_me = likedByMe
       // })
+
+      console.log('post data is:', postData)
 
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
     } catch (err) {
