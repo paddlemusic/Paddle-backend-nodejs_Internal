@@ -1,6 +1,6 @@
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
-const schema = require('../schemaValidator/userSchema')
+const schema = require('../schemaValidator/homeSchema')
 
 const UserPost = require('../../../models/userPost')
 const LikePost = require('../../../models/likePost')

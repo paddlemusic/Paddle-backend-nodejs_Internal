@@ -519,7 +519,7 @@ class UserController {
     }
   }
 
-  async likePost (req, res) {
+  /*  async likePost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
 
     const validationResult = await schema.likePost.validateAsync(req.body)
@@ -548,9 +548,9 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  }
+  } */
 
-  async unlikePost (req, res) {
+/*  async unlikePost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const data = await commonService.update(LikeUnlike, { is_liked: false }, { user_id: req.decoded.id })
@@ -560,6 +560,6 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  }
+  } */
 }
 module.exports = UserController

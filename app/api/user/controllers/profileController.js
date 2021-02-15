@@ -113,13 +113,19 @@ class ProfileController {
         params.push({ playlist_id: req.params.playlist_id, track_id: trackId, media_image: req.body.media_image, media_name: req.body.media_name, meta_data: req.body.meta_data, meta_data2: req.body.meta_data2, media_type: req.params.media_type })
       }) */
       // changes by simnan
+      //  console.log('aa22222', req.body)
+      // console.log(JSON.parse(req.body.tracksData))
+      // console.log(req.body)
       const validationResult = await profileSchema.tracks.validateAsync(req.body)
+      //  console.log(validationResult)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
+      // console.log('aaaaaaaaaa', req.body.tracksData)
       req.body.user_id = req.decoded.id
       const data = req.body.tracksData
+      console.log(data)
       const params = data.map((item) => {
         return {
           playlist_id: req.params.playlist_id,
@@ -131,7 +137,7 @@ class ProfileController {
           media_type: req.params.media_type
         }
       })
-      console.log(params)
+      // console.log(params)
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
       console.log(playlistData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})

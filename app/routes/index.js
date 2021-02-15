@@ -15,10 +15,11 @@
 // }
 
 const userRoutes = require('../api/user/routes')
-// const adminRoutes = require('../api/admin/routes')
+const adminRoutes = require('../api/admin/routes')
 
 module.exports = (app) => {
   userRoutes(app)
+  adminRoutes(app)
   // app.use(adminRoutes)
   // app.use(`${routePrefix}/user`, userRoutes)
   // app.use(`${routePrefix}/admin`, adminRoutes)

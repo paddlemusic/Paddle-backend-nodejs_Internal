@@ -48,7 +48,7 @@ class HomeService {
     })
   }
 
-  async getHomePosts (userId, followingIds, pagination) {
+  /*  async getHomePosts (userId, followingIds, pagination) {
     // try {
     const rawQuery =
               `SELECT
@@ -96,7 +96,7 @@ class HomeService {
     //   // logger.error(error)
     //   throw error
     // }
-  }
+  } */
 
   getUserPostLike (postId) {
     return new Promise((resolve, reject) => {

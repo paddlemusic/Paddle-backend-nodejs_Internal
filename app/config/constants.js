@@ -1,5 +1,6 @@
 module.exports = {
   apiVersion: 1,
+  apiVersion2: 2,
   SUCCESS: 200,
   CREATED: 201,
   ACCEPTED: 202,
