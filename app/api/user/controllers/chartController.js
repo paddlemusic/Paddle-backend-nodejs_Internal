@@ -1,11 +1,11 @@
-const util = require('../utils/utils')
+const util = require('../../../utils/utils')
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
 const ChartService = require('../services/chartService')
 const chartService = new ChartService()
-const config = require('../config/index')
-const schema = require('../middleware/schemaValidator/chartSchema')
-const User = require('../models/user')
+const config = require('../../../config/index')
+const schema = require('../../../middleware/schemaValidator/chartSchema')
+const User = require('../../../models/user')
 
 class ChartController {
   async addMedia (req, res) {
