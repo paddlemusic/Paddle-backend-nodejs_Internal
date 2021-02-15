@@ -4,7 +4,7 @@ const commonService = new CommonService()
 const ChartService = require('../services/chartService')
 const chartService = new ChartService()
 const config = require('../../../config/index')
-const schema = require('../../../middleware/schemaValidator/chartSchema')
+const schema = require('../schemaValidator/chartSchema')
 const User = require('../../../models/user')
 
 class ChartController {
