@@ -143,31 +143,31 @@ class ProfileController {
 
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    userSchema.userShare.validateAsync(req.body).then(async () => {
-      try {
-        const validationResult = await userSchema.userShare.validate(req.body)
-        if (validationResult.error) {
-          util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-          return
-        }
-        if (Number(req.decoded.id) === Number(req.body.shared_with)) {
-          util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
-          return
-        }
-        const params = {
-          user_id: req.decoded.id,
-          media_id: req.body.media_id,
-          caption: req.body.caption,
-          shared_with: req.body.shared_with,
-          media_image: req.body.media_image,
-          media_name: req.body.media_name,
-          meta_data: req.body.meta_data,
-          media_type: req.params.media_type
-        }
-        console.log('params are:', params)
-        await commonService.create(UserShare, params)
-        // push notification section
-        /*        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
+    // userSchema.userShare.validateAsync(req.body).then(async () => {
+    try {
+      const validationResult = await userSchema.userShare.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      if (Number(req.decoded.id) === Number(req.body.shared_with)) {
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+        return
+      }
+      const params = {
+        user_id: req.decoded.id,
+        media_id: req.body.media_id,
+        caption: req.body.caption,
+        shared_with: req.body.shared_with,
+        media_image: req.body.media_image,
+        media_name: req.body.media_name,
+        meta_data: req.body.meta_data,
+        media_type: req.params.media_type
+      }
+      console.log('params are:', params)
+      await commonService.create(UserShare, params)
+      // push notification section
+      /*        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
         const payload = {
           message: {
             notification: {
@@ -184,12 +184,12 @@ class ProfileController {
           const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
           await notificationService.sendNotification(sharedwithToken, payload)
         } */
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
-      } catch (err) {
-        console.log(err)
-        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-      }
-    })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+    // })
   }
 
   async getUserShareAsPost (req, res) {
