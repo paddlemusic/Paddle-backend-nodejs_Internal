@@ -70,7 +70,6 @@ const options = {
   // List of files to be processes. You can also set globs './routes/*.js'
   // apis: ['./app/routes*.js'],
   apis: ['./app/api/user/routes/*.js']
-
 }
 /* const options2 = {
   swaggerDefinition: {
