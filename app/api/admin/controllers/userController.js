@@ -89,19 +89,19 @@ class UserController {
   }
 
   async blockUnblockUser (req, res) {
-    console.log('caleed', req.decoded.id)
+    console.log('caleed', req.body)
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.blockUnblockUser.validateAsync(req.params)
+      const validationResult = await schema.blockUnblockUser.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_blocked: true }, { id: req.decoded.id, role: 1 })
+        const data = await commonService.update(User, { is_blocked: true }, { id: req.body.ids, role: 1 })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_blocked: false }, { id: req.decoded.id, role: 1 })
+        const data = await commonService.update(User, { is_blocked: false }, { id: req.body.ids, role: 1 })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})

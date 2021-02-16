@@ -6,7 +6,8 @@ const schema = {
     password: Joi.string().min(8).max(30).required()
   }),
   blockUnblockUser: Joi.object().keys({
-    type: Joi.string().required()
+    ids: Joi.array().items(Joi.number()).unique(),
+    type: Joi.string()
   })
 }
 

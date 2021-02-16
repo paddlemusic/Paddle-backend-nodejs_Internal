@@ -19,7 +19,6 @@ class UserService {
 
   getUsers (name) {
     return new Promise((resolve, reject) => {
-      // const likes = commonService.findAndCountAll(LikeUnlike, { media_type: myMediaTypes, media_id: myMediaids, is_liked: true })
       User.findAll({
         // limit: pagination.limit,
         // offset: pagination.offset,
