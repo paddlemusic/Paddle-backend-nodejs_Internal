@@ -13,7 +13,7 @@ const commonService = new CommonService()
 const UserFollower = require('../../../models/userFollower')
 const University = require('../../../models/university')
 const UserRating = require('../../../models/userRating')
-const LikeUnlike = require('../../../models/likePost')
+// const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
 
@@ -85,12 +85,16 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.login.validateAsync(req.body).then(async () => {
       const loginResponse = await userService.login(req.body)
+      console.log('login response', loginResponse)
       if (!loginResponse) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       } else if (!loginResponse.dataValues.is_active) {
         util.failureResponse(res, config.constants.FORBIDDEN, langMsg.userDeactivated)
       } else if (!loginResponse.dataValues.password) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      } else if (loginResponse.dataValues.is_blocked === true) {
+        console.log('blocked person')
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.isBlocked)
       } else {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
         if (didMatch) {

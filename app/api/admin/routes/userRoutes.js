@@ -12,4 +12,6 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
 router.get('/viewProfile', auth.verifyToken, userController.getUserProfiles)
 
 router.get('/userSearch', userController.userSearch)
+
+router.post('/blockUnblock/:type', auth.verifyToken, userController.blockUnblockUser)
 module.exports = router

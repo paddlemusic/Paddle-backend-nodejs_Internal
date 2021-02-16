@@ -7,6 +7,7 @@ module.exports = {
     routeNotFound: 'Route not found.',
     internalServerError: 'Internal server error occured.',
     notFound: 'Not found',
+    isBlocked: 'User is blocked',
     signupSuccess: 'User signed up successfully.',
     userVerified: 'User verified successfully.',
     otpIncorrect: 'OTP is wrong or expired.',

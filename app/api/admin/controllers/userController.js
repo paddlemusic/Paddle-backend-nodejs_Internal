@@ -87,6 +87,29 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async blockUnblockUser (req, res) {
+    console.log('caleed', req.decoded.id)
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.blockUnblockUser.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      if (req.params.type === 'block') {
+        const data = await commonService.update(User, { is_blocked: true }, { id: req.decoded.id, role: 1 })
+        console.log(data)
+      } else if (req.params.type === 'unblock') {
+        const data = await commonService.update(User, { is_blocked: false }, { id: req.decoded.id, role: 1 })
+        console.log(data)
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 
 module.exports = UserController

@@ -37,6 +37,9 @@ function loader (app) {
   app.use('/paddle/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument.swaggerSpecification, {
     explorer: true
   }))
+  // app.use('/paddle/admin/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument.swaggerSpecification2, {
+  //  explorer: true
+  // }))
   app.get('/paddle', (req, res) => {
     res.send('<center><p><b>This is the Paddle app server.</b></p></center>')
   })
