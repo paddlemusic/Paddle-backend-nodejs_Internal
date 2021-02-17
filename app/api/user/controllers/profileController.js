@@ -297,7 +297,8 @@ class ProfileController {
           media_name: item.media_name,
           meta_data: item.meta_data,
           meta_data2: item.meta_data,
-          media_type: req.params.media_type
+          media_type: req.params.media_type,
+          usermedia_type: req.params.usermedia_type
         }
       })
       const mediaData = await commonService.bulkCreate(UserMedia, params)
@@ -384,7 +385,8 @@ class ProfileController {
       const params = {
         user_id: userId,
         media_id: req.body.media_id,
-        media_type: req.params.media_type
+        media_type: req.params.media_type,
+        usermedia_type: req.params.usermedia_type
       }
       const result = await commonService.delete(UserMedia, params)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, result)
@@ -522,7 +524,7 @@ class ProfileController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       if (req.decoded.id) {
-        const savedSongArtists = await commonService.findAndCountAll(UserMedia, { user_id: req.decoded.id, media_type: req.params.media_type }, ['media_id', 'media_image', 'media_name', 'meta_data'])
+        const savedSongArtists = await commonService.findAndCountAll(UserMedia, { user_id: req.decoded.id, media_type: req.params.media_type, usermedia_type: req.params.usermedia_type }, ['media_id', 'media_image', 'media_name', 'meta_data'])
         util.successResponse(res, config.constants.SUCCESS, langMsg.success, savedSongArtists)
       }
     } catch (err) {

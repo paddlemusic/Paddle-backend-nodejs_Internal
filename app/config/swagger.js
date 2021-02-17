@@ -54,6 +54,14 @@ const options = {
         description: 'Find out more',
         url: 'http://swagger.io'
       }
+    },
+    {
+      name: 'admin',
+      description: 'Everything about user management',
+      externalDocs: {
+        description: 'Find out more',
+        url: 'http://swagger.io'
+      }
     }],
     schemes: [
       'http',
@@ -69,7 +77,7 @@ const options = {
 
   // List of files to be processes. You can also set globs './routes/*.js'
   // apis: ['./app/routes*.js'],
-  apis: ['./app/api/user/routes/*.js']
+  apis: ['./app/api/user/routes/*.js', './app/api/admin/routes/*.js']
 }
 /* const options2 = {
   swaggerDefinition: {
