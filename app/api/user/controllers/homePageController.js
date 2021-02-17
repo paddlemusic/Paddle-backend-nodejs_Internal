@@ -4,6 +4,7 @@ const schema = require('../schemaValidator/homeSchema')
 
 const UserPost = require('../../../models/userPost')
 const LikePost = require('../../../models/likePost')
+const UserMedia = require('../../../models/userMedia')
 // const notificationService = require('../services/notificationService')
 // const User = require('../models/user')
 
@@ -169,6 +170,24 @@ class HomePageController {
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async isMediaSaved (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = {
+        user_id: req.decoded.id,
+        media_id: req.params.media_id
+      }
+      const isMediaSaved = await commonService.findOne(UserMedia, condition, ['media_id'])
+      const response = {
+        is_media_saved: isMediaSaved !== null
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, response)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

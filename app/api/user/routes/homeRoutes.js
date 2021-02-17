@@ -139,11 +139,39 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *        schema:
  *        type: string
  *        required: true
- *        description: (type = like) to like a post & (type=unlike) to unlike a post
- *     produces:
- *       - application/json
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
  */
 
 router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
+
+/**
+ * @swagger
+ *
+ * /home/media/isSaved/{media_id}:
+ *   get:
+ *     tags :
+ *      - home
+ *     summary: Check if media is saved or not.
+ *     description: >
+ *      This resource will be used Check if media is saved or not.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: media_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
+ */
+
+router.get('/media/isSaved/:media_id', authenticate.verifyToken, homePageController.isMediaSaved)
 
 module.exports = router

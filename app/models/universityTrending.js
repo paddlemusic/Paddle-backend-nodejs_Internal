@@ -42,6 +42,6 @@ UniversityTrending.belongsTo(University, {
 
 UniversityTrending.removeAttribute('id')
 
-UniversityTrending.sync({ alter: true })
+// UniversityTrending.sync({ alter: true })
 
 module.exports = UniversityTrending
