@@ -379,7 +379,7 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
 /**
  * @swagger
  *
- * /userMedia/topSongsArtists/{type}:
+ * /userMedia/topSongsArtists/{media_type}/{usermedia_type}:
  *   put:
  *     tags :
  *      - profile
@@ -393,11 +393,17 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *          type: string
  *          required: true
  *        - in: path
- *          name: type
+ *          name: media_type
  *          schema:
  *          type: integer
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
  *        - in: body
  *          name: data
  *          description: Tracks Or artist Data.
@@ -444,7 +450,7 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileCon
  *     produces:
  *       - application/json
  */
-router.put('/userMedia/topSongsArtists/:media_type', authenticate.verifyToken, profileController.createUserMedia)
+router.put('/userMedia/topSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
 
 /**
  * @swagger
@@ -480,7 +486,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileController.getRec
 /**
  * @swagger
  *
- * /userMedia/deleteTopSongsArtists/{type}:
+ * /userMedia/deleteTopSongsArtists/{media_type}/{usermedia_type}:
  *   delete:
  *     tags :
  *      - profile
@@ -496,11 +502,17 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileController.getRec
  *          type: string
  *          required: true
  *        - in: path
- *          name: type
+ *          name: media_type
  *          schema:
  *          type: integer
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
  *        - in: body
  *          name : ids
  *          description: Tracks Or artist Ids.
@@ -518,12 +530,12 @@ router.get('/getRecentPosts', authenticate.verifyToken, profileController.getRec
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 
-router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verifyToken, profileController.deleteUserMedia)
+router.delete('/userMedia/deleteTopSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
 
 /**
  * @swagger
  *
- * /userMedia/saveSongsArtists/{type}:
+ * /userMedia/saveSongsArtists/{media_type}/{usermedia_type}:
  *   put:
  *     tags :
  *      - profile
@@ -542,6 +554,12 @@ router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verif
  *          type: integer
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
  *        - in: body
  *          name: data
  *          description: Tracks Or artist Data.
@@ -588,12 +606,12 @@ router.delete('/userMedia/deleteTopSongsArtists/:media_type', authenticate.verif
  *     produces:
  *       - application/json
  */
-router.put('/userMedia/saveSongsArtists/:media_type', authenticate.verifyToken, profileController.createUserMedia)
+router.put('/userMedia/saveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
 
 /**
  * @swagger
  *
- * /userMedia/deleteSaveSongsArtists/{type}:
+ * /userMedia/deleteSaveSongsArtists/{media_type}/{usermedia_type}:
  *   delete:
  *     tags :
  *      - profile
@@ -609,11 +627,17 @@ router.put('/userMedia/saveSongsArtists/:media_type', authenticate.verifyToken, 
  *          type: string
  *          required: true
  *        - in: path
- *          name: type
+ *          name: media_type
  *          schema:
  *          type: integer
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
  *        - in: body
  *          name : ids
  *          description: Tracks Or artist Ids.
@@ -763,7 +787,7 @@ router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUse
 /**
  * @swagger
  *
- * /userMedia/getSaveSongsArtists/{type}:
+ * /userMedia/getSaveSongsArtists/{media_type}/{usermedia_type}:
  *   get:
  *     tags :
  *      - profile
@@ -777,15 +801,21 @@ router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUse
  *          type: string
  *          required: true
  *        - in: path
- *          name: type
+ *          name: media_type
  *          schema:
  *          type: integer
  *          required: true
  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
  *   description: >
  *    Shows user saved song and artists
  *     produces:
  *       - application/json
  */
-router.get('/userMedia/getSaveSongsArtists/:media_type', authenticate.verifyToken, profileController.getUserMedia)
+router.get('/userMedia/getSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.getUserMedia)
 module.exports = router

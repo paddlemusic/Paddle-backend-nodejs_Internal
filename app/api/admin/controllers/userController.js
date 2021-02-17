@@ -74,10 +74,10 @@ class UserController {
   async userSearch (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      // const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
 
-      const userList = await userService.getUsers(userName)
+      const userList = await userService.getUsers(userName, pagination)
       console.log(userList)
       // const userList = await commonService.findAndCountAll(User, condition, ['id', 'name', 'profile_picture'])
       // console.log(JSON.stringify(userList, null, 2))
@@ -89,19 +89,19 @@ class UserController {
   }
 
   async blockUnblockUser (req, res) {
-    console.log('caleed', req.decoded.id)
+    console.log('caleed', req.body)
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.blockUnblockUser.validateAsync(req.params)
+      const validationResult = await schema.blockUnblockUser.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_blocked: true }, { id: req.decoded.id, role: 1 })
+        const data = await commonService.update(User, { is_blocked: true }, { id: req.body.ids, role: 1 })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_blocked: false }, { id: req.decoded.id, role: 1 })
+        const data = await commonService.update(User, { is_blocked: false }, { id: req.body.ids, role: 1 })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -109,6 +109,38 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
+  }
+
+  async resetPassword (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.resetPassword.validateAsync(req.body).then(async () => {
+      const passwordHash = await util.encryptPassword(req.body.password)
+      req.body.password = passwordHash
+      const userExist = await userService.forgotPassword(req.body)
+      if (!userExist) {
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      }
+      const resetPasswordToken = await util.generatePasswordReset()
+      await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
+      const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
+      console.log('resetpasswordtakendetails', getResetPasswordToken)
+      const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
+      if (!resetPassword) {
+        util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      }
+      userExist.dataValues.token = resetPasswordToken
+      delete userExist.dataValues.password
+      delete userExist.dataValues.role
+      delete userExist.dataValues.device_token
+      delete userExist.dataValues.verification_token
+      delete userExist.dataValues.social_user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, userExist.dataValues)
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    })
   }
 }
 

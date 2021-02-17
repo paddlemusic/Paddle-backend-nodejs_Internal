@@ -33,6 +33,10 @@ const UserMedia = sequelize.define('User_Media', {
     type: DataTypes.INTEGER,
     allowNull: false, // required
     unique: 'user_id_media_id_media_type'
+  },
+  usermedia_type: {
+    type: DataTypes.INTEGER,
+    allowNull: true // required
   }
 },
 {
@@ -48,5 +52,5 @@ UserMedia.belongsTo(User, {
 })
 
 // UserMedia.removeAttribute('id')
-// UserMedia.sync()
+// UserMedia.sync({ alter: true })
 module.exports = UserMedia
