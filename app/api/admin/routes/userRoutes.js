@@ -97,7 +97,7 @@ router.get('/userSearch', userController.userSearch)
 
 /**
  * @swagger
- * admin/resetPassword:
+ * admin/changePassword:
  *   post:
  *     tags :
  *      - admin
@@ -105,13 +105,18 @@ router.get('/userSearch', userController.userSearch)
  *     description: >
  *      This resource will be used for individual to regenerate password .
  *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *            type: string
+ *        required: true
  *      - in: body
- *        name: email
+ *        name: old_password
  *        schema:
  *        type: string
  *        required: true
  *      - in: body
- *        name: password
+ *        name: new_password
  *        schema:
  *        type: string
  *        required: true
@@ -119,7 +124,7 @@ router.get('/userSearch', userController.userSearch)
  *       - application/json
  */
 
-router.post('/resetPassword', userController.resetPassword)
+router.post('/changePassword', auth.verifyAdminToken, userController.changePassword)
 /**
  * @swagger
  *

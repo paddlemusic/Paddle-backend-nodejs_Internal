@@ -57,7 +57,7 @@ const options = {
     },
     {
       name: 'admin',
-      description: 'Everything about user management',
+      description: 'Everything about admin & user management',
       externalDocs: {
         description: 'Find out more',
         url: 'http://swagger.io'
