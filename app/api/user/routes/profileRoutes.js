@@ -655,7 +655,7 @@ router.put('/userMedia/saveSongsArtists/:media_type/:usermedia_type', authentica
  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
  */
 
-router.delete('/userMedia/deleteSaveSongsArtists/:media_type', authenticate.verifyToken, profileController.deleteUserMedia)
+router.delete('/userMedia/deleteSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
 
 /**
  * @swagger

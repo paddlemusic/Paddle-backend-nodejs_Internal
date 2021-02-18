@@ -303,7 +303,7 @@ class ProfileController {
       })
       const mediaData = await commonService.bulkCreate(UserMedia, params)
       console.log('Data is:', mediaData)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, mediaData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -384,12 +384,13 @@ class ProfileController {
       }
       const params = {
         user_id: userId,
-        media_id: req.body.media_id,
+        media_id: req.body.ids,
         media_type: req.params.media_type,
         usermedia_type: req.params.usermedia_type
       }
       const result = await commonService.delete(UserMedia, params)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, result)
+      console.log(result)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log('err is:', err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

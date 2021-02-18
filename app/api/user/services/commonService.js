@@ -80,7 +80,7 @@ class CommonService {
 
   bulkCreate (table, params) {
     return new Promise((resolve, reject) => {
-      table.bulkCreate(params, { ignoreDuplicates: true })
+      table.bulkCreate(params, { ignoreDuplicates: true, attributes: ['id'] })
         .then(result => resolve(result))
         .catch(err => {
           (err.original.code === '23505' || err.original.code === '23503')
