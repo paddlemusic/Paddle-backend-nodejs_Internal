@@ -46,6 +46,8 @@ function loader (app) {
 
   routes(app)
   app.use((req, res, next) => {
+    // console.log(req.method)
+    // console.log(req.url)
     const langMsg = config.messages[req.app.get('lang')]
     utils.failureResponse(res, constants.NOT_FOUND, langMsg.routeNotFound)
     next()

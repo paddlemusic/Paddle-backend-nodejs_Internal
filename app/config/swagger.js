@@ -62,6 +62,14 @@ const options = {
         description: 'Find out more',
         url: 'http://swagger.io'
       }
+    },
+    {
+      name: 'admin-university',
+      description: 'Everything about universities management',
+      externalDocs: {
+        description: 'Find out more',
+        url: 'http://swagger.io'
+      }
     }],
     schemes: [
       'http',

@@ -17,6 +17,7 @@ module.exports = {
     wrongPassword: 'Password is incorrect.',
     socialAccount: 'Login with your social account.',
     otpSent: 'OTP send to email sucesessfully.',
+    linkSent: 'Password reset link send to email sucesessfully.',
     tokenExpired: 'Password reset token is invalid or has expired.',
     passwordUpdated: 'Your password has been updated.',
     invalidToken: 'Authorization token is not valid.',

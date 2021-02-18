@@ -8,7 +8,7 @@ const auth = require('../../../middleware/authenticate')
 /**
  * @swagger
  *
- * admin/login:
+ * /login:
  *   post:
  *     tags:
  *      - admin
@@ -35,7 +35,7 @@ router.post('/login', userController.login)
 /**
  * @swagger
  *
- * admin/logout:
+ * /logout:
  *   post:
  *     tags :
  *      - admin
@@ -56,7 +56,7 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
 /**
  * @swagger
  *
- * admin/viewProfile:
+ * /viewProfile:
  *   get:
  *     tags :
  *      - admin
@@ -77,7 +77,7 @@ router.get('/viewProfile', auth.verifyToken, userController.getUserProfiles)
 /**
  * @swagger
  *
- * admin/userSearch:
+ * /userSearch:
  *   get:
  *     tags :
  *      - admin
@@ -90,6 +90,16 @@ router.get('/viewProfile', auth.verifyToken, userController.getUserProfiles)
  *        schema:
  *        type: string
  *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
  *     produces:
  *       - application/json
  */
@@ -97,13 +107,13 @@ router.get('/userSearch', userController.userSearch)
 
 /**
  * @swagger
- * admin/changePassword:
+ * /changePassword:
  *   post:
  *     tags :
  *      - admin
- *     summary: To Reset Forgotten Password.
+ *     summary: To change Password.
  *     description: >
- *      This resource will be used for individual to regenerate password .
+ *      This resource will be used for admin to change password .
  *     parameters:
  *      - in: header
  *        name: Authorization
@@ -128,7 +138,7 @@ router.post('/changePassword', auth.verifyAdminToken, userController.changePassw
 /**
  * @swagger
  *
- * admin/blockUnblock/{type}:
+ * /blockUnblock/{type}:
  *   post:
  *     tags :
  *      - admin
@@ -147,8 +157,66 @@ router.post('/changePassword', auth.verifyAdminToken, userController.changePassw
  *        type: string
  *        required: true
  *        description: (type = block) to block a user & (type=unblock) to unblock a user
+ *      - in: body
+ *        name: ids
+ *        required: true
+ *        description: ids of user to be deactivated from admin panel
+ *        schema:
+ *          type: array
+ *          example: {
+ *                "ids":[
+ *                    17,
+ *                    20
+ *                      ]
+ *                   }
  *     produces:
  *       - application/json
  */
 router.post('/blockUnblock/:type', userController.blockUnblockUser)
+
+/**
+ * @swagger
+ *
+ * /forgotPassword:
+ *   post:
+ *     tags :
+ *      - admin
+ *     summary: Password Reset Link Generate.
+ *     description: >
+ *      This resource will be used by admin to send reset password link.
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.post('/forgotPassword', userController.forgotPassword)
+
+/**
+ * @swagger
+ * /resetPassword:
+ *   post:
+ *     tags :
+ *      - admin
+ *     summary: To Reset Forgotten Password.
+ *     description: >
+ *      This resource will be used for admin to regenerate password .
+ *     parameters:
+ *      - in: body
+ *        name: email
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: password
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.post('/resetPassword', userController.resetPassword)
 module.exports = router
