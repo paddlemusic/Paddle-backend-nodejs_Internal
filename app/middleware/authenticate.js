@@ -110,10 +110,11 @@ exports.verifyToken = (req, res, next) => {
         console.log(LangMsg.invalidToken)
         util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
       } else {
-        // console.log('DEcoded is:', decoded)
-        if (Number(decoded.role) !== 1) {
+        console.log('DEcoded is:', decoded)
+        if (Number(decoded.role) === 0 && Number(decoded.role) >= 3) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
-        } else if (!decoded.is_active) {
+        } else
+        if (!decoded.is_active) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
         } else {
           req.decoded = decoded
