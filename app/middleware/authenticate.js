@@ -111,11 +111,12 @@ exports.verifyToken = (req, res, next) => {
         util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
       } else {
         console.log('DEcoded is:', decoded)
-        if (Number(decoded.role) === 0 && Number(decoded.role) >= 3) {
+        if (Number(decoded.role) !== 1) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
-        } else
-        if (!decoded.is_active) {
+        } else if (!decoded.is_active) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
+        } else if (!decoded.is_verified && (req.path !== '/verify_otp' || req.path !== '/resend_otp')) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userNotVerfied)
         } else {
           req.decoded = decoded
           next()

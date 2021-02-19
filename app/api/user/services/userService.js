@@ -143,8 +143,8 @@ class UserService {
 
   isUserAlreadyExist (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['name', 'username', 'email', 'phophone_number', 'date_of_birth', 'social_user_id',
-        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token', 'id']
+      const userAttribute = ['name', 'username', 'email', 'phone_number', 'date_of_birth', 'social_user_id',
+        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token', 'id', 'university_code']
       User.findOne({ where: params, raw: true }, { attribute: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))

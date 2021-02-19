@@ -37,8 +37,10 @@ class UserController {
       const payload = {
         id: signupData.dataValues.id,
         username: signupData.dataValues.username,
+        universityId: signupData.dataValues.university_code,
         role: 1,
-        isActive: signupData.dataValues.is_active
+        isActive: signupData.dataValues.is_active,
+        isVerified: signupData.dataValues.is_verified
       }
       const token = await util.generateJwtToken(payload)
       signupData.dataValues.token = token
@@ -101,10 +103,16 @@ class UserController {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
         if (didMatch) {
           const payload = {
+            // id: loginResponse.dataValues.id,
+            // username: loginResponse.dataValues.username,
+            // role: 1,
+            // isActive: loginResponse.dataValues.is_active
             id: loginResponse.dataValues.id,
             username: loginResponse.dataValues.username,
+            universityId: loginResponse.dataValues.university_code,
             role: 1,
-            isActive: loginResponse.dataValues.is_active
+            isActive: loginResponse.dataValues.is_active,
+            isVerified: loginResponse.dataValues.is_verified
           }
           const token = await util.generateJwtToken(payload)
           await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
@@ -235,10 +243,16 @@ class UserController {
         console.log('msg:', config.messages.en.loginSuccess)
         if (userExistData) {
           const data = {
+            // id: userExistData.id,
+            // email: req.user.emails[0].value || req.user.email,
+            // role: '1',
+            // isActive: true
             id: userExistData.id,
-            email: req.user.emails[0].value || req.user.email,
-            role: '1',
-            isActive: true
+            username: userExistData.username,
+            universityId: userExistData.university_code,
+            role: 1,
+            isActive: userExistData.is_active,
+            isVerified: userExistData.is_verified
           }
           const token = await util.generateJwtToken(data)
           userExistData.token = token
@@ -253,10 +267,16 @@ class UserController {
               const username = [socialData.name.replace(' ', '_'), socialData.id].join('_')
               await commonService.update(User, { username: username }, { id: socialData.id })
               const data = {
+                // id: socialData.id,
+                // email: req.user.emails[0].value || req.user.email,
+                // role: '1',
+                // isActive: true
                 id: socialData.id,
-                email: req.user.emails[0].value || req.user.email,
-                role: '1',
-                isActive: true
+                username: socialData.username,
+                universityId: socialData.university_code,
+                role: 1,
+                isActive: socialData.is_active,
+                isVerified: socialData.is_verified
               }
               const token = await util.generateJwtToken(data)
               socialData.token = token
@@ -577,30 +597,9 @@ class UserController {
         return
       }
       console.log(validationResult)
-      // let performQuery = true
-      // let didOpenApp = false
-      // response
-      // const param = {}
-      // if (validationResult.app_usage_time) {
-      //   // update usage time
-      //   param.app_usage_time = validationResult.app_usage_time
-      // } else if (validationResult.did_open_app) {
-      //   // increment open_count
-      //   didOpenApp = true
-      // } else {
-      //   // do nothing
-      //   performQuery = false
-      // }
-      // param.user_id = req.decoded.id
-      // param.date = validationResult.date
-      // param.university_id = null
-      // param.app_usage_time = validationResult.app_usage_time
-      // param.
       validationResult.user_id = req.decoded.id
       validationResult.university_id = null
-      // if (performQuery) {
-      const response = await userService.submitUserStats(validationResult)// commonService.createOrUpdate(UserStats, validationResult)
-      // }
+      const response = await userService.submitUserStats(validationResult)
       console.log(response)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
     } catch (err) {
