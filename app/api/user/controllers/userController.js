@@ -597,10 +597,14 @@ class UserController {
         return
       }
       console.log(validationResult)
+
+      const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
       validationResult.user_id = req.decoded.id
-      validationResult.university_id = null
+      validationResult.university_id = university.university_code
+
       const response = await userService.submitUserStats(validationResult)
       console.log(response)
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
     } catch (err) {
       console.log(err)
