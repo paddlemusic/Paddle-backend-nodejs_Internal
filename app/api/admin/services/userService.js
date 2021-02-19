@@ -33,6 +33,9 @@ class UserService {
       User.findAll({
         limit: pagination.limit,
         offset: pagination.offset,
+        where: {
+          role: 1
+        },
         attributes: ['name', 'email', 'phone_number', 'is_active'],
         raw: true
       }).then(result => resolve(result))
