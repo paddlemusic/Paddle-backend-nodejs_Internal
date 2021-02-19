@@ -58,6 +58,7 @@ const schema = {
     media_image: Joi.string().allow('').allow(null),
     media_name: Joi.string().allow('').allow(null),
     meta_data: Joi.string().allow('').allow(null),
+    meta_data2: Joi.string().allow('').allow(null),
     shared_with: Joi.number().allow(null)
   }),
   friend: Joi.object().keys({
