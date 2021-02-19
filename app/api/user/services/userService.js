@@ -382,28 +382,6 @@ class UserService {
     })
     return data
   }
-
-  // async updateUserShoppedStore (params) {
-  //   try {
-  //     const where_criteria = {
-  //       user_id: params.user_id,
-  //       store_id: params.store_id
-  //     }
-  //     const userShopppedId = await UserShoppedStores.findOne({
-  //       where: where_criteria, raw: true
-  //     })
-  //     if (userShopppedId) {
-  //       params.receipt_count = sequelize.literal('receipt_count + 1')
-  //       return await UserShoppedStores.update(params, { where: where_criteria, raw: true, returning: true })
-  //     } else {
-  //       params.receipt_count = 1
-  //       return (await UserShoppedStores.create(params)).get({ plain: true })
-  //     }
-  //   } catch (e) {
-  //     console.log('Error Ocured in creating slip ', e)
-  //     throw e
-  //   }
-  // }
 }
 
 module.exports = UserService
