@@ -16,6 +16,8 @@ const UserRating = require('../../../models/userRating')
 // const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
+// const moment = require('moment')
+// const UserStats = require('../../../models/userStats')
 
 class UserController {
   async signup (req, res) {
@@ -554,7 +556,7 @@ class UserController {
     }
   } */
 
-/*  async unlikePost (req, res) {
+  /*  async unlikePost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const data = await commonService.update(LikeUnlike, { is_liked: false }, { user_id: req.decoded.id })
@@ -565,5 +567,46 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   } */
+
+  async submitStats (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.submitStats.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      console.log(validationResult)
+      // let performQuery = true
+      // let didOpenApp = false
+      // response
+      // const param = {}
+      // if (validationResult.app_usage_time) {
+      //   // update usage time
+      //   param.app_usage_time = validationResult.app_usage_time
+      // } else if (validationResult.did_open_app) {
+      //   // increment open_count
+      //   didOpenApp = true
+      // } else {
+      //   // do nothing
+      //   performQuery = false
+      // }
+      // param.user_id = req.decoded.id
+      // param.date = validationResult.date
+      // param.university_id = null
+      // param.app_usage_time = validationResult.app_usage_time
+      // param.
+      validationResult.user_id = req.decoded.id
+      validationResult.university_id = null
+      // if (performQuery) {
+      const response = await userService.submitUserStats(validationResult)// commonService.createOrUpdate(UserStats, validationResult)
+      // }
+      console.log(response)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 module.exports = UserController

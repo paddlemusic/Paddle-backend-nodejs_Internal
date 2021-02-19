@@ -485,4 +485,6 @@ router.post('/logout', auth.verifyToken, userController.logout)
 // router.get('/getlikes', userController.getLikes)
 // router.put('/unlike', auth.verifyToken, userController.unlikePost)
 
+router.post('/submitStats', auth.verifyToken, userController.submitStats)
+
 module.exports = router

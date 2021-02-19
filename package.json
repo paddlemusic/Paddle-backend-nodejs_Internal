@@ -16,6 +16,7 @@
   "homepage": "https://bitbucket.org/algoworks-dev/paddle-backend-nodejs#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@hapi/joi-date": "^2.0.1",
     "@sendgrid/mail": "^7.4.2",
     "aws-sdk": "^2.831.0",
     "bcrypt": "^5.0.0",
