@@ -28,6 +28,18 @@ class UserService {
     })
   }
 
+  listUsers (pagination) {
+    return new Promise((resolve, reject) => {
+      User.findAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        attributes: ['name', 'email', 'phone_number', 'is_active'],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   resetPassword (params) {
     return new Promise((resolve, reject) => {
       User.update({ password: params.newPassword, resetPasswordToken: null, resetPasswordExpires: null },

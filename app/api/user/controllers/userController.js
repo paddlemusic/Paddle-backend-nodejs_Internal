@@ -94,7 +94,7 @@ class UserController {
         util.failureResponse(res, config.constants.FORBIDDEN, langMsg.userDeactivated)
       } else if (!loginResponse.dataValues.password) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
-      } else if (loginResponse.dataValues.is_blocked === true) {
+      } else if (loginResponse.dataValues.is_active === false) {
         console.log('blocked person')
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.isBlocked)
       } else {
