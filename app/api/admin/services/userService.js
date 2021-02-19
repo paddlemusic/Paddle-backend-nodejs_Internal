@@ -20,7 +20,7 @@ class UserService {
         //        order: [
         //         ['created_at', 'DESC']
         //       ],
-        attributes: ['id', 'name', 'profile_picture'],
+        attributes: [],
         raw: true
         // result.likes=likes
       }).then(result => resolve(result))
