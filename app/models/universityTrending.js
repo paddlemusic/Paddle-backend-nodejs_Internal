@@ -5,7 +5,7 @@ const University = require('./university')
 const UniversityTrending = sequelize.define('University_Trending', {
   university_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
     unique: 'university_id_media_id_media_type'
   },
   media_id: {
@@ -42,6 +42,6 @@ UniversityTrending.belongsTo(University, {
 
 UniversityTrending.removeAttribute('id')
 
-// UniversityTrending.sync({ force: true })
+// UniversityTrending.sync({ alter: true })
 
 module.exports = UniversityTrending

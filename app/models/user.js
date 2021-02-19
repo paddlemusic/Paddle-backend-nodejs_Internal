@@ -21,11 +21,6 @@ const User = sequelize.define('User', {
     allowNull: true,
     defaultValue: false
   },
-  is_blocked: {
-    type: DataTypes.BOOLEAN,
-    allowNull: true,
-    defaultValue: false
-  },
   email: {
     type: DataTypes.STRING,
     allowNull: true,

@@ -20,9 +20,21 @@ class UserService {
         //        order: [
         //         ['created_at', 'DESC']
         //       ],
-        attributes: ['id', 'name', 'profile_picture'],
+        attributes: [],
         raw: true
         // result.likes=likes
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  listUsers (pagination) {
+    return new Promise((resolve, reject) => {
+      User.findAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        attributes: ['name', 'email', 'phone_number', 'is_active'],
+        raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })

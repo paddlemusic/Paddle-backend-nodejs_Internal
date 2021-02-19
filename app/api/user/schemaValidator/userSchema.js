@@ -1,4 +1,6 @@
-const Joi = require('@hapi/joi')
+let Joi = require('@hapi/joi')
+const JoiDate = require('@hapi/joi-date')
+Joi = Joi.extend(JoiDate)
 
 const schema = {
   login: Joi.object().keys({
@@ -58,6 +60,7 @@ const schema = {
     media_image: Joi.string().allow('').allow(null),
     media_name: Joi.string().allow('').allow(null),
     meta_data: Joi.string().allow('').allow(null),
+    meta_data2: Joi.string().allow('').allow(null),
     shared_with: Joi.number().allow(null)
   }),
   friend: Joi.object().keys({
@@ -72,6 +75,11 @@ const schema = {
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),
     feedback: Joi.string().max(300).trim()
+  }),
+  submitStats: Joi.object().keys({
+    app_usage_time: Joi.number().min(0).default(0),
+    did_open_app: Joi.boolean().default(false),
+    date: Joi.date().format('YYYY-MM-DD').required()
   })
 }
 

@@ -8,6 +8,8 @@ const LikeUnlike = require('../../../models/likePost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
+const sequelize = require('../../../models')
+// const UserStats = require('../../../models/userStats')
 
 class CustomError extends Error {
   constructor (message) {
@@ -336,6 +338,72 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  // async submitUserStats (params, didOpenApp) {
+  //   // return new Promise((resolve, reject) => {
+  //   //   // params.app_open_count = sequelize.literal('app_open_count + 1')
+  //   //   UserStats.findOrCreate({
+  //   //     where: params
+  //   //   })
+  //   //     .then(result => resolve(result))
+  //   //     .catch(err => reject(err))
+  //   // })
+  //   const findOrCreate = await UserStats.findOrCreate({ where: params })
+  //   console.log(findOrCreate)
+  //   if (didOpenApp) {
+  //     // increment open_app_count
+  //   }
+  //   return findOrCreate
+  // }
+
+  async submitUserStats (params) {
+    console.log(params)
+    const updateQuery = params.did_open_app
+      ? ', app_open_count = "User_Stats".app_open_count + 1;'
+      : ';'
+    const rawQuery =
+             `INSERT INTO
+                "User_Stats" (
+                user_id,
+                university_id,
+                "date",
+                app_usage_time,
+                app_open_count)
+              VALUES ( $1, $2, $3, $4, $5) 
+              ON CONFLICT 
+                (user_id,
+                "date") 
+              DO UPDATE
+              SET
+                app_usage_time = "User_Stats".app_usage_time + $4
+                ${updateQuery}`
+    const data = await sequelize.query(rawQuery, {
+      bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
+    })
+    return data
+  }
+
+  // async updateUserShoppedStore (params) {
+  //   try {
+  //     const where_criteria = {
+  //       user_id: params.user_id,
+  //       store_id: params.store_id
+  //     }
+  //     const userShopppedId = await UserShoppedStores.findOne({
+  //       where: where_criteria, raw: true
+  //     })
+  //     if (userShopppedId) {
+  //       params.receipt_count = sequelize.literal('receipt_count + 1')
+  //       return await UserShoppedStores.update(params, { where: where_criteria, raw: true, returning: true })
+  //     } else {
+  //       params.receipt_count = 1
+  //       return (await UserShoppedStores.create(params)).get({ plain: true })
+  //     }
+  //   } catch (e) {
+  //     console.log('Error Ocured in creating slip ', e)
+  //     throw e
+  //   }
+  // }
 }
 
 module.exports = UserService

@@ -17,12 +17,16 @@ class ChartController {
         return
       }
       const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
-      if (university) {
-        req.body.track.university_id = university.university_code
-        req.body.artist.university_id = university.university_code
+      // if (university) {
+        req.body.track.university_id = university.university_code || null
+        req.body.artist.university_id = university.university_code || null
+        req.body.album.university_id = university.university_code || null
+        
         await chartService.addMedia(req.body.track)
         await chartService.addMedia(req.body.artist)
-      }
+        if (req.body.album)
+          await chartService.addMedia(req.body.album)
+      // }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)

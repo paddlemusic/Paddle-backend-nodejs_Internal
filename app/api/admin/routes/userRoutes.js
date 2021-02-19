@@ -56,13 +56,13 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
 /**
  * @swagger
  *
- * /viewProfile:
+ * /viewAdminProfile:
  *   get:
  *     tags :
  *      - admin
- *     summary: For Viewing User Profile.
+ *     summary: For Viewing admin Profile.
  *     description: >
- *      This resource will be used to view user profiles by the admin.
+ *      This resource will be used to get profile of  the admin.
  *     parameters:
  *      - in: header
  *        name: Authorization
@@ -72,7 +72,28 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
  *     produces:
  *       - application/json
  */
-router.get('/viewAdminProfile', auth.verifyAdminToken, userController.getUserProfiles)
+router.get('/viewAdminProfile', auth.verifyAdminToken, userController.getAdminProfile)
+
+/**
+ * @swagger
+ *
+ * /viewUserProfile/{id}:
+ *   get:
+ *     tags :
+ *      - admin
+ *     summary: For Viewing user Profile.
+ *     description: >
+ *      This resource will be used to get profile of  the  users from admin panel.
+ *     parameters:
+ *      - in: params
+ *        name: id
+ *        schema:
+ *            type: integer
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/viewUserProfile/:id', userController.getUserProfile)
 
 /**
  * @swagger
@@ -219,4 +240,31 @@ router.post('/forgotPassword', userController.forgotPassword)
  *       - application/json
  */
 router.post('/resetPassword', userController.resetPassword)
+
+/**
+ * @swagger
+ *
+ * /getUsers:
+ *   get:
+ *     tags :
+ *      - admin
+ *     summary: Get Users.
+ *     description: >
+ *      This resource will be used to get all the users exist .
+ *     parameters:
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.get('/getUsers', userController.getUsers)
+
 module.exports = router
