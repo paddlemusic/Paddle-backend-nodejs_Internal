@@ -9,7 +9,9 @@ const schema = {
     ids: Joi.array().items(Joi.number()).unique(),
     type: Joi.string()
   }),
-
+  forgotPassword: Joi.object().keys({
+    email: Joi.string().trim().email().required()
+  }),
   resetPassword: Joi.object().keys({
     email: Joi.string().trim().email().required(),
     password: Joi.string().min(6).max(26).required()
