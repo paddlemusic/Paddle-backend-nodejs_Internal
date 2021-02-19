@@ -72,7 +72,7 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
  *     produces:
  *       - application/json
  */
-router.get('/viewProfile', auth.verifyToken, userController.getUserProfiles)
+router.get('/viewAdminProfile', auth.verifyAdminToken, userController.getUserProfiles)
 
 /**
  * @swagger
