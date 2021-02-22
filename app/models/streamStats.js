@@ -23,14 +23,13 @@ const StreamStats = sequelize.define('Stream_Stats', {
     type: DataTypes.JSON,
     allowNull: true
   },
-  month: {
-    type: DataTypes.INTEGER,
+  date: {
+    type: DataTypes.DATEONLY,
     allowNull: false,
-    unique: 'stream_stats_un_key',
-    validate: { min: 1, max: 12 }
+    unique: 'stream_stats_un_key'
   },
   count: {
-    type: DataTypes.BIGINT,
+    type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 1,
     validate: { min: 1 }

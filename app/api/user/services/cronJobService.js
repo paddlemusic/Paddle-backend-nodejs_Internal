@@ -51,8 +51,8 @@ class CronJobService {
     console.log('cleanUserStats called')
     const deletedUserLogs = await UserStreams.destroy({
       where: {
-        created_at: {
-          [Op.lt]: moment().utc().subtract(1, 'month').format('YYYY-MM-DD')
+        date: {
+          [Op.lt]: moment().utc().subtract(3, 'month').format('YYYY-MM-DD')
         }
       }
     })

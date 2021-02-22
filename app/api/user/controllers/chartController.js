@@ -6,6 +6,7 @@ const chartService = new ChartService()
 const config = require('../../../config/index')
 const schema = require('../schemaValidator/chartSchema')
 const User = require('../../../models/user')
+const moment = require('moment')
 
 class ChartController {
   async addMedia (req, res) {
@@ -16,18 +17,26 @@ class ChartController {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
+      const date = moment().utc().format('YYYY-MM-DD')
       const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
-      // if (university) {
-      req.body.track.university_id = university.university_code || null
-      req.body.artist.university_id = university.university_code || null
-      req.body.album.university_id = university.university_code || null
 
-      await chartService.addMedia(req.body.track)
-      await chartService.addMedia(req.body.artist)
-      if (req.body.album) { await chartService.addMedia(req.body.album) }
-      // }
-
-      // Add to Stream Stats table also
+      const param = []
+      if (validationResult.track) {
+        validationResult.track.university_id = university?.university_code || null
+        validationResult.track.date = date
+        param.push(validationResult.track)
+      }
+      if (validationResult.artist) {
+        validationResult.artist.university_id = university?.university_code || null
+        validationResult.artist.date = date
+        param.push(validationResult.artist)
+      }
+      if (validationResult.album) {
+        validationResult.album.university_id = university?.university_code || null
+        validationResult.album.date = date
+        param.push(validationResult.album)
+      }
+      await chartService.submitStramingStats(param)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
