@@ -95,7 +95,8 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-      const data = await userService.listUsers(pagination)
+      const userName = req.query.name
+      const data = await userService.listUsers(userName, pagination)
       // console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {

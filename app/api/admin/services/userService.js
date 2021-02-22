@@ -28,15 +28,18 @@ class UserService {
     })
   }
 
-  listUsers (pagination) {
+  listUsers (name, pagination) {
     return new Promise((resolve, reject) => {
-      User.findAll({
+      User.findAndCountAll({
+        where: {
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          }
+        },
         limit: pagination.limit,
         offset: pagination.offset,
-        where: {
-          role: 1
-        },
-        attributes: ['name', 'email', 'phone_number', 'is_active'],
+        attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
