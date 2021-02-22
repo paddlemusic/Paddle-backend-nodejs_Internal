@@ -33,6 +33,7 @@ module.exports = {
     artistAdded: 'Artist added successfully',
     trackDeleted: 'Track deleted successfully',
     artistDeleted: 'Artist deleted successfully',
-    logOut: 'User logged out successfully'
+    logOut: 'User logged out successfully',
+    notAllowed: 'user not allowed to change email address.'
   }
 }

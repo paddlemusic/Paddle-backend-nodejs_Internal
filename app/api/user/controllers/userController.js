@@ -85,6 +85,28 @@ class UserController {
     })
   }
 
+  async changeEmailAddress (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.changeEmailAddress.validateAsync(req.body)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      }
+      const verificationStatus = await commonService.findOne(User, { id: req.decoded.id }, ['is_verified'])
+      if (verificationStatus.is_verified) {
+        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.notAllowed)
+      }
+      await commonService.update(User, validationResult, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS,
+        langMsg.success, {})
+    } catch (error) {
+      console.log(error)
+      const errorMessage = error.name === 'CustomError' ? error.message : langMsg.internalServerError
+      const errorCode = error.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      util.failureResponse(res, errorCode, errorMessage)
+    }
+  }
+
   async login (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.login.validateAsync(req.body).then(async () => {

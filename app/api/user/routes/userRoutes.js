@@ -79,6 +79,8 @@ router.post('/signup', userController.signup)
  */
 router.post('/verify_otp', userController.verifyOTP)
 
+router.post('/changeEmail', auth.verifyToken, userController.changeEmailAddress)
+
 /**
  * @swagger
  *

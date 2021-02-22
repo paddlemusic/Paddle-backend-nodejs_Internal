@@ -3,6 +3,7 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const sequelize = require('../../../models')
 const moment = require('moment')
+// eslint-disable-next-line no-unused-vars
 const StreamStats = require('../../../models/streamStats')
 
 class ChartService {

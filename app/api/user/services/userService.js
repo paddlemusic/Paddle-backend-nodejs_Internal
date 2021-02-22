@@ -10,13 +10,7 @@ const Op = Sequelize.Op
 const moment = require('moment')
 const sequelize = require('../../../models')
 // const UserStats = require('../../../models/userStats')
-
-class CustomError extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'CustomError'
-  }
-}
+const CustomError = require('../../../utils/customError')
 
 class UserService {
   signup (params) {

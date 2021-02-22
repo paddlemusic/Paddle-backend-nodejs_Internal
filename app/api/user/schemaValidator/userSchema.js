@@ -26,6 +26,9 @@ const schema = {
     email: Joi.string().trim().email().required(),
     otp: Joi.string().trim().length(4).required()
   }),
+  changeEmailAddress: Joi.object().keys({
+    email: Joi.string().trim().email().required()
+  }),
   resetPassword: Joi.object().keys({
     email: Joi.string().trim().email().required(),
     password: Joi.string().min(6).max(26).required()
