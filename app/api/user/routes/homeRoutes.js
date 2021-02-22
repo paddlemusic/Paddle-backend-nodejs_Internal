@@ -169,7 +169,7 @@ router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageCont
  *        required: true
  *     responses:
  *          default:
- *              description: Delete tracks from playlists response object.
+ *              description: This resource will be used Check if media is saved or not.
  */
 
 router.get('/media/isSaved/:media_id', authenticate.verifyToken, homePageController.isMediaSaved)

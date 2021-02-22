@@ -485,6 +485,37 @@ router.post('/logout', auth.verifyToken, userController.logout)
 // router.get('/getlikes', userController.getLikes)
 // router.put('/unlike', auth.verifyToken, userController.unlikePost)
 
+/**
+ * @swagger
+ *
+ * /user/submitStats:
+ *   post:
+ *     tags :
+ *      - user
+ *     summary: To store user data
+ *     description: >
+ *      This resource will be used for storing user data
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name : body
+ *        required : true
+ *        schema:
+ *           type: object
+ *           properties:
+ *              date:
+ *                 type: string
+ *              app_usage_time:
+ *                 type: number
+ *              did_open_app:
+ *                 type: boolean
+ *     responses:
+ *          default:
+ *              This resource will be used for storing user data
+ */
 router.post('/submitStats', auth.verifyToken, userController.submitStats)
 
 module.exports = router

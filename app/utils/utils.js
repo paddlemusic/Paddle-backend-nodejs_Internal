@@ -31,9 +31,11 @@ const generateJwtToken = function (payload) {
     const secret = config.JWT.secret
     const data = {
       id: payload.id,
-      username: payload.email,
+      username: payload.username,
       role: payload.role,
-      is_active: payload.isActive
+      is_active: payload.isActive,
+      is_verified: payload.isVerified,
+      university_code: payload.universityId
     }
     // console.log('token data is:', data)
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
