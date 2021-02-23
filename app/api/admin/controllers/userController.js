@@ -62,12 +62,43 @@ class UserController {
     }
   }
 
-  async getUserProfiles (req, res) {
+  async getAdminProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       console.log(req.decoded.id)
       const myProfile = await commonService.findOne(User, { id: req.decoded.id }, ['name', 'username', 'biography', 'phone_number', 'date_of_birth'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getUserProfile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.viewUserProfile.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      // console.log(req.params.id)
+      const myProfile = await commonService.findOne(User, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getUsers (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userName = req.query.name
+      const data = await userService.listUsers(userName, pagination)
+      // console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -98,10 +129,10 @@ class UserController {
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_blocked: true }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: 1 })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_blocked: false }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: 1 })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
