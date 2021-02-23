@@ -116,7 +116,7 @@ exports.verifyToken = (req, res, next) => {
         } else if (!decoded.is_active) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
         } else if (!decoded.is_verified &&
-          (req.path !== '/verify_otp' ||
+          !(req.path !== '/verify_otp' ||
           req.path !== '/resend_otp' ||
           req.path !== '/changeEmail')) {
           util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userNotVerfied)
