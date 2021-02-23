@@ -92,11 +92,16 @@ class UserController {
       if (validationResult.error) {
         return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
       }
-      const verificationStatus = await commonService.findOne(User, { id: req.decoded.id }, ['is_verified'])
+      const verificationStatus = await commonService.findOne(User, { id: req.decoded.id }, ['is_verified', 'name'])
       if (verificationStatus.is_verified) {
         return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.notAllowed)
       }
       await commonService.update(User, validationResult, { id: req.decoded.id })
+      const sendEmail = await util.sendEmail(validationResult.email, verificationStatus.name)
+      if (sendEmail) {
+        const otpJwt = await util.getJwtFromOtp(sendEmail.otp)
+        await userService.updateVerificationToken({ otp: otpJwt, id: req.decoded.id })
+      }
       util.successResponse(res, config.constants.SUCCESS,
         langMsg.success, {})
     } catch (error) {
