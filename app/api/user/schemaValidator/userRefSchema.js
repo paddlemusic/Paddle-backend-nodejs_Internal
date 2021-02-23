@@ -13,9 +13,9 @@ const schema = {
     // media_id: Joi.array().items(Joi.string()).unique()
     ids: Joi.array().items(Joi.string()).unique()
   }),
-  media_id: Joi.string().required(),
+
   userMedia: Joi.object().keys({
-    data: Joi.array().items(Joi.object().keys({
+    tracksData: Joi.array().items(Joi.object().keys({
       media_id: Joi.string().required(),
       media_image: Joi.string().allow('').allow(null),
       media_name: Joi.string().allow('').allow(null),

@@ -288,7 +288,7 @@ class ProfileController {
         return
       }
       req.body.user_id = req.decoded.id
-      const data = req.body.data
+      const data = req.body.tracksData
       const params = data.map((item) => {
         return {
           user_id: req.decoded.id,
@@ -376,7 +376,6 @@ class ProfileController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const userId = req.decoded.id
-      // if (req.params.type === '1') {
       const validationResult = await schema.deleteMedia.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
@@ -524,10 +523,16 @@ class ProfileController {
   async getUserMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      if (req.decoded.id) {
-        const savedSongArtists = await commonService.findAndCountAll(UserMedia, { user_id: req.decoded.id, media_type: req.params.media_type, usermedia_type: req.params.usermedia_type }, ['media_id', 'media_image', 'media_name', 'meta_data'])
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, savedSongArtists)
+      const condition = {
+        user_id: req.decoded.id,
+        media_type: req.params.media_type,
+        usermedia_type: req.params.usermedia_type
       }
+      const attributes = ['media_id', 'media_name', 'media_image', 'meta_data',
+        'meta_data2', 'media_type', 'created_at', 'updated_at']
+      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes)
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, userMedia)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
