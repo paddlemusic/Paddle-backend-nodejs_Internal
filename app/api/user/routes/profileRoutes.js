@@ -376,81 +376,81 @@ router.get('/getPostToFriend/:shared_with', authenticate.verifyToken, profileCon
  */
 router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, profileController.getPlaylistTracks)
 
-/**
- * @swagger
- *
- * /userMedia/topSongsArtists/{media_type}/{usermedia_type}:
- *   put:
- *     tags :
- *      - profile
- *     summary: My TOP SONGS and TOP ARTISTS.
- *     consumes:
- *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
- *        - in: path
- *          name: media_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for track & artist, 1 = track & 2 = artist
- *        - in: path
- *          name: usermedia_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
- *        - in: body
- *          name: data
- *          description: Tracks Or artist Data.
- *          required: true
- *          schema:
- *            type: array
- *            items :
- *               $ref: '#/definitions/TrackArtistIds'
- *            example: {
- *                   "tracksData":[
- *                          {
- *                    "media_id": "1",
- *                    "media_image": "",
- *                    "media_name": "song 1",
- *                    "meta_data": "",
- *                    "meta_data2": "",
- *                          },
- *                          {
- *                    "media_id": "2",
- *                    "media_image": "",
- *                    "media_name": "song 2",
- *                    "meta_data": "",
- *                    "meta_data2": "",
- *                          }
- *                          ]
- *                     }
- *   definitions:
- *     TrackArtistIds:
- *      type: "object"
- *      properties:
- *          media_id:
- *            type: string
- *            required:  true
- *          media_image:
- *            type: string
- *          media_name:
- *            type: string
- *          meta_data:
- *            type: string
- *          meta_data2:
- *            type: string
- *   description: >
- *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
- *     produces:
- *       - application/json
- */
-router.put('/userMedia/topSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
+// /**
+//  * @swagger
+//  *
+//  * /userMedia/topSongsArtists/{media_type}/{usermedia_type}:
+//  *   put:
+//  *     tags :
+//  *      - profile
+//  *     summary: My TOP SONGS and TOP ARTISTS.
+//  *     consumes:
+//  *        - application/json
+//  *     parameters:
+//  *        - in: header
+//  *          name: Authorization
+//  *          schema:
+//  *          type: string
+//  *          required: true
+//  *        - in: path
+//  *          name: media_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+//  *        - in: path
+//  *          name: usermedia_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+//  *        - in: body
+//  *          name: data
+//  *          description: Tracks Or artist Data.
+//  *          required: true
+//  *          schema:
+//  *            type: array
+//  *            items :
+//  *               $ref: '#/definitions/TrackArtistIds'
+//  *            example: {
+//  *                   "tracksData":[
+//  *                          {
+//  *                    "media_id": "1",
+//  *                    "media_image": "",
+//  *                    "media_name": "song 1",
+//  *                    "meta_data": "",
+//  *                    "meta_data2": "",
+//  *                          },
+//  *                          {
+//  *                    "media_id": "2",
+//  *                    "media_image": "",
+//  *                    "media_name": "song 2",
+//  *                    "meta_data": "",
+//  *                    "meta_data2": "",
+//  *                          }
+//  *                          ]
+//  *                     }
+//  *   definitions:
+//  *     TrackArtistIds:
+//  *      type: "object"
+//  *      properties:
+//  *          media_id:
+//  *            type: string
+//  *            required:  true
+//  *          media_image:
+//  *            type: string
+//  *          media_name:
+//  *            type: string
+//  *          meta_data:
+//  *            type: string
+//  *          meta_data2:
+//  *            type: string
+//  *   description: >
+//  *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+//  *     produces:
+//  *       - application/json
+//  */
+// router.put('/userMedia/topSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
 
 /**
  * @swagger
@@ -483,179 +483,179 @@ router.put('/userMedia/topSongsArtists/:media_type/:usermedia_type', authenticat
  */
 router.get('/getRecentPosts', authenticate.verifyToken, profileController.getRecentPosts)
 
-/**
- * @swagger
- *
- * /userMedia/deleteTopSongsArtists/{media_type}/{usermedia_type}:
- *   delete:
- *     tags :
- *      - profile
- *     summary: Delete Your TOP SONGS and TOP ARTISTS.
- *     produces:
- *       - application/json
- *     consumes:
- *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
- *        - in: path
- *          name: media_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for track & artist, 1 = track & 2 = artist
- *        - in: path
- *          name: usermedia_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
- *        - in: body
- *          name : ids
- *          description: Tracks Or artist Ids.
- *          required : true
- *          schema:
- *            type: array
- *            items :
- *               $ref: '#/definitions/TrackArtistIds'
- *            example:
- *               - "5"
- *     definitions:
- *       TrackArtistIds :
- *       type : string
- *     description: >
- *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
- */
+// /**
+//  * @swagger
+//  *
+//  * /userMedia/deleteTopSongsArtists/{media_type}/{usermedia_type}:
+//  *   delete:
+//  *     tags :
+//  *      - profile
+//  *     summary: Delete Your TOP SONGS and TOP ARTISTS.
+//  *     produces:
+//  *       - application/json
+//  *     consumes:
+//  *        - application/json
+//  *     parameters:
+//  *        - in: header
+//  *          name: Authorization
+//  *          schema:
+//  *          type: string
+//  *          required: true
+//  *        - in: path
+//  *          name: media_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+//  *        - in: path
+//  *          name: usermedia_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+//  *        - in: body
+//  *          name : ids
+//  *          description: Tracks Or artist Ids.
+//  *          required : true
+//  *          schema:
+//  *            type: array
+//  *            items :
+//  *               $ref: '#/definitions/TrackArtistIds'
+//  *            example:
+//  *               - "5"
+//  *     definitions:
+//  *       TrackArtistIds :
+//  *       type : string
+//  *     description: >
+//  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+//  */
 
-router.delete('/userMedia/deleteTopSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
+// router.delete('/userMedia/deleteTopSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
 
-/**
- * @swagger
- *
- * /userMedia/saveSongsArtists/{media_type}/{usermedia_type}:
- *   put:
- *     tags :
- *      - profile
- *     summary: My SAVED SONGS and SAVED ARTISTS.
- *     consumes:
- *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
- *        - in: path
- *          name: type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for track & artist, 1 = track & 2 = artist
- *        - in: path
- *          name: usermedia_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
- *        - in: body
- *          name: data
- *          description: Tracks Or artist Data.
- *          required: true
- *          schema:
- *            type: array
- *            items :
- *               $ref: '#/definitions/TrackArtistIds'
- *            example: {
- *                   "data":[
- *                          {
- *                    "media_id": "1",
- *                    "media_image": "",
- *                    "media_name": "song 1",
- *                    "meta_data": "",
- *                    "meta_data2": "",
- *                          },
- *                          {
- *                    "media_id": "2",
- *                    "media_image": "",
- *                    "media_name": "song 2",
- *                    "meta_data": "",
- *                    "meta_data2": "",
- *                          }
- *                          ]
- *                     }
- *   definitions:
- *     TrackArtistIds:
- *      type: "object"
- *      properties:
- *          media_id:
- *            type: string
- *            required:  true
- *          media_image:
- *            type: string
- *          media_name:
- *            type: string
- *          meta_data:
- *            type: string
- *          meta_data2:
- *            type: string
- *   description: >
- *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
- *     produces:
- *       - application/json
- */
-router.put('/userMedia/saveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
+// /**
+//  * @swagger
+//  *
+//  * /userMedia/saveSongsArtists/{media_type}/{usermedia_type}:
+//  *   put:
+//  *     tags :
+//  *      - profile
+//  *     summary: My SAVED SONGS and SAVED ARTISTS.
+//  *     consumes:
+//  *        - application/json
+//  *     parameters:
+//  *        - in: header
+//  *          name: Authorization
+//  *          schema:
+//  *          type: string
+//  *          required: true
+//  *        - in: path
+//  *          name: type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+//  *        - in: path
+//  *          name: usermedia_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+//  *        - in: body
+//  *          name: data
+//  *          description: Tracks Or artist Data.
+//  *          required: true
+//  *          schema:
+//  *            type: array
+//  *            items :
+//  *               $ref: '#/definitions/TrackArtistIds'
+//  *            example: {
+//  *                   "data":[
+//  *                          {
+//  *                    "media_id": "1",
+//  *                    "media_image": "",
+//  *                    "media_name": "song 1",
+//  *                    "meta_data": "",
+//  *                    "meta_data2": "",
+//  *                          },
+//  *                          {
+//  *                    "media_id": "2",
+//  *                    "media_image": "",
+//  *                    "media_name": "song 2",
+//  *                    "meta_data": "",
+//  *                    "meta_data2": "",
+//  *                          }
+//  *                          ]
+//  *                     }
+//  *   definitions:
+//  *     TrackArtistIds:
+//  *      type: "object"
+//  *      properties:
+//  *          media_id:
+//  *            type: string
+//  *            required:  true
+//  *          media_image:
+//  *            type: string
+//  *          media_name:
+//  *            type: string
+//  *          meta_data:
+//  *            type: string
+//  *          meta_data2:
+//  *            type: string
+//  *   description: >
+//  *    Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+//  *     produces:
+//  *       - application/json
+//  */
+// router.put('/userMedia/saveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.createUserMedia)
 
-/**
- * @swagger
- *
- * /userMedia/deleteSaveSongsArtists/{media_type}/{usermedia_type}:
- *   delete:
- *     tags :
- *      - profile
- *     summary: Delete Your SAVED SONGS and SAVED ARTISTS.
- *     produces:
- *       - application/json
- *     consumes:
- *        - application/json
- *     parameters:
- *        - in: header
- *          name: Authorization
- *          schema:
- *          type: string
- *          required: true
- *        - in: path
- *          name: media_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for track & artist, 1 = track & 2 = artist
- *        - in: path
- *          name: usermedia_type
- *          schema:
- *          type: integer
- *          required: true
- *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
- *        - in: body
- *          name : ids
- *          description: Tracks Or artist Ids.
- *          required : true
- *          schema:
- *            type: array
- *            items :
- *               $ref: '#/definitions/TrackArtistIds'
- *            example:
- *               - "5"
- *     definitions:
- *       TrackArtistIds :
- *       type : string
- *     description: >
- *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
- */
+// /**
+//  * @swagger
+//  *
+//  * /userMedia/deleteSaveSongsArtists/{media_type}/{usermedia_type}:
+//  *   delete:
+//  *     tags :
+//  *      - profile
+//  *     summary: Delete Your SAVED SONGS and SAVED ARTISTS.
+//  *     produces:
+//  *       - application/json
+//  *     consumes:
+//  *        - application/json
+//  *     parameters:
+//  *        - in: header
+//  *          name: Authorization
+//  *          schema:
+//  *          type: string
+//  *          required: true
+//  *        - in: path
+//  *          name: media_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+//  *        - in: path
+//  *          name: usermedia_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+//  *        - in: body
+//  *          name : ids
+//  *          description: Tracks Or artist Ids.
+//  *          required : true
+//  *          schema:
+//  *            type: array
+//  *            items :
+//  *               $ref: '#/definitions/TrackArtistIds'
+//  *            example:
+//  *               - "5"
+//  *     definitions:
+//  *       TrackArtistIds :
+//  *       type : string
+//  *     description: >
+//  *       Whenever tracks or artist will added, all related track_ids & artist_ids will be send in the array
+//  */
 
-router.delete('/userMedia/deleteSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
+// router.delete('/userMedia/deleteSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.deleteUserMedia)
 
 /**
  * @swagger
@@ -812,14 +812,51 @@ router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profil
 
 router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUserPrivacy)
 
+// /**
+//  * @swagger
+//  *
+//  * /userMedia/getSaveSongsArtists/{media_type}/{usermedia_type}:
+//  *   get:
+//  *     tags :
+//  *      - profile
+//  *     summary: Get SAVED SONGS and SAVED ARTISTS.
+//  *     consumes:
+//  *        - application/json
+//  *     parameters:
+//  *        - in: header
+//  *          name: Authorization
+//  *          schema:
+//  *          type: string
+//  *          required: true
+//  *        - in: path
+//  *          name: media_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+//  *        - in: path
+//  *          name: usermedia_type
+//  *          schema:
+//  *          type: integer
+//  *          required: true
+//  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+//  *   description: >
+//  *    Shows user saved song and artists
+//  *     produces:
+//  *       - application/json
+//  */
+// router.get('/userMedia/getSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.getUserMedia)
+
 /**
  * @swagger
  *
- * /userMedia/getSaveSongsArtists/{media_type}/{usermedia_type}:
- *   get:
+ * /profile/userMedia/{usermedia_type}/{media_type}:
+ *   put:
  *     tags :
  *      - profile
- *     summary: Get SAVED SONGS and SAVED ARTISTS.
+ *     summary: Add tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
  *     consumes:
  *        - application/json
  *     parameters:
@@ -840,10 +877,136 @@ router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUse
  *          type: integer
  *          required: true
  *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
- *   description: >
- *    Shows user saved song and artists
+ *        - in: body
+ *          name: data
+ *          description: Tracks Or artist Data.
+ *          required: true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example: {
+ *                   "tracksData":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
+ *          definitions:
+ *              TrackArtistIds:
+ *                  type: object
+ *                  properties:
+ *                          media_id:
+ *                              type: string
+ *                              required:  true
+ *                          media_image:
+ *                              type: string
+ *                          media_name:
+ *                              type: string
+ *                          meta_data:
+ *                              type: string
+ *                          meta_data2:
+ *                              type: string
+ *     responses:
+ *          default:
+ *              description: Add tracks/artist to Top and Saved Songs/Artist
+ */
+router.put('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, profileController.createUserMedia)
+
+/**
+ * @swagger
+ *
+ * /profile/userMedia/{usermedia_type}/{media_type}:
+ *   get:
+ *     tags :
+ *      - profile
+ *     summary: Get tracks/artist to Top and Saved Songs/Artist
  *     produces:
  *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *     responses:
+ *          default:
+ *              description: Get tracks/artist to Top and Saved Songs/Artist
  */
-router.get('/userMedia/getSaveSongsArtists/:media_type/:usermedia_type', authenticate.verifyToken, profileController.getUserMedia)
+router.get('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, profileController.getUserMedia)
+
+/**
+ * @swagger
+ *
+ * /profile/userMedia/{usermedia_type}/{media_type}:
+ *   delete:
+ *     tags :
+ *      - profile
+ *     summary: Delete tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *        - in: body
+ *          name : ids
+ *          description: Tracks Or artist Ids.
+ *          required : true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example:
+ *               - "5"
+ *     definitions:
+ *       TrackArtistIds :
+ *       type : string
+ *     responses:
+ *          default:
+ *              description: Delete tracks/artist to Top and Saved Songs/Artist
+ */
+router.delete('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, profileController.deleteUserMedia)
+
 module.exports = router
