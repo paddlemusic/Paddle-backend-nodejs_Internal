@@ -95,23 +95,6 @@ class HomePageController {
           }
         })
       })
-      // const postLikeData = await homeService.getUserPostLike(postIds)
-      // console.log('postLikeData', postLikeData)
-
-      // postData.rows.forEach((post, index) => {
-      //   let count = 0
-      //   let likedByMe = false
-      //   postLikeData.forEach(likeData => {
-      //     if (post.id === likeData.post_id) {
-      //       count++
-      //     }
-      //     if (req.decoded.id === likeData.user_id) {
-      //       likedByMe = true
-      //     }
-      //   })
-      //   postData.rows[index].like_count = count
-      //   postData.rows[index].liked_by_me = likedByMe
-      // })
 
       console.log('post data is:', postData)
 
