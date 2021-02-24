@@ -198,6 +198,37 @@ router.post('/blockUnblock/:type', userController.blockUnblockUser)
 /**
  * @swagger
  *
+ * /edit_details:
+ *   put:
+ *     tags :
+ *      - admin
+ *     summary: To Edit Admin Details.
+ *     description: >
+ *      This resource will be used for an admin to update its details in context of profile.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: body
+ *        name: name
+ *        schema:
+ *        type: string
+ *      - in: body
+ *        name: phone_number
+ *        schema:
+ *        type: string
+ *     responses:
+ *          default:
+ *              description: Update account deatails response object.
+ */
+
+router.put('/editDetails', auth.verifyAdminToken, userController.editAdminDetails)
+
+/**
+ * @swagger
+ *
  * /forgotPassword:
  *   post:
  *     tags :
@@ -214,7 +245,7 @@ router.post('/blockUnblock/:type', userController.blockUnblockUser)
  *     produces:
  *       - application/json
  */
-router.post('/forgotPassword', userController.forgotPassword)
+// router.post('/forgotPassword', userController.forgotPassword)
 
 /**
  * @swagger
@@ -239,7 +270,7 @@ router.post('/forgotPassword', userController.forgotPassword)
  *     produces:
  *       - application/json
  */
-router.post('/resetPassword', userController.resetPassword)
+// router.post('/resetPassword', userController.resetPassword)
 
 /**
  * @swagger
