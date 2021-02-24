@@ -1,10 +1,11 @@
 const User = require('../../../models/user')
 const UserFollower = require('../../../models/userFollower')
 const UserMedia = require('../../../models/userMedia')
-const LikePost = require('../../../models/likePost')
-const UserPost = require('../../../models/userPost')
+// const LikePost = require('../../../models/likePost')
+// const UserPost = require('../../../models/userPost')
 // const Sequelize = require('sequelize')
 // const Op = Sequelize.Op
+const CustomError = require('../../../utils/customError')
 
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
@@ -55,41 +56,34 @@ class ProfileService {
     })
   }
 
-  async likePost (params) {
+  editDetails (params) {
     return new Promise((resolve, reject) => {
-      LikePost.findOrCreate({ where: params })
-        .then(_ => {
-          return UserPost.findOne({ where: { id: params.post_id } })
-            .then(findResult => { findResult.increment('like_count') })
-        }).catch(err => reject(err))
+      console.log(params)
+      const userAttribute = ['id', 'name', 'username', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
+      User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
+        .then(result => resolve(result))
+        .catch(err => {
+          if (err.original.code === '23505' || err.original.code === 23505) {
+            switch (err.errors[0].path) {
+              case 'phone_number':
+                reject(new CustomError('Phone number is already registered.'))
+                break
+              case 'email':
+                reject(new CustomError('Email address is already registered.'))
+                break
+              case 'username':
+                reject(new CustomError('Username is already registered.'))
+                break
+              default:
+                reject(err)
+            }
+          } else {
+            console.log(err)
+            reject(err)
+          }
+        })
     })
   }
-
-  async unlikePost (params) {
-    return new Promise((resolve, reject) => {
-      LikePost.destroy({ where: params })
-        .then(_ => {
-          return UserPost.findOne({ where: { id: params.post_id } })
-            .then(findResult => { findResult.decrement('like_count') })
-        }).catch(err => reject(err))
-    })
-  }
-
-  // getUsersByName (username) {
-  //   console.log('username is:', username)
-  //   return new Promise((resolve, reject) => {
-  //     User.findAndCountAll({
-  //       where: {
-  //         name: {
-  //           [Op.iLike]: '%' + username + '%'
-  //         }
-  //       },
-  //       attributes: ['id', 'name', 'profile_picture'],
-  //       raw: true
-  //     }).then(result => resolve(result))
-  //       .catch(err => reject(err))
-  //   })
-  // }
 }
 
 module.exports = ProfileService

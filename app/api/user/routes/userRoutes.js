@@ -267,55 +267,6 @@ router.post('/resend_Otp', userController.resendOtp)
 /**
  * @swagger
  *
- * /user/edit_details:
- *   put:
- *     tags :
- *      - user
- *     summary: To Edit User Details.
- *     description: >
- *      This resource will be used for an individual to update its details in context of profile.
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
- *      - in: body
- *        name: name
- *        schema:
- *        type: string
- *        required: true
- *      - in: body
- *        name: username
- *        schema:
- *        type: string
- *        required: true
- *      - in: body
- *        name: phone_number
- *        schema:
- *        type: string
- *        required: true
- *      - in: body
- *        name: date_of_birth
- *        schema:
- *        type: string
- *        required: false
- *      - in: body
- *        name: bio
- *        schema:
- *        type: string
- *        required: false
- *        nullable: true
- *     responses:
- *          default:
- *              description: Update account deatails response object.
- */
-
-router.put('/edit_details', auth.verifyToken, userController.editDetails)
-
-/**
- * @swagger
- *
  * /auth/facebook/token:
  *   get:
  *     tags :

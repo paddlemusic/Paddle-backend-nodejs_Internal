@@ -10,7 +10,7 @@ const authenticate = require('../../../middleware/authenticate')
  * /createPost:
  *   post:
  *     tags :
- *      - home
+ *      - Home
  *     summary: Create User Post.
  *     produces:
  *       - application/json
@@ -63,7 +63,7 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  * /getPosts:
  *   get:
  *     tags :
- *      - home
+ *      - Home
  *     summary: get User posts.
  *     description: >
  *      This resource will be used for getting user's posts .
@@ -88,30 +88,30 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
 
-/**
- * @swagger
- *
- * /getUserSharedAsFriendPost/{shared_with}:
- *   get:
- *     tags :
- *      - home
- *     summary: get User posts by shared_with friend.
- *     description: >
- *      This resource will be used for getting shared with friend posts .
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
- *      - in: path
- *        name: shared_with
- *        schema:
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
- */
+// /**
+//  * @swagger
+//  *
+//  * /getUserSharedAsFriendPost/{shared_with}:
+//  *   get:
+//  *     tags :
+//  *      - Home
+//  *     summary: get User posts by shared_with friend.
+//  *     description: >
+//  *      This resource will be used for getting shared with friend posts .
+//  *     parameters:
+//  *      - in: header
+//  *        name: Authorization
+//  *        schema:
+//  *        type: string
+//  *        required: true
+//  *      - in: path
+//  *        name: shared_with
+//  *        schema:
+//  *        type: string
+//  *        required: true
+//  *     produces:
+//  *       - application/json
+//  */
 // router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 /**
  * @swagger
@@ -119,7 +119,7 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  * /likeunlike/{post_id}/{type}:
  *   post:
  *     tags :
- *      - home
+ *      - Home
  *     summary: LIKE OR UNLIKE .
  *     description: >
  *      This resource will be used ffor liking and unliking .
@@ -145,33 +145,5 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  */
 
 router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
-
-/**
- * @swagger
- *
- * /home/media/isSaved/{media_id}:
- *   get:
- *     tags :
- *      - home
- *     summary: Check if media is saved or not.
- *     description: >
- *      This resource will be used Check if media is saved or not.
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
- *      - in: path
- *        name: media_id
- *        schema:
- *        type: integer
- *        required: true
- *     responses:
- *          default:
- *              description: This resource will be used Check if media is saved or not.
- */
-
-router.get('/media/isSaved/:media_id', authenticate.verifyToken, homePageController.isMediaSaved)
 
 module.exports = router

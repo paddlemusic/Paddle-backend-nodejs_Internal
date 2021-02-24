@@ -24,36 +24,44 @@ const options = {
     host: `${process.env.HOST}:${process.env.PORT}`,
     basePath: '/paddle/api/v1',
     tags: [{
-      name: 'user',
-      description: 'Everything about user',
-      externalDocs: {
-        description: 'Find out more',
-        url: 'http://swagger.io'
-      }
+      name: 'User',
+      description: 'User onboarding, search, etc.'
+      // externalDocs: {
+      //   description: 'Find out more',
+      //   url: 'http://swagger.io'
+      // }
     },
     {
-      name: 'profile',
-      description: 'Everything about profile',
-      externalDocs: {
-        description: 'Find out more',
-        url: 'http://swagger.io'
-      }
+      name: 'Profile',
+      description: 'User profile'
+      // externalDocs: {
+      //   description: 'Find out more',
+      //   url: 'http://swagger.io'
+      // }
     },
     {
-      name: 'chart',
-      description: 'Everything about charts',
-      externalDocs: {
-        description: 'Find out more',
-        url: 'http://swagger.io'
-      }
+      name: 'Chart',
+      description: 'Trending tracks artists and albums'
+      // externalDocs: {
+      //   description: 'Find out more',
+      //   url: 'http://swagger.io'
+      // }
     },
     {
-      name: 'home',
-      description: 'Everything about Home feed',
-      externalDocs: {
-        description: 'Find out more',
-        url: 'http://swagger.io'
-      }
+      name: 'Home',
+      description: 'Home posts, shares, likes etc.'
+      // externalDocs: {
+      //   description: 'Find out more',
+      //   url: 'http://swagger.io'
+      // }
+    },
+    {
+      name: 'User Media',
+      description: 'Playlists, top songs/artists, saved songs/artists etc.'
+      // externalDocs: {
+      //   description: 'Find out more',
+      //   url: 'http://swagger.io'
+      // }
     },
     {
       name: 'admin',
