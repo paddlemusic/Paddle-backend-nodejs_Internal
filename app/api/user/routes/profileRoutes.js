@@ -168,7 +168,7 @@ router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUse
  * /user/edit_details:
  *   put:
  *     tags :
- *      - user
+ *      - Profile
  *     summary: To Edit User Details.
  *     description: >
  *      This resource will be used for an individual to update its details in context of profile.

@@ -13,7 +13,7 @@ const authenticate = require('../../../middleware/authenticate')
  * /signup:
  *   post:
  *     tags :
- *     - user
+ *     - User
  *     summary: For Normal Signup.
  *     description: >
  *      This resource will be used for individual normal signup in the system.
@@ -59,7 +59,7 @@ router.post('/signup', userController.signup)
  * /verify_otp:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: To verify The Otp Recieved.
  *     description: >
  *      This resource will be used for individual to verify the otp recieved on registerd email.
@@ -87,7 +87,7 @@ router.post('/changeEmail', auth.verifyToken, userController.changeEmailAddress)
  * /login:
  *   post:
  *     tags:
- *      - user
+ *      - User
  *     summary: For Login.
  *     description: >
  *      This resource will be used for individual login in the system.
@@ -113,7 +113,7 @@ router.post('/login', userController.login)
  * /follow/{user_id}:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: For following users.
  *     description: >
  *      This resource will be used for following other users.
@@ -137,7 +137,7 @@ router.post('/follow/:user_id', auth.verifyToken, userController.follow)
  * /unfollow/{user_id}:
  *   delete:
  *     tags :
- *      - user
+ *      - User
  *     summary: For unfollowing users.
  *     description: >
  *      This resource will be used for unfollowing other users.
@@ -161,7 +161,7 @@ router.delete('/unfollow/:user_id', auth.verifyToken, userController.unfollow)
  * /user/following:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: For fetching the list of users you are following.
  *     description: >
  *      This resource will be used for fetching the list of users you are following.
@@ -182,7 +182,7 @@ router.get('/following', auth.verifyToken, userController.getFollowing)
  * /forgotPassword:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: Forgot Password OTP Generation.
  *     description: >
  *      This resource will be used for individual to send OTP to registered email for new password generation.
@@ -202,7 +202,7 @@ router.post('/forgotPassword', userController.forgotPassword)
  * /resetPassword:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: To Reset Forgotten Password.
  *     description: >
  *      This resource will be used for individual to regenerate password via otp verification.
@@ -228,7 +228,7 @@ router.post('/resetPassword', userController.resetPassword)
  * /user/followers:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: For fetching the list of followers.
  *     description: >
  *      This resource will be used for fetching the list of followers.
@@ -249,7 +249,7 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
  * /resend_Otp:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: Resend OTP Verification.
  *     description: >
  *      This resource will be used for individual to send OTP again to the registered email if not recieved .
@@ -270,7 +270,7 @@ router.post('/resend_Otp', userController.resendOtp)
  * /auth/facebook/token:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: For Signup with Facebook.
  *     description: >
  *      This resource will be used for individual signup with Facebook in the system.
@@ -294,7 +294,7 @@ router.get('/auth/facebook/token', authenticate.facebookSignIn, userController.s
  * /auth/google/token:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: For Signup with Google.
  *     consumes:
  *        - application/json
@@ -322,7 +322,7 @@ router.post('/auth/google/token', authenticate.googleSignIn, userController.soci
  * /changePassword:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: Reset password.
  *     consumes:
  *        - application/json
@@ -363,7 +363,7 @@ router.post('/changePassword', authenticate.verifyToken, userController.changePa
  * /user/university:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: Get list of universities.
  *     produces:
  *       - application/json
@@ -381,7 +381,7 @@ router.get('/university', userController.getUniversity)
  * /user/countries:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: Get list of country code.
  *     produces:
  *       - application/json
@@ -399,7 +399,7 @@ router.get('/countries', userController.getCountryCallingCode)
  * /user/isUsernameAvailable:
  *   get:
  *     tags :
- *      - user
+ *      - User
  *     summary: Check if username is available or not.
  *     produces:
  *       - application/json
@@ -420,7 +420,7 @@ router.get('/rateApp', auth.verifyToken, userController.getRateApp)
  * /logout:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: LOGOUT.
  *     description: >
  *      This resource will be used to logout users by destroying device token.
@@ -444,7 +444,7 @@ router.post('/logout', auth.verifyToken, userController.logout)
  * /user/submitStats:
  *   post:
  *     tags :
- *      - user
+ *      - User
  *     summary: To store user data
  *     description: >
  *      This resource will be used for storing user data
