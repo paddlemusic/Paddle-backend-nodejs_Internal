@@ -33,14 +33,16 @@ class UserService {
     return new Promise((resolve, reject) => {
       User.findAndCountAll({
         where: {
-          role: 1,
-          name: {
-            [Op.iLike]: '%' + name + '%'
-          }
+          role: 1
+          // name: {
+          //   [Op.iLike]: '%' + name + '%'
+          // }
         },
         limit: pagination.limit,
         offset: pagination.offset,
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
+        // group: ['id'],
+        order: [['id', 'ASC']],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
@@ -79,6 +81,16 @@ class UserService {
     })
   }
 
+  editDetails (params, adminId) {
+    return new Promise((resolve, reject) => {
+      console.log(params)
+      const userAttribute = ['name', 'phone_number', 'profile_picture']
+      User.update(params, { where: { id: adminId, role: 2 }, raw: true, attributes: userAttribute })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   getSharesPerUniversity (mediaId, universityId) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
@@ -99,22 +111,73 @@ class UserService {
     })
   }
 
-/*  getTotalMonthlyShares (mediaId, month) {
+  getLikesPerUniversity (mediaId, universityId) {
     // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        where: { media_id: mediaId, media_type: 1 },
+        // attributes: [Sequelize.literal('"User_Post"."id"')],
+        attributes: [Sequelize.fn('sum', Sequelize.col('"User_Post"."like_count"'))],
+        // attributes: [Sequelize.literal([Sequelize.fn('sum', Sequelize.col('User_Post.id'))])],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          where: { university_code: universityId },
+          attributes: []
+          // as: 'post'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTotalMonthlyShares (mediaId, month) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
-        where: {
-          [Op.and]: [
-            Sequelize.where(Sequelize.fn('MONTH', Sequelize.cast(Sequelize.col('created_at'), 'integer')), month),
-            { media_id: mediaId, media_type: 1 }
+        /*    attributes: {
+          include: [
+            [Sequelize.fn('sum', Sequelize.col('like_count'))]
           ]
-        },
-        // attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
-        // "media_image","media_name","meta_data","media_id","caption"`)],
+        }, */
+        where: { media_id: mediaId, media_type: 1 },
+        //    [Op.and]: [
+        // console.log('fffff'),
+        //     Sequelize.where([Sequelize.fn('extract(month)', Sequelize.col('created_at'))], month),
+        //    { media_id: mediaId, media_type: 1 },
+        //  ]
+        // }
+        group: ['created_at', 'id'],
+        order: [['created_at', 'DESC']],
+        limit: 1,
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
-  } */
+  }
+
+  getUniversityMonthlyShares (mediaId, universityId) {
+    // console.log('ffffffffffff', follwersId, sharedWith)
+    return new Promise((resolve, reject) => {
+      UserPost.findAndCountAll({
+        where: { media_id: mediaId, media_type: 1 },
+        group: ['User_post"."created_at"', '"User_Post"."id"'],
+        order: [['"User_post"."created_at"', 'DESC']],
+        limit: 1,
+        // attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        // "media_image","media_name","meta_data","media_id","caption"`)],
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          where: { university_code: universityId },
+          attributes: []
+          // as: 'post'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 module.exports = UserService

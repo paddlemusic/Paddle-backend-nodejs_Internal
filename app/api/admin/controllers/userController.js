@@ -66,7 +66,7 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       console.log(req.decoded.id)
-      const myProfile = await commonService.findOne(User, { id: req.decoded.id }, ['name', 'username', 'biography', 'phone_number', 'date_of_birth'])
+      const myProfile = await commonService.findOne(User, { id: req.decoded.id }, ['name', 'phone_number', 'profile_picture'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)
@@ -161,7 +161,24 @@ class UserController {
     })
   }
 
-  async forgotPassword (req, res) {
+  async editAdminDetails (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.editDetails.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+
+      const updatedResult = await userService.editDetails(req.body, req.decoded.id)
+      console.log('updated result', updatedResult)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  /* async forgotPassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       // const userExist = await userService.forgotPassword(req.body)
@@ -226,7 +243,7 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
-  }
+  } */
 }
 
 module.exports = UserController

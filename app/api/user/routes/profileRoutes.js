@@ -754,6 +754,34 @@ router.get('/getProfile/:userId', authenticate.verifyToken, profileController.ge
 
 router.get('/getAccountDetails', authenticate.verifyToken, profileController.getAccountDetails)
 
+/**
+ * @swagger
+ *
+ * /upload:
+ *   post:
+ *     tags :
+ *      - profile
+ *     summary: To upload an image.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - multipart/form-data
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: formData
+ *        name: image
+ *        schema:
+ *        type: file
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: upload image to Amazon S3 bucket .
+ */
+
 router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
 
 /**
