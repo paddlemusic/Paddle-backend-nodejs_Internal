@@ -45,6 +45,10 @@ const schema = {
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),
     feedback: Joi.string().max(300).trim()
+  }),
+  topMediaCount: Joi.object().keys({
+    media_type: Joi.number().min(1).max(2).required(), // /^(1|2)/
+    count: Joi.number().min(0).max(10).required() // /^(0|3|5|10)/
   })
 }
 

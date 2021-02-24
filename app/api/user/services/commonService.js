@@ -15,7 +15,7 @@ class CommonService {
       table.update(params, { where: condition, returning: returning })
         .then(result => resolve(result))
         .catch(err => {
-          if (err.original.code === '23505' || err.original.code === 23505) {
+          if (err.original && (err.original.code === '23505' || err.original.code === 23505)) {
             if (err.errors[0].path === 'email') {
               reject(new CustomError('Email address is already registered.'))
             }

@@ -1009,4 +1009,40 @@ router.get('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, p
  */
 router.delete('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, profileController.deleteUserMedia)
 
+/**
+ * @swagger
+ *
+ * /profile/userMedia/{media_type}/{count}:
+ *   post:
+ *     tags :
+ *      - profile
+ *     summary: Set/update Top artitst/tracks
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: count
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: count in range of 0, 3, 5, 10.
+ *     responses:
+ *          default:
+ *              description: Set/update Top artitst/tracks
+ */
+router.post('/userMedia/:media_type/:count', authenticate.verifyToken, profileController.updateTopMediaCount)
+
 module.exports = router

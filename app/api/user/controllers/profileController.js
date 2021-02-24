@@ -506,6 +506,30 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async updateTopMediaCount (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await profileSchema.topMediaCount.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST,
+          validationResult.error.details[0].message)
+        return
+      }
+      const params = {}
+      if (validationResult.media_type === 1) {
+        params.top_tracks_count = validationResult.count
+      } else {
+        params.top_artist_count = validationResult.count
+      }
+      commonService.update(User, params, { id: req.decoded.id }, false)
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 
 module.exports = ProfileController
