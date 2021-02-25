@@ -232,6 +232,9 @@ class UserController {
         await commonService.update(User,
           { password: passwordHash, verification_token: null },
           { email: verificationToken.email })
+        return util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, {})
+      } else {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.tokenExpired)
       }
 
       // userExist.dataValues.token = resetPasswordToken
@@ -240,7 +243,6 @@ class UserController {
       // delete userExist.dataValues.device_token
       // delete userExist.dataValues.verification_token
       // delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
