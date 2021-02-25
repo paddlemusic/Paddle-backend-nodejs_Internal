@@ -133,7 +133,7 @@ class HomePageController {
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.userShare.validateAsync(req.body)
+      const validationResult = await schema.userPost.validateAsync(req.body)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return

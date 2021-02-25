@@ -83,7 +83,6 @@ router.post('/changeEmail', auth.verifyToken, userController.changeEmailAddress)
 
 /**
  * @swagger
- *
  * /login:
  *   post:
  *     tags:

@@ -146,4 +146,49 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
 
 router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
 
+/**
+ * @swagger
+ *
+ * /userShare/{type}:
+ *   post:
+ *     tags :
+ *      - Home
+ *     summary: This resource will be used to create post from end user as a SHARE TO ALL post OR as SHARE TO FRIEND post.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  media_id:
+ *                      type: string
+ *                      required: true
+ *                  caption:
+ *                      type: string
+ *                  media_image:
+ *                      type: string
+ *                      required: false
+ *                  meta_data:
+ *                      type: string
+ *                      required: false
+ *                  shared_with:
+ *                      type: string
+ *                      required: true
+ *     responses:
+ *          default:
+ *              description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ */
+router.post('/userShare/:media_type', authenticate.verifyToken, homePageController.userShare)
 module.exports = router

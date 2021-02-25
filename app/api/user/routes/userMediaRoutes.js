@@ -9,7 +9,7 @@ const authenticate = require('../../../middleware/authenticate')
 /**
  * @swagger
  *
- * /userMedia/playlist/create:
+ * /playlist/create:
  *   post:
  *     tags :
  *      - User Media
@@ -43,7 +43,7 @@ router.post('/playlist/create', authenticate.verifyToken, userMediaController.cr
 /**
  * @swagger
  *
- * /userMedia/playlist/update/{playlist_id}:
+ * /playlist/update/{playlist_id}:
  *   put:
  *     tags :
  *      - User Media
@@ -81,7 +81,7 @@ router.put('/playlist/update/:playlist_id', authenticate.verifyToken, userMediaC
 /**
  * @swagger
  *
- * /userMedia/playlist/delete/{playlist_id}:
+ * /playlist/delete/{playlist_id}:
  *   delete:
  *     tags :
  *      - User Media
@@ -109,7 +109,7 @@ router.delete('/playlist/delete/:playlist_id', authenticate.verifyToken, userMed
 /**
  * @swagger
  *
- * /userMedia/playlist:
+ * /playlist:
  *   get:
  *     tags :
  *      - User Media
@@ -133,7 +133,7 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
 /**
  * @swagger
  *
- * /userMedia/playlist/{playlist_id}/addTracks:
+ * /playlist/{playlist_id}/addTracks:
  *   put:
  *     tags :
  *      - User Media
@@ -281,7 +281,7 @@ router.put('/playlist/:playlist_id/addTracks', authenticate.verifyToken, userMed
 /**
  * @swagger
  *
- * /userMedia/playlist/{playlist_id}/deleteTracks:
+ * /playlist/{playlist_id}/deleteTracks:
  *   delete:
  *     tags :
  *      - User Media
@@ -347,7 +347,7 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, u
 /**
  * @swagger
  *
- * /userMedia/playlist/{playlist_id}/tracks:
+ * /playlist/{playlist_id}/tracks:
  *   get:
  *     tags :
  *      - User Media
@@ -451,7 +451,7 @@ router.get('/playlist/:playlist_id/tracks', authenticate.verifyToken, userMediaC
 /**
  * @swagger
  *
- * /userMedia/getRecentPosts:
+ * /getRecentPosts:
  *   get:
  *     tags :
  *      - User Media
@@ -733,7 +733,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
 /**
  * @swagger
  *
- * /userMedia/{usermedia_type}/{media_type}:
+ * /{usermedia_type}/{media_type}:
  *   put:
  *     tags :
  *      - User Media
@@ -805,12 +805,12 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *          default:
  *              description: Add tracks/artist to Top and Saved Songs/Artist
  */
-router.put('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.createUserMedia)
+router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.createUserMedia)
 
 /**
  * @swagger
  *
- * /userMedia/{usermedia_type}/{media_type}:
+ * /{usermedia_type}/{media_type}:
  *   get:
  *     tags :
  *      - User Media
@@ -841,12 +841,12 @@ router.put('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, u
  *          default:
  *              description: Get tracks/artist to Top and Saved Songs/Artist
  */
-router.get('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.getUserMedia)
+router.get('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.getUserMedia)
 
 /**
  * @swagger
  *
- * /userMedia/{usermedia_type}/{media_type}:
+ * /{usermedia_type}/{media_type}:
  *   delete:
  *     tags :
  *      - User Media
@@ -890,12 +890,12 @@ router.get('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, u
  *          default:
  *              description: Delete tracks/artist to Top and Saved Songs/Artist
  */
-router.delete('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.deleteUserMedia)
+router.delete('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.deleteUserMedia)
 
 /**
  * @swagger
  *
- * /userMedia/{media_type}/{count}:
+ * /{media_type}/{count}:
  *   post:
  *     tags :
  *      - User Media
@@ -926,15 +926,15 @@ router.delete('/userMedia/:usermedia_type/:media_type', authenticate.verifyToken
  *          default:
  *              description: Set/update Top artitst/tracks
  */
-router.post('/userMedia/:media_type/:count', authenticate.verifyToken, userMediaController.updateTopMediaCount)
+router.post('/:media_type/:count', authenticate.verifyToken, userMediaController.updateTopMediaCount)
 
 /**
  * @swagger
  *
- * /userMedia/isSaved/{media_id}:
+ * /isSaved/{media_id}:
  *   get:
  *     tags :
- *      - home
+ *      - User Media
  *     summary: Check if media is saved or not.
  *     description: >
  *      This resource will be used Check if media is saved or not.

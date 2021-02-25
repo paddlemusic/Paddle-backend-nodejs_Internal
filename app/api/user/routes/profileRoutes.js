@@ -165,7 +165,7 @@ router.put('/checkPrivacy', authenticate.verifyToken, profileController.checkUse
 /**
  * @swagger
  *
- * /user/edit_details:
+ * /profile/edit_details:
  *   put:
  *     tags :
  *      - Profile

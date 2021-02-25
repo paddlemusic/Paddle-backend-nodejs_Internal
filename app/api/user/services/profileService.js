@@ -23,7 +23,7 @@ class ProfileService {
 
     console.log('Params is:', params)
     // return new Promise((resolve, reject) => {
-    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['id', 'name', 'username', 'profile_picture', 'is_privacy'])
+    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['id', 'name', 'username', 'profile_picture', 'is_privacy', 'biography'])
     const follwerDetails = await UserFollower.findAndCountAll({
       where: { user_id: params.user_id },
       raw: true
