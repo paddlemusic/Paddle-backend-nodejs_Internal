@@ -33,10 +33,10 @@ class UserService {
     return new Promise((resolve, reject) => {
       User.findAndCountAll({
         where: {
-          role: 1
-          // name: {
-          //   [Op.iLike]: '%' + name + '%'
-          // }
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          }
         },
         limit: pagination.limit,
         offset: pagination.offset,
@@ -49,16 +49,16 @@ class UserService {
     })
   }
 
-  resetPassword (params) {
+  /* resetPassword (params) {
     return new Promise((resolve, reject) => {
       User.update({ password: params.newPassword, resetPasswordToken: null, resetPasswordExpires: null },
         { where: { resetPasswordToken: params.getResetPasswordToken, resetPasswordExpires: { [Op.gt]: Date.now() } } })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
-  }
+  } */
 
-  sendResetLink (toEmail, name) {
+  /*  sendResetLink (toEmail, name) {
     return new Promise((resolve, reject) => {
       const str = 'Click Here'
       const result = str.link('https://www.google.com')
@@ -66,7 +66,7 @@ class UserService {
         to: 'eresh.sharma@algoworks.com',
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
-        text: `Hi ${name} \n 
+        text: `Hi ${name} \n
         ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
       }
       sgMail.send(mailOptions, (err, result) => {
@@ -79,7 +79,7 @@ class UserService {
         }
       })
     })
-  }
+  } */
 
   editDetails (params, adminId) {
     return new Promise((resolve, reject) => {
@@ -91,13 +91,10 @@ class UserService {
     })
   }
 
-  getSharesPerUniversity (mediaId, universityId) {
-    // console.log('ffffffffffff', follwersId, sharedWith)
+  getSharesPerUniversity (mediaId, universityId, mediaType) {
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
-        where: { media_id: mediaId, media_type: 1 },
-        // attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
-        // "media_image","media_name","meta_data","media_id","caption"`)],
+        where: { media_id: mediaId, media_type: mediaType },
         raw: true,
         include: [{
           model: User,
@@ -111,11 +108,10 @@ class UserService {
     })
   }
 
-  getLikesPerUniversity (mediaId, universityId) {
-    // console.log('ffffffffffff', follwersId, sharedWith)
+  getLikesPerUniversity (mediaId, universityId, mediaType) {
     return new Promise((resolve, reject) => {
       UserPost.findAll({
-        where: { media_id: mediaId, media_type: 1 },
+        where: { media_id: mediaId, media_type: mediaType },
         // attributes: [Sequelize.literal('"User_Post"."id"')],
         attributes: [Sequelize.fn('sum', Sequelize.col('"User_Post"."like_count"'))],
         // attributes: [Sequelize.literal([Sequelize.fn('sum', Sequelize.col('User_Post.id'))])],
@@ -158,15 +154,12 @@ class UserService {
   }
 
   getUniversityMonthlyShares (mediaId, universityId) {
-    // console.log('ffffffffffff', follwersId, sharedWith)
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
         where: { media_id: mediaId, media_type: 1 },
         group: ['User_post"."created_at"', '"User_Post"."id"'],
         order: [['"User_post"."created_at"', 'DESC']],
         limit: 1,
-        // attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
-        // "media_image","media_name","meta_data","media_id","caption"`)],
         raw: true,
         include: [{
           model: User,
