@@ -112,7 +112,7 @@ class UserMediaController {
           media_name: item.media_name,
           meta_data: item.meta_data,
           meta_data2: item.meta_data,
-          media_type: 1 // req.params.media_type
+          media_type: config.constants.MEDIA_TYPE.TRACK// 1 // req.params.media_type
         }
       })
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
@@ -291,7 +291,7 @@ class UserMediaController {
         return
       }
       const params = {}
-      if (validationResult.media_type === 1) {
+      if (validationResult.media_type === config.constants.MEDIA_TYPE.TRACK) {
         params.top_tracks_count = validationResult.count
       } else {
         params.top_artist_count = validationResult.count

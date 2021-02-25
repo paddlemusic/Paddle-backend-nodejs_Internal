@@ -16,7 +16,7 @@ const config = require('../../../config')
 class UserService {
   signup (params) {
     return new Promise((resolve, reject) => {
-      params.role = 1 // 1->User, 2->Admin
+      params.role = config.constants.ROLE.USER // 1->User, 2->Admin
       params.email = params.email.toLowerCase()
       console.log(params)
       User.create(params)
@@ -105,7 +105,7 @@ class UserService {
       const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
         'password', 'is_privacy', 'is_verified', 'is_active', 'top_tracks_count', 'top_artist_count', 'created_at', 'updated_at']
       const criteria = {
-        role: 1,
+        role: config.constants.ROLE.USER,
         email: (params.email).toLowerCase()
       }
       User.findOne({ where: criteria, attributes: userAttribute })

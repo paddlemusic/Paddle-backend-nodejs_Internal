@@ -258,18 +258,23 @@ class UserController {
       }
       const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
       if (getEmail) {
-        const otpJwt = await util.getJwtFromOtp(getEmail.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: userExist.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
+        const payload = {
+          otp: getEmail.otp,
+          email: userExist.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: userExist.dataValues.id })
       }
-      const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
-      const token = await util.generateJwtToken(payload)
-      userExist.dataValues.token = token
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
+      // const token = await util.generateJwtToken(payload)
+      // userExist.dataValues.token = token
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
@@ -292,7 +297,7 @@ class UserController {
           username: req.user.id,
           social_user_id: req.user.id,
           email: req.user.emails[0].value || req.user.email,
-          role: '1'
+          role: config.constants.ROLE.USER
         }
         userExistData = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
         console.log('isUserExist:', userExistData)
@@ -306,7 +311,7 @@ class UserController {
             id: userExistData.id,
             username: userExistData.username,
             universityId: userExistData.university_code,
-            role: 1,
+            role: config.constants.ROLE.USER,
             isActive: userExistData.is_active,
             isVerified: userExistData.is_verified
           }
@@ -330,7 +335,7 @@ class UserController {
                 id: socialData.id,
                 username: socialData.username,
                 universityId: socialData.university_code,
-                role: 1,
+                role: config.constants.ROLE.USER,
                 isActive: socialData.is_active,
                 isVerified: socialData.is_verified
               }
