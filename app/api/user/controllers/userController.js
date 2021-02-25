@@ -31,14 +31,19 @@ class UserController {
       await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
       const otp = await util.sendEmail(signupData.dataValues.email, signupData.dataValues.name)
       if (otp) {
-        const otpJwt = await util.getJwtFromOtp(otp.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(otp.otp)
+        const payload = {
+          otp: otp.otp,
+          email: signupData.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: signupData.dataValues.id })
       }
       const payload = {
         id: signupData.dataValues.id,
         username: signupData.dataValues.username,
         universityId: signupData.dataValues.university_code,
-        role: 1,
+        role: config.constants.ROLE.USER, // 1,
         isActive: signupData.dataValues.is_active,
         isVerified: signupData.dataValues.is_verified
       }
@@ -70,8 +75,14 @@ class UserController {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
         return
       }
-      const otp = await util.getOtpFromJwt(verificationToken.verification_token)
-      if (otp.otp === req.body.otp) {
+      const token = await util.getOtpFromJwt(verificationToken.verification_token)
+      if (token.otp === req.body.otp && token.email === req.body.email) {
+        const payload = {
+          email: token.email,
+          isOTPVerified: true
+        }
+        const verificationToken = await util.getJwtForResetPassword(payload)
+        req.body.verification_token = verificationToken
         await userService.verifyUser(req.body)
         util.successResponse(res, config.constants.SUCCESS, langMsg.userVerified, {})
       } else {
@@ -99,8 +110,13 @@ class UserController {
       await commonService.update(User, validationResult, { id: req.decoded.id })
       const sendEmail = await util.sendEmail(validationResult.email, verificationStatus.name)
       if (sendEmail) {
-        const otpJwt = await util.getJwtFromOtp(sendEmail.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: req.decoded.id })
+        // const otpJwt = await util.getJwtFromOtp(sendEmail.otp)
+        const payload = {
+          otp: sendEmail.otp,
+          email: validationResult.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: req.decoded.id })
       }
       util.successResponse(res, config.constants.SUCCESS,
         langMsg.success, {})
@@ -134,7 +150,7 @@ class UserController {
             id: loginResponse.dataValues.id,
             username: loginResponse.dataValues.username,
             universityId: loginResponse.dataValues.university_code,
-            role: 1,
+            role: config.constants.ROLE.USER, // 1,
             isActive: loginResponse.dataValues.is_active,
             isVerified: loginResponse.dataValues.is_verified
           }
@@ -164,19 +180,28 @@ class UserController {
       }
       const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
       if (getEmail) {
-        const otpJwt = await util.getJwtFromOtp(getEmail.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: userExist.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
+        const payload = {
+          otp: getEmail.otp,
+          email: userExist.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: userExist.dataValues.id })
       }
-      await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
-      const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
-      const token = await util.generateJwtToken(payload)
-      userExist.dataValues.token = token
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      // await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
+
+      // We do not need to send token in forget password response.
+
+      // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
+      // const token = await util.generateJwtToken(payload)
+      // userExist.dataValues.token = token
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+      // util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
@@ -192,23 +217,30 @@ class UserController {
       req.body.password = passwordHash
       const userExist = await userService.forgotPassword(req.body)
       if (!userExist) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const resetPasswordToken = await util.generatePasswordReset()
-      await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
-      const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
-      console.log('resetpasswordtakendetails', getResetPasswordToken)
-      const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
-      if (!resetPassword) {
-        util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      // const resetPasswordToken = await util.generatePasswordReset()
+      // await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
+      // const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
+      // console.log('resetpasswordtakendetails', getResetPasswordToken)
+      // const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
+      // if (!resetPassword) {
+      //   util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      // }
+      const verificationToken = await util.getOtpFromJwt(userExist.dataValues.verification_token)
+      if (verificationToken.email === userExist.dataValues.email && verificationToken.isOTPVerified) {
+        await commonService.update(User,
+          { password: passwordHash, verification_token: null },
+          { email: verificationToken.email })
       }
-      userExist.dataValues.token = resetPasswordToken
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, userExist.dataValues)
+
+      // userExist.dataValues.token = resetPasswordToken
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {

@@ -162,6 +162,25 @@ function generatePasswordReset () {
   })
 }
 
+function generateVerificationToken (payload) {
+  return new Promise((resolve, reject) => {
+    const secret = config.JWT.secret
+    // const data = {
+    //   verificationType: payload.verificationType,
+    //   isOTPVerified: payload.isOTPVerified
+    // }
+    jwt.sign(payload, secret, { expiresIn: '300s' }, (err, token) => {
+      if (err) {
+        console.log(err)
+        reject(err)
+      } else {
+        console.log(token)
+        resolve(token)
+      }
+    })
+  })
+}
+
 module.exports = {
   successResponse,
   failureResponse,
@@ -172,5 +191,6 @@ module.exports = {
   encryptPassword,
   comparePassword,
   generatePasswordReset,
-  sendEmail
+  sendEmail,
+  generateVerificationToken
 }

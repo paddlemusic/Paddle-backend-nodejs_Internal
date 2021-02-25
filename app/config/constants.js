@@ -16,5 +16,18 @@ module.exports = {
     ENCRYPTION_SECRET: 'whatever_for_now',
     CLIENT_CALLBACK_URL: 'com-paddle-spotify://spotify-login-callback',
     URI: 'accounts.spotify.com'
+  },
+  ROLE: {
+    USER: 1,
+    ADMIN: 2
+  },
+  MEDIA_TYPE: {
+    TRACK: 1,
+    ARTIST: 2,
+    ALBUM: 3
+  },
+  USER_MEDIA_TYPE: {
+    TOP_TRACKS_ARTISTS: 1,
+    SAVED_TRACKS_ARTIST: 2
   }
 }

@@ -11,6 +11,7 @@ const moment = require('moment')
 const sequelize = require('../../../models')
 // const UserStats = require('../../../models/userStats')
 const CustomError = require('../../../utils/customError')
+const config = require('../../../config')
 
 class UserService {
   signup (params) {
@@ -92,7 +93,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       const query = {}
       query.is_verified = true
-      query.verification_token = null
+      query.verification_token = params.verification_token
       User.update(query, { where: { email: params.email } })
         .then(result => resolve(result))
         .catch(err => reject(err))
@@ -148,7 +149,7 @@ class UserService {
   forgotPassword (params) {
     return new Promise((resolve, reject) => {
       const criteria = {
-        role: 1,
+        role: config.constants.ROLE.USER,
         email: params.email
       }
       User.findOne({ where: criteria })
