@@ -22,7 +22,7 @@ class UserService {
       User.create(params)
         .then(result => resolve(result))
         .catch(err => {
-          if (err.original.code === '23505' || err.original.code === 23505) {
+          if (err.original && (err.original.code === '23505' || err.original.code === 23505)) {
             switch (err.errors[0].path) {
               case 'phone_number':
                 reject(new CustomError('Phone number is already registered.'))

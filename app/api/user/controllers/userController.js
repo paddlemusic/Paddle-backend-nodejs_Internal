@@ -81,7 +81,7 @@ class UserController {
           email: token.email,
           isOTPVerified: true
         }
-        const verificationToken = await util.getJwtForResetPassword(payload)
+        const verificationToken = await util.generateVerificationToken(payload)// util.getJwtForResetPassword(payload)
         req.body.verification_token = verificationToken
         await userService.verifyUser(req.body)
         util.successResponse(res, config.constants.SUCCESS, langMsg.userVerified, {})
@@ -176,7 +176,7 @@ class UserController {
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await userService.forgotPassword(req.body)
       if (!userExist) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
       const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
       if (getEmail) {

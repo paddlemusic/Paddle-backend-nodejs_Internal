@@ -148,6 +148,7 @@ class UserController {
       const data = await commonService.findOne(User, { id: req.decoded.id }, ['password'])
       console.log('OLd pwd is:', data.old_password)
       const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
+      console.log('isPasswordMatched', isPasswordMatched)
       if (isPasswordMatched) {
         const passwordHash = await util.encryptPassword(req.body.new_password)
         const updateResult = await commonService.update(User, { password: passwordHash }, { id: req.decoded.id })

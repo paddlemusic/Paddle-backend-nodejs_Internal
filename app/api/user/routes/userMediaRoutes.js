@@ -810,7 +810,7 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
 /**
  * @swagger
  *
- * /{usermedia_type}/{media_type}:
+ * /get/{usermedia_type}/{media_type}:
  *   get:
  *     tags :
  *      - User Media
@@ -841,7 +841,7 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
  *          default:
  *              description: Get tracks/artist to Top and Saved Songs/Artist
  */
-router.get('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.getUserMedia)
+router.get('/get/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.getUserMedia)
 
 /**
  * @swagger
