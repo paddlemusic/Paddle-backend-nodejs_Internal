@@ -29,5 +29,6 @@ module.exports = {
   USER_MEDIA_TYPE: {
     TOP_TRACKS_ARTISTS: 1,
     SAVED_TRACKS_ARTIST: 2
-  }
+  },
+  PASSCODE: 'KEYTOPADDLE'
 }
