@@ -13,7 +13,7 @@ const commonService = new CommonService()
 const userService = new UserService()
 
 class AnalyticsController {
-  async getStreamsTotally (req, res) {
+  async getsharesTotally (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let streamCount
     console.log(req.query)
@@ -82,7 +82,7 @@ class AnalyticsController {
     }
   }
 
-  async getStreamsMonthly (req, res) {
+  async getSharesMonthly (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let streamCount
 
@@ -97,10 +97,10 @@ class AnalyticsController {
         console.log('unviersity wise', streamCount)
       } else {
         console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwww', req.query)
-        streamCount = await userService.getTotalMonthlyShares(req.query.media_id, req.query.month)
+        streamCount = await userService.getTotalMonthlyShares(req.query.media_id, req.query.media_type, req.query.month)
         console.log('Whole wise', streamCount)
       }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount.rows[0].like_count)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

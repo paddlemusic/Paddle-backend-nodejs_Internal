@@ -51,11 +51,11 @@ router.get('/getUniversities', universityController.getUniversity)
  *        name: city
  *        schema:
  *        type: string
- *        required: true
+ *        required: false
  *     produces:
  *       - application/json
  */
-router.post('admin/university/addUniversity', universityController.addUniversity)
+router.post('/addUniversity', universityController.addUniversity)
 
 /**
  * @swagger

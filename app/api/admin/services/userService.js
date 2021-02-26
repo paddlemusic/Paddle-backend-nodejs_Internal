@@ -128,25 +128,34 @@ class UserService {
     })
   }
 
-  getTotalMonthlyShares (mediaId, month) {
+  getTotalMonthlyShares (mediaId, mediaType, month) {
     // console.log('ffffffffffff')
     return new Promise((resolve, reject) => {
-      UserPost.findAndCountAll({
+      UserPost.findAll({
+        // attributes: [Sequelize.fn('sum', Sequelize.col('"User_Post"."id"'))],
         /*    attributes: {
           include: [
             [Sequelize.fn('sum', Sequelize.col('like_count'))]
           ]
         }, */
-        where: { media_id: mediaId, media_type: 1 },
-        //    [Op.and]: [
+        // where: ([Sequelize.fn('extract(month)', Sequelize.col('created_at'))], month),
+        // where: { media_id: mediaId, media_type: mediaType },
+        where: {
+          [Op.and]: [
+
+            // Sequelize.where([Sequelize.fn('extract', ['MONTH', 'FROM'], Sequelize.col('created_at'))], month),
+            { media_id: mediaId, media_type: mediaType }
+          ]
+        },
+        // [Op.and]: [
         // console.log('fffff'),
-        //     Sequelize.where([Sequelize.fn('extract(month)', Sequelize.col('created_at'))], month),
-        //    { media_id: mediaId, media_type: 1 },
-        //  ]
-        // }
-        group: ['created_at', 'id'],
-        order: [['created_at', 'DESC']],
-        limit: 1,
+        // equelize.where([SequeSlize.fn('extract(month)', Sequelize.col('created_at'))], month)
+        // Sequelize.where(media_id:mediaId),
+        // { media_id: mediaId, media_type: mediaType }
+        // ],
+        // group: ['created_at', 'id'],
+        // order: [['created_at', 'DESC']],
+        // limit: 2,
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))

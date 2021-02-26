@@ -6,6 +6,7 @@ class ProfileService {
         limit: pagination.limit,
         offset: pagination.offset,
         attributes: ['id', 'name', 'city', 'created_at', 'updated_at'],
+        order: [['id', 'ASC']],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))

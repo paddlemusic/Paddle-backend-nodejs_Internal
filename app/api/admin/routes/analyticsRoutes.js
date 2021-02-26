@@ -6,13 +6,13 @@ const analyticsController = new AnalyticsController()
 /**
  * @swagger
  *
- * /getTotalStreams:
+ * /getTotalShares:
  *   get:
  *     tags :
  *      - admin-analytics
- *     summary: Get Total Streams For Media( all over /Via university).
+ *     summary: Get Total Shares For Media( all over /Via university).
  *     description: >
- *      This resource will be used to get streams count for album,artist,song for admin panel .
+ *      This resource will be used to get share count for album,artist,song for admin panel .
  *     parameters:
  *      - in: query
  *        name: media_id
@@ -34,7 +34,7 @@ const analyticsController = new AnalyticsController()
  *     produces:
  *       - application/json
  */
-router.get('/getTotalStreams', analyticsController.getStreamsTotally)
+router.get('/getTotalShares', analyticsController.getsharesTotally)
 
 /**
  * @swagger
@@ -90,5 +90,5 @@ router.get('/getTotalLikes', analyticsController.getLikesTotally)
  *       - application/json
  */
 router.get('/getTotalSignups', analyticsController.getAppSignups)
-router.get('/getMonthlyStreams', analyticsController.getStreamsMonthly)
+router.get('/getMonthlyShares', analyticsController.getSharesMonthly)
 module.exports = router
