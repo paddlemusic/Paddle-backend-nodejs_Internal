@@ -1,5 +1,6 @@
 const CommonService = require('../services/commonService')
 const ProfileService = require('../services/profileService')
+
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const University = require('../../../models/university')
@@ -35,6 +36,20 @@ class UniversityController {
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async universitySearch (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userName = req.query.name
+
+      const userList = await profileService.searchUniversity(userName, pagination)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
+    } catch (err) {
+      console.log('err is:', err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
