@@ -1,5 +1,6 @@
 const CommonService = require('../services/commonService')
 const ProfileService = require('../services/profileService')
+
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const University = require('../../../models/university')
@@ -39,6 +40,20 @@ class UniversityController {
     }
   }
 
+  async universitySearch (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userName = req.query.name
+
+      const userList = await profileService.searchUniversity(userName, pagination)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
+    } catch (err) {
+      console.log('err is:', err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async deleteUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -55,6 +70,23 @@ class UniversityController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  /* async getUniversityDetail (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.viewUserProfile.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      // console.log(req.params.id)
+      const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  } */
 }
 
 module.exports = UniversityController

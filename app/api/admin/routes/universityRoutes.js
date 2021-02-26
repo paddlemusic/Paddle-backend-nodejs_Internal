@@ -51,11 +51,11 @@ router.get('/getUniversities', universityController.getUniversity)
  *        name: city
  *        schema:
  *        type: string
- *        required: true
+ *        required: false
  *     produces:
  *       - application/json
  */
-router.post('admin/university/addUniversity', universityController.addUniversity)
+router.post('/addUniversity', universityController.addUniversity)
 
 /**
  * @swagger
@@ -77,4 +77,35 @@ router.post('admin/university/addUniversity', universityController.addUniversity
  *       - application/json
  */
 router.delete('/deleteUniversity/:id', universityController.deleteUniversity)
+
+/**
+ * @swagger
+ *
+ * /universitySearch:
+ *   get:
+ *     tags :
+ *      - admin-university
+ *     summary: T0 search university through name.
+ *     description: >
+ *      This resource will be used to search university on the basis of name in search bar .
+ *     parameters:
+ *      - in: query
+ *        name: name
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.get('/universitySearch', universityController.universitySearch)
 module.exports = router
