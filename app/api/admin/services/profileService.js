@@ -5,7 +5,7 @@ const Op = Sequelize.Op
 class ProfileService {
   getUniversities (pagination) {
     return new Promise((resolve, reject) => {
-      University.findAll({
+      University.findAndCountAll({
         limit: pagination.limit,
         offset: pagination.offset,
         attributes: ['id', 'name', 'city', 'created_at', 'updated_at'],
