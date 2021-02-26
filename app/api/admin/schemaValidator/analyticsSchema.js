@@ -5,7 +5,11 @@ const Joi = require('@hapi/joi')
 const schema = {
   getStream: Joi.object().keys({
     media_id: Joi.string().required(),
-    university_id: Joi.number().required()
+    university_id: Joi.number().required(),
+    media_type: Joi.number().required()
+  }),
+  getSignups: Joi.object().keys({
+    university_code: Joi.number().required()
   }),
   getStreamMonthly: Joi.object().keys({
     media_id: Joi.string().required(),
