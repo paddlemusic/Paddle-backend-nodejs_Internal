@@ -22,17 +22,17 @@ class ChartController {
 
       const param = []
       if (validationResult.track) {
-        validationResult.track.university_id = university?.university_code || null
+        validationResult.track.university_id = university ? university.university_code : null
         validationResult.track.date = date
         param.push(validationResult.track)
       }
       if (validationResult.artist) {
-        validationResult.artist.university_id = university?.university_code || null
+        validationResult.artist.university_id = university ? university.university_code : null
         validationResult.artist.date = date
         param.push(validationResult.artist)
       }
       if (validationResult.album) {
-        validationResult.album.university_id = university?.university_code || null
+        validationResult.album.university_id = university ? university.university_code : null
         validationResult.album.date = date
         param.push(validationResult.album)
       }
