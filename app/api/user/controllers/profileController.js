@@ -40,7 +40,7 @@ class ProfileController {
       const body = {
         user_id: userId // (5)
       }
-      if (req.decoded.id /* 1 */ === userId) {
+      if (req.decoded.id /* 1 */ === Number(userId)) {
         profileData = await profileService.getProfile(body)
       } else {
         const userDetail = await commonService.findOne(User, { id: body.user_id }, ['is_privacy'])
