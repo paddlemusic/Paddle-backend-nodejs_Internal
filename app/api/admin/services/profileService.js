@@ -3,9 +3,14 @@ const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
 class ProfileService {
-  getUniversities (pagination) {
+  getUniversities (name, pagination) {
     return new Promise((resolve, reject) => {
       University.findAndCountAll({
+        where: {
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          }
+        },
         limit: pagination.limit,
         offset: pagination.offset,
         attributes: ['id', 'name', 'city', 'created_at', 'updated_at'],
