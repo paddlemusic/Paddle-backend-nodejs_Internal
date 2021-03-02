@@ -29,6 +29,7 @@ module.exports = {
     failed: 'Error occured.',
     changePassowrd: 'Password change successfully',
     incorrectPassword: 'Password not correct',
+    invalidPasscode: 'Signup failed! Passcode did not match.',
     trackAdded: 'Track added successfully',
     artistAdded: 'Artist added successfully',
     trackDeleted: 'Track deleted successfully',

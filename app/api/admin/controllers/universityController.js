@@ -31,7 +31,8 @@ class UniversityController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-      const data = await profileService.getUniversities(pagination)
+      const uniName = req.query.name
+      const data = await profileService.getUniversities(uniName, pagination)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {

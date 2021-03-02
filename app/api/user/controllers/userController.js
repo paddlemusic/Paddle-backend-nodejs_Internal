@@ -23,6 +23,9 @@ class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.signup.validateAsync(req.body).then(async () => {
+      if (req.body.passcode !== config.constants.PASSCODE) {
+        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.invalidPasscode)
+      }
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
       const signupData = await userService.signup(req.body)
