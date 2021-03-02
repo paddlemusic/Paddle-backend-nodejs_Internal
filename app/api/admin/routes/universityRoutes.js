@@ -108,4 +108,52 @@ router.delete('/deleteUniversity/:id', universityController.deleteUniversity)
  *       - application/json
  */
 router.get('/universitySearch', universityController.universitySearch)
+
+/**
+ * @swagger
+ *
+ * /editUniversity/{id}:
+ *   post:
+ *     tags :
+ *      - admin-university
+ *     summary: For editing university details from admin panel.
+ *     description: >
+ *      This resource will be used to edit details of universities from admin panel.
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        schema:
+ *            type: integer
+ *        required: true
+ *        description: Id of the university to be edited
+ *      - in: body
+ *        name: name
+ *        schema:
+ *            type: string
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.post('/editUniversity/:id', universityController.editUniversity)
+
+/**
+ * @swagger
+ *
+ * /viewUniversity/{id}:
+ *   get:
+ *     tags :
+ *      - admin-university
+ *     summary: For Viewing university detail.
+ *     description: >
+ *      This resource will be used to get details of university from admin panel.
+ *     parameters:
+ *      - in: params
+ *        name: id
+ *        schema:
+ *            type: integer
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/viewUniversity/:id', universityController.getUniversityDetail)
 module.exports = router

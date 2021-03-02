@@ -226,50 +226,8 @@ router.post('/blockUnblock/:type', userController.blockUnblockUser)
 
 router.put('/editDetails', auth.verifyAdminToken, userController.editAdminDetails)
 
-/**
- * @swagger
- *
- * /forgotPassword:
- *   post:
- *     tags :
- *      - admin
- *     summary: Password Reset Link Generate.
- *     description: >
- *      This resource will be used by admin to send reset password link.
- *     parameters:
- *      - in: body
- *        name: email
- *        schema:
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
- */
 // router.post('/forgotPassword', userController.forgotPassword)
 
-/**
- * @swagger
- * /resetPassword:
- *   post:
- *     tags :
- *      - admin
- *     summary: To Reset Forgotten Password.
- *     description: >
- *      This resource will be used for admin to regenerate password .
- *     parameters:
- *      - in: body
- *        name: email
- *        schema:
- *        type: string
- *        required: true
- *      - in: body
- *        name: password
- *        schema:
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
- */
 // router.post('/resetPassword', userController.resetPassword)
 
 /**

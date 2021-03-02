@@ -128,47 +128,62 @@ class UserService {
     })
   }
 
-  getTotalMonthlyShares (mediaId, mediaType, month) {
+  getTotalMonthlyShares (mediaId, mediaType, startDate, endDate) {
     // console.log('ffffffffffff')
     return new Promise((resolve, reject) => {
-      UserPost.findAll({
-        // attributes: [Sequelize.fn('sum', Sequelize.col('"User_Post"."id"'))],
-        /*    attributes: {
-          include: [
-            [Sequelize.fn('sum', Sequelize.col('like_count'))]
-          ]
-        }, */
-        // where: ([Sequelize.fn('extract(month)', Sequelize.col('created_at'))], month),
-        // where: { media_id: mediaId, media_type: mediaType },
-        where: {
-          [Op.and]: [
+      UserPost.findAndCountAll({
 
-            // Sequelize.where([Sequelize.fn('extract', ['MONTH', 'FROM'], Sequelize.col('created_at'))], month),
-            { media_id: mediaId, media_type: mediaType }
-          ]
+        where: {
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_id: mediaId,
+          media_type: mediaType
+
         },
-        // [Op.and]: [
-        // console.log('fffff'),
-        // equelize.where([SequeSlize.fn('extract(month)', Sequelize.col('created_at'))], month)
-        // Sequelize.where(media_id:mediaId),
-        // { media_id: mediaId, media_type: mediaType }
-        // ],
-        // group: ['created_at', 'id'],
-        // order: [['created_at', 'DESC']],
-        // limit: 2,
+
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
 
-  getUniversityMonthlyShares (mediaId, universityId) {
+  getTotalMonthlyLikes (mediaId, mediaType, startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        where: {
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_id: mediaId,
+          media_type: mediaType
+
+        },
+        attributes: [Sequelize.fn('sum', Sequelize.col('like_count'))],
+        raw: true
+
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUniversityMonthlyShares (mediaId, universityId, mediaType, startDate, endDate) {
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
-        where: { media_id: mediaId, media_type: 1 },
-        group: ['User_post"."created_at"', '"User_Post"."id"'],
-        order: [['"User_post"."created_at"', 'DESC']],
-        limit: 1,
+        attributes: [Sequelize.literal('"User_Post"."id","user_id","university_code"')],
+
+        where: {
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_id: mediaId,
+          media_type: mediaType
+          // [Op.and]: [
+
+          // Sequelize.where([Sequelize.fn('extract', ['MONTH', 'FROM'], Sequelize.col('created_at'))], month),
+          // { media_id: mediaId, media_type: mediaType }
+          // ]
+        },
         raw: true,
         include: [{
           model: User,
@@ -177,6 +192,65 @@ class UserService {
           attributes: []
           // as: 'post'
         }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUniversityMonthlyLikes (mediaId, universityId, mediaType, startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [Sequelize.fn('sum', Sequelize.col('"User_Post"."like_count"'))],
+        // attributes: [Sequelize.fn('count', Sequelize.col('"User_Post"."id"'))],
+        where: {
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_id: mediaId,
+          media_type: mediaType
+
+        },
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          where: { university_code: universityId },
+          attributes: []
+          // as: 'post'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUniversityMonthlySignups (universityCode, startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      User.findAndCountAll({
+        where: {
+          university_code: universityCode,
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          }
+        },
+
+        attributes: ['id'],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTotalMonthlySignups (startDate, endDate) {
+    return new Promise((resolve, reject) => {
+      User.findAndCountAll({
+        where: {
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          }
+        },
+
+        attributes: ['id'],
+        raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })

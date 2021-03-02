@@ -2,6 +2,7 @@ const CommonService = require('../services/commonService')
 const UserService = require('../services/userService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
+const moment = require('moment')
 // const UniversityTrending = require('../../../models/universityTrending')
 const UserPost = require('../../../models/userPost')
 const User = require('../../../models/user')
@@ -36,6 +37,38 @@ class AnalyticsController {
     }
   }
 
+  async getSharesMonthly (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    let streamCount
+    try {
+      const validationResult = await AnalyticsSchema.getStreamMonthly.validateAsync(req.query)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      } if (req.query.university_id >= 1) {
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+        streamCount = await userService.getUniversityMonthlyShares(req.query.media_id, req.query.university_id, req.query.media_type, startDate, endDate)
+        console.log('unviersity wise', streamCount.count)
+      } else {
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+        streamCount = await userService.getTotalMonthlyShares(req.query.media_id, req.query.media_type, startDate, endDate)
+        console.log('Whole wise', streamCount.count)
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount.count)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async getLikesTotally (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let streamCount
@@ -50,6 +83,38 @@ class AnalyticsController {
         console.log('unviersity wise', streamCount)
       } else {
         streamCount = await commonService.findAll(UserPost, { media_id: req.query.media_id, media_type: req.query.media_type }, [Sequelize.fn('sum', Sequelize.col('like_count'))])
+        console.log('Whole wise', streamCount)
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getLikesMonthly (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    let streamCount
+    try {
+      const validationResult = await AnalyticsSchema.getStreamMonthly.validateAsync(req.query)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      } if (req.query.university_id >= 1) {
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+        streamCount = await userService.getUniversityMonthlyLikes(req.query.media_id, req.query.university_id, req.query.media_type, startDate, endDate)
+        console.log('unviersity wise', streamCount)
+      } else {
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+        streamCount = await userService.getTotalMonthlyLikes(req.query.media_id, req.query.media_type, startDate, endDate)
         console.log('Whole wise', streamCount)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
@@ -82,25 +147,31 @@ class AnalyticsController {
     }
   }
 
-  async getSharesMonthly (req, res) {
+  async getAppSignupsMonthly (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     let streamCount
-
-    // console.log(req.query)
+    console.log(req.query)
     try {
-      const validationResult = await AnalyticsSchema.getStreamMonthly.validateAsync(req.query)
+      const validationResult = await AnalyticsSchema.getSignupsMonthly.validateAsync(req.query)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
-      } if (req.query.university_id >= 1) {
-        streamCount = await userService.getUniversityMonthlyShares(req.query.media_id, req.query.university_id)
-        console.log('unviersity wise', streamCount)
+      } if (req.query.university_code >= 1) {
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+        streamCount = await userService.getUniversityMonthlySignups(req.query.university_code, startDate, endDate)
+        console.log('unviersity wise', streamCount.count)
       } else {
-        console.log('wwwwwwwwwwwwwwwwwwwwwwwwwwww', req.query)
-        streamCount = await userService.getTotalMonthlyShares(req.query.media_id, req.query.media_type, req.query.month)
-        console.log('Whole wise', streamCount)
+        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+        const daysInMonth = moment(startDate).daysInMonth()
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+        streamCount = await userService.getTotalMonthlySignups(startDate, endDate)
+        console.log('Whole wise', streamCount.count)
       }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount.count)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
