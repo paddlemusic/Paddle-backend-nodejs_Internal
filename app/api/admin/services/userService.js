@@ -68,7 +68,7 @@ class UserService {
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
         text: `Hi ${name} \n
-       click ${result}  ${result2} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+       click ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
