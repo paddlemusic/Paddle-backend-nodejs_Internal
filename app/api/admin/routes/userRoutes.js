@@ -290,7 +290,7 @@ router.post('/forgotPassword', userController.forgotPassword)
  *      This resource will be used for admin to regenerate password .
  *     parameters:
  *      - in: header
- *        name: Authorization
+ *        name: MailToken
  *        schema:
  *        type: string
  *        required: true
@@ -308,7 +308,7 @@ router.post('/forgotPassword', userController.forgotPassword)
  *       - application/json
  */
 
-router.post('/resetPassword', auth.verifyAdminToken, userController.resetPassword)
+router.post('/resetPassword', auth.verificationToken, userController.resetPassword)
 
 /**
  * @swagger

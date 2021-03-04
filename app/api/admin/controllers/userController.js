@@ -255,14 +255,15 @@ class UserController {
 
       // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
       // const token = await util.generateJwtToken(payload)
+      userExist.mailToken = verificationToken
       // userExist.dataValues.token = token
-      // delete userExist.dataValues.password
-      // delete userExist.dataValues.role
-      // delete userExist.dataValues.device_token
-      // delete userExist.dataValues.verification_token
-      // delete userExist.dataValues.social_user_id
+      delete userExist.password
+      delete userExist.role
+      delete userExist.device_token
+      delete userExist.verification_token
+      delete userExist.social_user_id
       // util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.linkSent, userExist.verification_token)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.linkSent, userExist)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
