@@ -219,7 +219,7 @@ class AnalyticsController {
         const daysInMonth = moment(startDate).daysInMonth()
         const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
 
-        streamCount = await commonService.findAll(StreamStats, { media_id: req.query.media_id, university_id: req.query.university_id, media_type: req.query.media_type, created_at: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('like_count'))])
+        streamCount = await commonService.findAll(StreamStats, { media_id: req.query.media_id, university_id: req.query.university_id, media_type: req.query.media_type, created_at: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('count'))])
         console.log('unviersity wise', streamCount)
       } else {
         const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
@@ -227,7 +227,7 @@ class AnalyticsController {
         const daysInMonth = moment(startDate).daysInMonth()
         const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
 
-        streamCount = await commonService.findAll(StreamStats, { media_id: req.query.media_id, media_type: req.query.media_type, created_at: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('like_count'))])
+        streamCount = await commonService.findAll(StreamStats, { media_id: req.query.media_id, media_type: req.query.media_type, created_at: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('count'))])
         console.log('Whole wise', streamCount)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)

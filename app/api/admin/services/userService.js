@@ -58,16 +58,17 @@ class UserService {
     })
   } */
 
-  /*  sendResetLink (toEmail, name) {
+  sendResetLink (toEmail, token, name) {
     return new Promise((resolve, reject) => {
-      const str = 'Click Here'
-      const result = str.link('https://www.google.com')
+      // const str = 'Click Here'
+      const result2 = 'https://www.google.com'
+      const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
-        to: 'eresh.sharma@algoworks.com',
+        to: 'simnan.khan@algoworks.com',
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
         text: `Hi ${name} \n
-        ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+       click ${result}  ${result2} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
@@ -79,7 +80,17 @@ class UserService {
         }
       })
     })
-  } */
+  }
+
+  updateVerificationToken (params) {
+    return new Promise((resolve, reject) => {
+      User.is_verified = false
+      User.update({ verification_token: params.otp },
+        { where: { id: params.id } })
+        .then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 
   editDetails (params, adminId) {
     return new Promise((resolve, reject) => {
@@ -218,39 +229,6 @@ class UserService {
           attributes: []
           // as: 'post'
         }]
-      }).then(result => resolve(result))
-        .catch(err => reject(err))
-    })
-  }
-
-  getUniversityMonthlySignups (universityCode, startDate, endDate) {
-    return new Promise((resolve, reject) => {
-      User.findAndCountAll({
-        where: {
-          university_code: universityCode,
-          created_at: {
-            [Op.between]: [startDate, endDate]
-          }
-        },
-
-        attributes: ['id'],
-        raw: true
-      }).then(result => resolve(result))
-        .catch(err => reject(err))
-    })
-  }
-
-  getTotalMonthlySignups (startDate, endDate) {
-    return new Promise((resolve, reject) => {
-      User.findAndCountAll({
-        where: {
-          created_at: {
-            [Op.between]: [startDate, endDate]
-          }
-        },
-
-        attributes: ['id'],
-        raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
