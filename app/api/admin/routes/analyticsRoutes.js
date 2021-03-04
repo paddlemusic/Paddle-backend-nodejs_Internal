@@ -215,4 +215,83 @@ router.get('/getTotalSignups', analyticsController.getAppSignups)
  */
 router.get('/getMonthlySignups', analyticsController.getAppSignupsMonthly)
 
+/**
+ * @swagger
+ *
+ * /getTotalStreams:
+ *   get:
+ *     tags :
+ *      - admin-analytics
+ *     summary: Get Total Streams For Media( all over /Via university).
+ *     description: >
+ *      This resource will be used to get stream count for album,artist,song for admin panel .
+ *     parameters:
+ *      - in: query
+ *        name: media_id
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: media_type
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: media_type = 1 for songs,media_type = 2 for artists,media_type = 3 for albums .
+ *      - in: query
+ *        name: university_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: university_id = 0 for all universities streams,university_id >= 1 for specific university stream .
+ *     produces:
+ *       - application/json
+ */
+
+router.get('/getTotalStreams', analyticsController.getstreamsTotally)
+
+/**
+ * @swagger
+ *
+ * /getMonthlyStreams:
+ *   get:
+ *     tags :
+ *      - admin-analytics
+ *     summary: Get Monthly  Streams For Media( all over /Via university).
+ *     description: >
+ *      This resource will be used to get monthly stream count for album,artist,song for admin panel .
+ *     parameters:
+ *      - in: query
+ *        name: media_id
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: media_type
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: media_type = 1 for songs,media_type = 2 for artists,media_type = 3 for albums .
+ *      - in: query
+ *        name: university_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: university_id = 0 for all universities streams,university_id >= 1 for specific university stream .
+ *      - in: query
+ *        name: month
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: Month for which the media shares need to be found.
+ *      - in: query
+ *        name: year
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: Year for which the media shares need to be found.
+ *     produces:
+ *       - application/json
+ */
+router.get('/getMonthlyStreams', analyticsController.getStreamsMonthly)
+
 module.exports = router
