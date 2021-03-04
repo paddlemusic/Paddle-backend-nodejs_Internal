@@ -61,7 +61,7 @@ class UserService {
   sendResetLink (toEmail, token, name) {
     return new Promise((resolve, reject) => {
       // const str = 'Click Here'
-      const result2 = 'https://www.google.com'
+      // const result2 = 'https://www.google.com'
       const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
         to: 'simnan.khan@algoworks.com',

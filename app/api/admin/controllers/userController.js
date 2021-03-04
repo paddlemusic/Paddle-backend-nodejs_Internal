@@ -262,7 +262,7 @@ class UserController {
       // delete userExist.dataValues.verification_token
       // delete userExist.dataValues.social_user_id
       // util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, {})
+      util.successResponse(res, config.constants.SUCCESS, langMsg.linkSent, userExist.verification_token)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
