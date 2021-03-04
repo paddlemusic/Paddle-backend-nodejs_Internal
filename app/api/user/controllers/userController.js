@@ -390,7 +390,9 @@ class UserController {
   async getUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const data = await commonService.findAll(University, {})
+      const condition = { is_active: true }
+      const attributes = ['id', 'name', 'city', 'created_at', 'updated_at']
+      const data = await commonService.findAll(University, condition, attributes)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
