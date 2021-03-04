@@ -8,6 +8,7 @@ const schema = require('../schemaValidator/userSchema')
 
 const commonService = new CommonService()
 const userService = new UserService()
+const s3Bucket = require('../services/s3Bucket')
 
 class UserController {
   async login (req, res) {
@@ -70,6 +71,26 @@ class UserController {
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async uploadFile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (!req.file) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.failed)
+      }
+      const myFile = req.file.originalname.split('.')
+      const fileType = myFile[myFile.length - 1]
+      const body = {
+        fileType: fileType,
+        buffer: req.file.buffer
+      }
+      const data = await s3Bucket.uploadToS3(body)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (error) {
+      console.log('Error is:', error)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }

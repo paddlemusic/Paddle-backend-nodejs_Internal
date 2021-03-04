@@ -4,6 +4,7 @@ const UserController = require('../controllers/userController')
 const userController = new UserController()
 
 const auth = require('../../../middleware/authenticate')
+const uploadMiddleware = require('../../../middleware/upload')
 
 /**
  * @swagger
@@ -73,6 +74,36 @@ router.post('/logout', auth.verifyAdminToken, userController.logout)
  *       - application/json
  */
 router.get('/viewAdminProfile', auth.verifyAdminToken, userController.getAdminProfile)
+
+/**
+ * @swagger
+ *
+ * /upload:
+ *   post:
+ *     tags :
+ *      - Profile
+ *     summary: To upload an image.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - multipart/form-data
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: formData
+ *        name: image
+ *        schema:
+ *        type: file
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: upload image to Amazon S3 bucket .
+ */
+
+router.post('/upload', auth.verifyAdminToken, uploadMiddleware.upload, userController.uploadFile)
 
 /**
  * @swagger

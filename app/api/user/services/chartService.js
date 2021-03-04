@@ -81,7 +81,7 @@ class ChartService {
 
   fetchChart (universityId, mediaType, pagination) {
     return new Promise((resolve, reject) => {
-      UniversityTrending.findAndCountAll({
+      StreamStats.findAndCountAll({
         where: {
           university_id: universityId,
           media_type: mediaType,

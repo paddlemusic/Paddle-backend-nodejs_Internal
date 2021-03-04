@@ -1,11 +1,12 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
-const University = require('./university')
+// const University = require('./university')
 
 const StreamStats = sequelize.define('Stream_Stats', {
   university_id: {
     type: DataTypes.INTEGER,
-    allowNull: true,
+    allowNull: false,
+    defaultValue: 0,
     unique: 'stream_stats_un_key'
   },
   media_id: {
@@ -41,15 +42,15 @@ const StreamStats = sequelize.define('Stream_Stats', {
   timestamps: false
 })
 
-StreamStats.belongsTo(University, {
-  sourceKey: 'id',
-  foreignKey: 'university_id',
-  onDelete: 'Cascade',
-  onUpdate: 'Cascade'
-})
+// StreamStats.belongsTo(University, {
+//   sourceKey: 'id',
+//   foreignKey: 'university_id',
+//   onDelete: 'Cascade',
+//   onUpdate: 'Cascade'
+// })
 
 StreamStats.removeAttribute('id')
 
-// StreamStats.sync({ alter: true })
+// StreamStats.sync({ force: true })
 
 module.exports = StreamStats
