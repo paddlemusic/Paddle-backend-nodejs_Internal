@@ -7,6 +7,8 @@ const schema = {
       media_type: Joi.number().equal(1).default(1).required(),
       media_metadata: Joi.object().keys({
         name: Joi.string().trim(),
+        artist_name: Joi.string().trim(),
+        track_type: Joi.string().trim().allow(null).allow(''),
         image: Joi.string().trim()
       })
     }),
