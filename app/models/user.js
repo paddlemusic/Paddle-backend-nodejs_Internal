@@ -104,8 +104,8 @@ const User = sequelize.define('User', {
 User.belongsTo(University, {
   sourceKey: 'id',
   foreignKey: 'university_code',
-  onDelete: 'Cascade',
-  onUpdate: 'Cascade'
+  onDelete: 'SET NULL',
+  onUpdate: 'SET NULL'
 })
 
 module.exports = User
