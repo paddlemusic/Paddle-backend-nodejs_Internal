@@ -9,7 +9,9 @@ const schema = {
     id: Joi.number().required()
   }),
   editUniversity: Joi.object().keys({
-    name: Joi.string().trim().max(30)
+    name: Joi.string().trim().max(30),
+    city: Joi.string().max(30)
+
   }),
   viewUniversity: Joi.object().keys({
     id: Joi.number().required()
