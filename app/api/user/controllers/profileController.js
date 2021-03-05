@@ -126,8 +126,8 @@ class ProfileController {
   async getAccountDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const attributes = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography']
-      const profileData = await commonService.findOne(User, { id: req.decoded.id }, attributes)
+      // const attributes = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography', 'university_code']
+      const profileData = await profileService.getAccountDetails(req.decoded) // await commonService.findOne(User, { id: req.decoded.id }, attributes)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
