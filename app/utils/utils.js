@@ -101,11 +101,7 @@ const sendEmail = async function (toEmail, name, type) {
       `Hi ${name},\n${emailSubBody}\nThis OTP will be expired in 5 minutes.\n\nThanks,\nPaddle Support Team`
 
     const mailOptions = {
-<<<<<<< HEAD
-      to: toEmail,
-=======
       to: toEmail, // 'eresh.sharma@algoworks.com',
->>>>>>> 71c912f38aeb623ec03f282746b3823f4c8f7acf
       from: config.SENDGRID.fromEmail,
       subject: emailSubject,
       text: emailBody
