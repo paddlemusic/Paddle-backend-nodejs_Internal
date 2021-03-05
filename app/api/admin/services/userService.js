@@ -30,7 +30,7 @@ class UserService {
     })
   }
 
-  listUsers (name, pagination) {
+  listUsers (name, uniName, pagination) {
     return new Promise((resolve, reject) => {
       User.findAndCountAll({
         where: {
@@ -52,7 +52,7 @@ class UserService {
           where: {
             // role: 1,
             name: {
-              [Op.iLike]: '%' + name + '%'
+              [Op.iLike]: '%' + uniName + '%'
             }
           },
           attributes: ['id', 'name']
