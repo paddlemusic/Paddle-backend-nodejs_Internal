@@ -41,11 +41,11 @@ class UserService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
-        // attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
+        // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
+        attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         // group: ['id'],
         order: [['id', 'ASC']],
-        raw: true,
+        // raw: true,
         include: [{
           model: University,
           required: true,
@@ -54,8 +54,8 @@ class UserService {
             name: {
               [Op.iLike]: '%' + uniName + '%'
             }
-          },
-          attributes: ['id', 'name']
+          }
+          // attributes: ['id', 'name']
           // as: 'post'
         }]
       }).then(result => resolve(result))
