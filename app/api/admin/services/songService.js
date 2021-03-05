@@ -1,12 +1,12 @@
 // const StreamStats = require('../../../models/streamStats')
-const UniversityTrending = require('../../../models/universityTrending')
-const Sequelize = require('sequelize')
-const University = require('../../../models/university')
-const Op = Sequelize.Op
+// const StreamStats = require('../../../models/streamStats')
+// const Sequelize = require('sequelize')
+// const University = require('../../../models/university')
+// const Op = Sequelize.Op
 class ProfileService {
-  getSongs (name, pagination) {
+  /* getSongs (name, pagination) {
     return new Promise((resolve, reject) => {
-      UniversityTrending.findAndCountAll({
+      StreamStats.findAndCountAll({
         where: {
           media_metadata: {
             name: {
@@ -17,8 +17,8 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: [Sequelize.literal('"UniversityTrending"."university_id","UniversityTrending"."media_metadata","UniversityTrending"."created_at"')],
-        // attributes: ['university_id', 'media_metadata', 'created_at'],
+        attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],
+        // attributes: ['university_id', 'media_metadata', 'date'],
         order: [['university_id', 'ASC']],
         raw: true,
         include: [{
@@ -37,5 +37,24 @@ class ProfileService {
         .catch(err => reject(err))
     })
   }
+
+  fetchChart (universityId, mediaType, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAndCountAll({
+        where: {
+          university_id: universityId,
+          media_type: mediaType,
+          date: {
+            [Op.gte]: moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
+          }
+        },
+        attributes: ['media_id', 'media_type', 'media_metadata'],
+        limit: pagination.limit,
+        offset: pagination.offset,
+        order: [['count', 'DESC']]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  } */
 }
 module.exports = ProfileService

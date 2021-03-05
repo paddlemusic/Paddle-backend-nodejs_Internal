@@ -82,7 +82,7 @@ class UniversityController {
         return
       }
 
-      const updatedResult = await commonService.update(University, { name: req.body.name }, { id: req.params.id })
+      const updatedResult = await commonService.update(University, req.body, { id: req.params.id })
       console.log('updated result', updatedResult)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
