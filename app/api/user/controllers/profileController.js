@@ -37,12 +37,16 @@ class ProfileController {
     let profileData
     try {
       const userId = req.params.userId
+      let isFollowing = false
       const body = {
         user_id: userId // (5)
       }
       if (req.decoded.id /* 1 */ === Number(userId)) {
         profileData = await profileService.getProfile(body)
       } else {
+        const condition = { user_id: userId, follower_id: req.decoded.id }
+        const following = await commonService.findOne(UserFollower, condition)
+        if (following) { isFollowing = true }
         const userDetail = await commonService.findOne(User, { id: body.user_id }, ['is_privacy'])
         if (!userDetail.is_privacy) {
           profileData = await profileService.getProfile(body)
@@ -60,6 +64,7 @@ class ProfileController {
           }
         }
       }
+      profileData.isFollowing = isFollowing
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)
@@ -121,8 +126,8 @@ class ProfileController {
   async getAccountDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const attributes = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography']
-      const profileData = await commonService.findOne(User, { id: req.decoded.id }, attributes)
+      // const attributes = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography', 'university_code']
+      const profileData = await profileService.getAccountDetails(req.decoded) // await commonService.findOne(User, { id: req.decoded.id }, attributes)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)

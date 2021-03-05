@@ -9,6 +9,11 @@ const University = sequelize.define('University', {
   city: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  is_active: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
   }
 },
 {
@@ -18,4 +23,4 @@ const University = sequelize.define('University', {
 
 module.exports = University
 
-// University.sync()
+// University.sync({ alter: true })

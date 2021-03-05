@@ -23,7 +23,8 @@ const schema = {
   editDetails: Joi.object().keys({
     name: Joi.string().trim().max(30),
     phone_number: Joi.string().trim().max(17).min(10),
-    date_of_birth: Joi.string().trim()
+    date_of_birth: Joi.string().trim(),
+    profile_picture: Joi.string().trim()
   }),
   viewUserProfile: Joi.object().keys({
     id: Joi.number().required()

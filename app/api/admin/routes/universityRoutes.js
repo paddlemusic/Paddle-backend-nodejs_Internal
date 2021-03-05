@@ -81,6 +81,28 @@ router.delete('/deleteUniversity/:id', universityController.deleteUniversity)
 /**
  * @swagger
  *
+ * /{id}/status/toggle:
+ *   put:
+ *     tags:
+ *      - admin-university
+ *     summary: Toggle University status.
+ *     description: >
+ *      This resource will be used for toggle universities status from admin panel.
+ *     parameters:
+ *      - in: params
+ *        name: id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: Get list of niversities response object.
+ */
+router.put('/:id/status/toggle', universityController.toggleUniversityStatus)
+
+/**
+ * @swagger
+ *
  * /universitySearch:
  *   get:
  *     tags :

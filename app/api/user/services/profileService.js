@@ -14,6 +14,7 @@ const UserService = require('../services/userService')
 const userService = new UserService()
 
 const config = require('../../../config')
+const University = require('../../../models/university')
 
 class ProfileService {
   async getProfile (params) {
@@ -86,6 +87,26 @@ class ProfileService {
             reject(err)
           }
         })
+    })
+  }
+
+  getAccountDetails (params) {
+    return new Promise((resolve, reject) => {
+      console.log(params)
+      const userAttribute = ['id', 'name', 'username', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
+      User.findOne({
+        where: { id: params.id },
+        attributes: userAttribute,
+        include: [{
+          model: University,
+          required: true,
+          // where: { university_code:  },
+          attributes: ['name', 'city', 'is_active']
+          // as: 'post'
+        }]
+      })
+        .then(result => resolve(result))
+        .catch(err => { reject(err) })
     })
   }
 }
