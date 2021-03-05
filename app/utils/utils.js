@@ -90,7 +90,7 @@ const sendEmail = async function (toEmail, name) {
     })
     console.log(otp)
     const mailOptions = {
-      to: 'eresh.sharma@algoworks.com',
+      to: toEmail,
       from: config.SENDGRID.fromEmail,
       subject: 'Password change request',
       text: `Hi ${name} \n 
@@ -109,7 +109,7 @@ const sendEmail = async function (toEmail, name) {
   })
 }
 
-const sendOTP = async function (phoneNumber) {
+/* const sendOTP = async function (phoneNumber) {
   return new Promise((resolve, reject) => {
     const accountSid = config.Twilio.accountSid
     const authToken = config.Twilio.authToken
@@ -133,7 +133,7 @@ const sendOTP = async function (phoneNumber) {
         resolve()
       })
   })
-}
+} */
 
 function encryptPassword (plainTextPassword) {
   return new Promise((resolve, reject) => {
@@ -187,7 +187,7 @@ module.exports = {
   generateJwtToken,
   getJwtFromOtp,
   getOtpFromJwt,
-  sendOTP,
+  // sendOTP,
   encryptPassword,
   comparePassword,
   generatePasswordReset,

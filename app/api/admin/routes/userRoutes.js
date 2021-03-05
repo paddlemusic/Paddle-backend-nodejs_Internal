@@ -81,7 +81,7 @@ router.get('/viewAdminProfile', auth.verifyAdminToken, userController.getAdminPr
  * /upload:
  *   post:
  *     tags :
- *      - Profile
+ *      - admin
  *     summary: To upload an image.
  *     produces:
  *       - application/json
@@ -276,7 +276,8 @@ router.put('/editDetails', auth.verifyAdminToken, userController.editAdminDetail
  *     produces:
  *       - application/json
  */
-// router.post('/forgotPassword', userController.forgotPassword)
+
+router.post('/forgotPassword', userController.forgotPassword)
 
 /**
  * @swagger
@@ -288,6 +289,11 @@ router.put('/editDetails', auth.verifyAdminToken, userController.editAdminDetail
  *     description: >
  *      This resource will be used for admin to regenerate password .
  *     parameters:
+ *      - in: header
+ *        name: MailToken
+ *        schema:
+ *        type: string
+ *        required: true
  *      - in: body
  *        name: email
  *        schema:
@@ -301,7 +307,8 @@ router.put('/editDetails', auth.verifyAdminToken, userController.editAdminDetail
  *     produces:
  *       - application/json
  */
-// router.post('/resetPassword', userController.resetPassword)
+
+router.post('/resetPassword', auth.verificationToken, userController.resetPassword)
 
 /**
  * @swagger

@@ -72,22 +72,39 @@ class UniversityController {
     }
   }
 
-  /* async getUniversityDetail (req, res) {
+  async editUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.viewUserProfile.validateAsync(req.params)
+      const validationResult = await UniversitySchema.editUniversity.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+
+      const updatedResult = await commonService.update(University, { name: req.body.name }, { id: req.params.id })
+      console.log('updated result', updatedResult)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getUniversityDetail (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await UniversitySchema.viewUniversity.validateAsync(req.params)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       // console.log(req.params.id)
-      const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'city', 'created_at'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  } */
+  }
 }
 
 module.exports = UniversityController
