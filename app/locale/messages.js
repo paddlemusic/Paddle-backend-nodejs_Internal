@@ -35,6 +35,6 @@ module.exports = {
     trackDeleted: 'Track deleted successfully',
     artistDeleted: 'Artist deleted successfully',
     logOut: 'User logged out successfully',
-    notAllowed: 'user not allowed to change email address.'
+    notAllowed: 'Not allowed.'
   }
 }

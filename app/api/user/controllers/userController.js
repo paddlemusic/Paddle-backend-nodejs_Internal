@@ -16,7 +16,7 @@ const UserRating = require('../../../models/userRating')
 // const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
-// const moment = require('moment')
+const moment = require('moment')
 // const UserStats = require('../../../models/userStats')
 
 class UserController {
@@ -160,7 +160,7 @@ class UserController {
             isVerified: loginResponse.dataValues.is_verified
           }
           const token = await util.generateJwtToken(payload)
-          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.dataValues.token = token
           delete loginResponse.dataValues.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
@@ -564,9 +564,10 @@ class UserController {
       }
       console.log(validationResult)
 
-      const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
+      // const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
       validationResult.user_id = req.decoded.id
-      validationResult.university_id = university.university_code
+      validationResult.university_id = req.decoded.university_code || null// university.university_code
+      validationResult.date = moment().utc().format('YYYY-MM-DD')
 
       const response = await userService.submitUserStats(validationResult)
       console.log(response)
