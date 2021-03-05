@@ -32,7 +32,8 @@ class UserController {
       //  const otp = await util.sendOTP(signupData.dataValues.phone_number)
       const username = [signupData.dataValues.name.replace(' ', '_'), signupData.dataValues.id].join('_')
       await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
-      const otp = await util.sendEmail(signupData.dataValues.email, signupData.dataValues.name)
+      const otp = await util
+        .sendEmail(signupData.dataValues.email, signupData.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (otp) {
         // const otpJwt = await util.getJwtFromOtp(otp.otp)
         const payload = {
@@ -111,7 +112,8 @@ class UserController {
         return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.notAllowed)
       }
       await commonService.update(User, validationResult, { id: req.decoded.id })
-      const sendEmail = await util.sendEmail(validationResult.email, verificationStatus.name)
+      const sendEmail = await util
+        .sendEmail(validationResult.email, verificationStatus.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (sendEmail) {
         // const otpJwt = await util.getJwtFromOtp(sendEmail.otp)
         const payload = {
@@ -181,7 +183,8 @@ class UserController {
       if (!userExist) {
         return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
+      const getEmail = await util
+        .sendEmail(userExist.dataValues.email, userExist.dataValues.name, config.constants.OTPType.RESET_PASSWORD)
       if (getEmail) {
         // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
         const payload = {
@@ -261,7 +264,7 @@ class UserController {
       if (!userExist) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
+      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (getEmail) {
         // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
         const payload = {
@@ -387,7 +390,9 @@ class UserController {
   async getUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const data = await commonService.findAll(University, {})
+      const condition = { is_active: true }
+      const attributes = ['id', 'name', 'city', 'created_at', 'updated_at']
+      const data = await commonService.findAll(University, condition, attributes)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {

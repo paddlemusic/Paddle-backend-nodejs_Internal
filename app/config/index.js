@@ -42,6 +42,14 @@ module.exports = {
   FIREBASE: {
     vapidKey: process.env.VAPID_KEY
   },
+  SPOTIFY: {
+    // To be added to environment files when client sets up spotify account.
+    CLIENT_ID: 'da2cb8c8e3c540ab9feef4d9ded1ef8d',
+    CLIENT_SECRET: 'b4b8e576181f4b3c9b2db22182693571',
+    ENCRYPTION_SECRET: 'whatever_for_now',
+    CLIENT_CALLBACK_URL: 'com-paddle-spotify://spotify-login-callback',
+    URI: 'accounts.spotify.com'
+  },
   port: port,
   messages: messages,
   constants: constants

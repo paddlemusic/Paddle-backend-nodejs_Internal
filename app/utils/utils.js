@@ -83,29 +83,40 @@ const getOtpFromJwt = function (token) {
     })
   })
 }
-const sendEmail = async function (toEmail, name) {
+const sendEmail = async function (toEmail, name, type) {
   return new Promise((resolve, reject) => {
     const otp = otpGenerator.generate(4, {
       digits: true, alphabets: false, upperCase: false, specialChars: false
     })
     console.log(otp)
+    const emailSubject = type === config.constants.OTPType.VERIFY_ACCOUNT
+      ? 'Paddle | Verify your account'
+      : 'Paddle | Reset Password'
+
+    const emailSubBody = type === config.constants.OTPType.VERIFY_ACCOUNT
+      ? `Your Paddle account verification OTP is ${otp}.`
+      : `Your Paddle account password reset OTP is ${otp}.`
+
+    const emailBody =
+      `Hi ${name},\n${emailSubBody}\nThis OTP will be expired in 5 minutes.\n\nThanks,\nPaddle Support Team`
+
     const mailOptions = {
+<<<<<<< HEAD
       to: toEmail,
+=======
+      to: toEmail, // 'eresh.sharma@algoworks.com',
+>>>>>>> 71c912f38aeb623ec03f282746b3823f4c8f7acf
       from: config.SENDGRID.fromEmail,
-      subject: 'Password change request',
-      text: `Hi ${name} \n 
-      Your password recovery otp is ${otp}. \n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+      subject: emailSubject,
+      text: emailBody
     }
-    sgMail.send(mailOptions, (err, result) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-      } else {
-        mailOptions.otp = otp
-        // console.log(mailOptions)
-        resolve(mailOptions)
-      }
-    })
+
+    sgMail.send(mailOptions)
+
+    mailOptions.otp = otp
+    resolve(mailOptions)
+  }).catch(error => {
+    throw (error)
   })
 }
 
