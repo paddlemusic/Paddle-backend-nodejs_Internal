@@ -1,6 +1,7 @@
 // const StreamStats = require('../../../models/streamStats')
 const UniversityTrending = require('../../../models/universityTrending')
 const Sequelize = require('sequelize')
+const University = require('../../../models/university')
 const Op = Sequelize.Op
 class ProfileService {
   getSongs (name, pagination) {
@@ -16,9 +17,22 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['university_id', 'media_metadata', 'created_at'],
+        attributes: [Sequelize.literal('"UniversityTrending"."university_id","UniversityTrending"."media_metadata","UniversityTrending"."created_at"')],
+        // attributes: ['university_id', 'media_metadata', 'created_at'],
         order: [['university_id', 'ASC']],
-        raw: true
+        raw: true,
+        include: [{
+          model: University,
+          required: true,
+          where: {
+            // role: 1,
+            name: {
+              [Op.iLike]: '%' + name + '%'
+            }
+          },
+          attributes: ['id', 'name']
+          // as: 'post'
+        }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })

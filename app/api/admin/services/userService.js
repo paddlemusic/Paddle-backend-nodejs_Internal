@@ -1,4 +1,5 @@
 const User = require('../../../models/user')
+const University = require('../../../models/university')
 const UserPost = require('../../../models/userPost')
 const Sequelize = require('sequelize')
 const config = require('../../../config')
@@ -40,10 +41,23 @@ class UserService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
+        attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
+        // attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         // group: ['id'],
         order: [['id', 'ASC']],
-        raw: true
+        raw: true,
+        include: [{
+          model: University,
+          required: true,
+          where: {
+            // role: 1,
+            name: {
+              [Op.iLike]: '%' + name + '%'
+            }
+          },
+          attributes: ['id', 'name']
+          // as: 'post'
+        }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
