@@ -5,6 +5,7 @@ const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const University = require('../../../models/university')
 const UniversitySchema = require('../schemaValidator/universitySchema')
+const Sequelize = require('sequelize')
 
 const commonService = new CommonService()
 const profileService = new ProfileService()
@@ -31,7 +32,8 @@ class UniversityController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-      const data = await profileService.getUniversities(pagination)
+      const uniName = req.query.name
+      const data = await profileService.getUniversities(uniName, pagination)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
@@ -65,6 +67,25 @@ class UniversityController {
       const data = await commonService.delete(University, { id: req.params.id })
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async toggleUniversityStatus (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await UniversitySchema.deleteUniversity.validateAsync(req.params)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const param = { is_active: Sequelize.literal('NOT is_active') }
+      const condition = { id: req.params.id }
+      const data = await commonService.update(University, param, condition, true)
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data[1][0])
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
