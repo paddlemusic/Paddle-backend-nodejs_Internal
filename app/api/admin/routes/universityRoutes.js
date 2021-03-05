@@ -81,8 +81,8 @@ router.delete('/deleteUniversity/:id', universityController.deleteUniversity)
 /**
  * @swagger
  *
- * /deleteUniversity/{id}:
- *   delete:
+ * /{id}/status/toggle:
+ *   put:
  *     tags:
  *      - admin-university
  *     summary: Toggle University status.
@@ -94,8 +94,9 @@ router.delete('/deleteUniversity/:id', universityController.deleteUniversity)
  *        schema:
  *        type: integer
  *        required: true
- *     produces:
- *       - application/json
+ *     responses:
+ *          default:
+ *              description: Get list of niversities response object.
  */
 router.put('/:id/status/toggle', universityController.toggleUniversityStatus)
 
