@@ -9,6 +9,7 @@ sgMail.setApiKey(config.SENDGRID.sendgridApiKey)
 const Op = Sequelize.Op
 
 class UserService {
+  // to be removed later
   getUsers (name, pagination) {
     return new Promise((resolve, reject) => {
       User.findAll({
