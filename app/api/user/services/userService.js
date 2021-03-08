@@ -102,7 +102,7 @@ class UserService {
 
   login (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
+      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number', 'university_code',
         'password', 'is_privacy', 'is_verified', 'is_active', 'top_tracks_count', 'top_artist_count', 'created_at', 'updated_at']
       const criteria = {
         role: config.constants.ROLE.USER,
