@@ -39,10 +39,9 @@ const schema = {
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(30).required(),
     phone_number: Joi.string().trim().max(17).min(10).required(),
-    // email: Joi.string().trim().email().required(),
-    date_of_birth: Joi.string().trim(), // .regex(/^([0-2][0-9]|(3)[0-1])(-)(((0)[0-9])|((1)[0-2]))(-)d{4}$/),
-    // bio: Joi.string().trim().alphanum().max(300)
-    biography: Joi.string().trim().max(300).allow(null).allow('')
+    date_of_birth: Joi.string().trim(),
+    biography: Joi.string().trim().max(300).allow(null).allow(''),
+    university_id: Joi.number().min(1).allow(null)
   })
 }
 
