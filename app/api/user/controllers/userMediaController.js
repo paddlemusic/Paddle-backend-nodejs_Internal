@@ -270,10 +270,11 @@ class UserMediaController {
         media_type: req.params.media_type,
         usermedia_type: req.params.usermedia_type
       }
-      console.log('getUserMedia', condition)
       const attributes = ['media_id', 'media_name', 'media_image', 'meta_data',
         'meta_data2', 'media_type', 'created_at', 'updated_at']
-      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes)
+
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes, pagination)
       console.log(userMedia)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userMedia)
     } catch (err) {

@@ -485,7 +485,8 @@ class UserController {
   async getFollowing (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const followingData = await userService.getFollowing(req.decoded)
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const followingData = await userService.getFollowing(req.decoded, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, followingData)
     } catch (err) {
       console.log(err)
@@ -496,7 +497,8 @@ class UserController {
   async getFollowers (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const followerData = await userService.getFollowers(req.decoded)
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const followerData = await userService.getFollowers(req.decoded, pagination)
       const followersID = followerData.rows.map(follower => { return follower.id })
       const followBackData = await userService.getFollowBack(req.decoded.id, followersID)
       followerData.rows.forEach((follower, index) => {
