@@ -42,12 +42,12 @@ const StreamStats = sequelize.define('Stream_Stats', {
   timestamps: false
 })
 
-// StreamStats.belongsTo(University, {
-//   sourceKey: 'id',
-//   foreignKey: 'university_id',
-//   onDelete: 'Cascade',
-//   onUpdate: 'Cascade'
-// })
+/* StreamStats.belongsTo(University, {
+  sourceKey: 'id',
+  foreignKey: 'university_id',
+  onDelete: 'Cascade',
+  onUpdate: 'Cascade'
+}) */
 
 StreamStats.removeAttribute('id')
 
