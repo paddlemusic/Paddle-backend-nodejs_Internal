@@ -26,24 +26,35 @@ class HomePageController {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
-      if (Number(req.decoded.id) === Number(req.body.shared_with)) {
-        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
-        return
-      }
-      const params = {
+      // if (Number(req.decoded.id) === Number(req.body.shared_with)) {
+      //   util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+      //   return
+      // }
+      const param = {
         user_id: req.decoded.id,
         media_id: req.body.media_id,
         caption: req.body.caption,
-        shared_with: req.body.shared_with,
+        // shared_with: req.body.shared_with,
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
         meta_data2: req.body.meta_data,
         media_type: req.params.media_type
       }
+      const params = []
+
+      validationResult.shared_with.forEach(shareId => {
+        if (Number(req.decoded.id) !== Number(req.body.shareId)) {
+          param.shared_with = shareId
+          params.push(param)
+        }
+      })
 
       console.log('params are:', params)
-      await commonService.create(UserPost, params)
+      // await commonService.create(UserPost, params)
+      await commonService.bulkCreate(UserPost, params)
+
+      // ------NOTIFICATION: DON'T REMOVE------ //
       // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
       // const payload = {
       //   message: {
