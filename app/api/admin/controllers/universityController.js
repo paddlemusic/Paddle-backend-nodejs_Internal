@@ -1,5 +1,5 @@
 const CommonService = require('../services/commonService')
-const ProfileService = require('../services/profileService')
+const UniversityService = require('../services/universityService')
 
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
@@ -8,7 +8,7 @@ const UniversitySchema = require('../schemaValidator/universitySchema')
 const Sequelize = require('sequelize')
 
 const commonService = new CommonService()
-const profileService = new ProfileService()
+const universityService = new UniversityService()
 
 class UniversityController {
   async addUniversity (req, res) {
@@ -33,7 +33,7 @@ class UniversityController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const uniName = req.query.name
-      const data = await profileService.getUniversities(uniName, pagination)
+      const data = await universityService.getUniversities(uniName, pagination)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
@@ -48,7 +48,7 @@ class UniversityController {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
 
-      const userList = await profileService.searchUniversity(userName, pagination)
+      const userList = await universityService.searchUniversity(userName, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
     } catch (err) {
       console.log('err is:', err)
