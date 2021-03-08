@@ -513,6 +513,27 @@ class UserController {
     }
   }
 
+  async searchFollowers (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      req.decoded.keyword = req.query.keyword
+      const followerData = await userService.searchFollowers(req.decoded, pagination)
+
+      // const followersID = followerData.rows.map(follower => { return follower.id })
+      // const followBackData = await userService.getFollowBack(req.decoded.id, followersID)
+      // followerData.rows.forEach((follower, index) => {
+      //   followBackData.forEach(followBack => {
+      //     followerData.rows[index].follow_back = follower.id === followBack.id
+      //   })
+      // })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, followerData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async isUsernameAvailable (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {

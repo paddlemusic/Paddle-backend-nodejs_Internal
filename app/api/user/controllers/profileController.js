@@ -79,10 +79,9 @@ class ProfileController {
       if (validationResult.error) {
         return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
       }
-      // req.body.id =
-      validationResult.id = req.decoded.id
-      const updateResult = await profileService.editDetails(validationResult)
-      console.log(JSON.stringify(updateResult))
+      console.log(validationResult)
+      const updateResult = await profileService.editDetails(validationResult, req.decoded.id)
+      console.log((updateResult))
 
       const payload = {
         id: updateResult[1][0].id,

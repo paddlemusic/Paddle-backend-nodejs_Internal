@@ -41,7 +41,7 @@ const schema = {
     phone_number: Joi.string().trim().max(17).min(10).required(),
     date_of_birth: Joi.string().trim(),
     biography: Joi.string().trim().max(300).allow(null).allow(''),
-    university_id: Joi.number().min(1).allow(null)
+    university_code: Joi.number().min(1).allow(null)
   })
 }
 
