@@ -163,12 +163,14 @@ class UserService {
       console.log('params are:', params)
       SaveArtist.create(params) */
 
-  getFollowing (params) {
+  getFollowing (params, pagination) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { follower_id: params.id },
         attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture","followed"."device_token"')],
         raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
         include: [{
           model: User,
           required: true,
@@ -180,15 +182,41 @@ class UserService {
     })
   }
 
-  getFollowers (params) {
+  getFollowers (params, pagination) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { user_id: params.id },
         attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
         raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
         include: [{
           model: User,
           required: true,
+          attributes: [],
+          as: 'follower'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  searchFollowers (params, pagination) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { user_id: params.id },
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
+        raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        include: [{
+          model: User,
+          required: true,
+          where: {
+            name: {
+              [Op.iLike]: params.keyword + '%'
+            }
+          },
           attributes: [],
           as: 'follower'
         }]

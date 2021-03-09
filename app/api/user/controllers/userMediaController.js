@@ -270,10 +270,11 @@ class UserMediaController {
         media_type: req.params.media_type,
         usermedia_type: req.params.usermedia_type
       }
-      console.log('getUserMedia', condition)
       const attributes = ['media_id', 'media_name', 'media_image', 'meta_data',
         'meta_data2', 'media_type', 'created_at', 'updated_at']
-      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes)
+
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes, pagination)
       console.log(userMedia)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userMedia)
     } catch (err) {
@@ -306,18 +307,20 @@ class UserMediaController {
     }
   }
 
-  // Redundant API
   async trackArtistSearch (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const userName = req.query.name
       const condition = {
+        user_id: req.decoded.id,
+        usermedia_type: req.params.usermedia_type,
+        media_type: req.params.media_type,
         media_name: {
-          [Op.iLike]: '%' + userName + '%'
+          [Op.iLike]: '%' + req.query.keyword + '%'
         }
       }
-      const userList = await commonService.findAndCountAll(UserMedia, condition, ['user_id', 'media_id', 'media_name', 'media_image', 'meta_data', 'media_type', 'meta_data2'])
-      // console.log(JSON.stringify(userList, null, 2))
+      // const attributes = ['user_id', 'media_id', 'media_name', 'media_image', 'meta_data', 'media_type', 'meta_data2']
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userList = await commonService.findAndCountAll(UserMedia, condition, null, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
     } catch (err) {
       console.log('err is:', err)

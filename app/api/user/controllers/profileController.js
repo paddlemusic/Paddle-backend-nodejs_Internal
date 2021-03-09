@@ -74,33 +74,31 @@ class ProfileController {
 
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    schema.editDetails.validateAsync(req.body).then(async () => {
-      // const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
-      req.body.id = req.decoded.id
-      const updateResult = await profileService.editDetails(req.body) // commonService.update(User, req.body, { id: req.decoded.id })
-      // console.log(currentEmail)
-      console.log(JSON.stringify(updateResult))
-      // if (req.body.email !== currentEmail.email) {
-      // const otp = await util.sendOTP(req.body.phone_number)
-      //   const otp = await util.sendEmail(req.body.email, req.body.name)
-      //   if (otp) {
-      //     const otpJwt = await util.getJwtFromOtp(otp.otp)
-      //     await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
-      //   }
-      //   await commonService.update(User, { is_verified: false }, { id: req.decoded.id })
-      //   util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
-      //   return
-      // }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, {})
-    }, reject => {
-      console.log(reject)
-      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
-    }).catch(err => {
+    try {
+      const validationResult = await schema.editDetails.validateAsync(req.body)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      }
+      console.log(validationResult)
+      const updateResult = await profileService.editDetails(validationResult, req.decoded.id)
+      console.log((updateResult))
+
+      const payload = {
+        id: updateResult[1][0].id,
+        username: updateResult[1][0].username,
+        universityId: updateResult[1][0].university_code,
+        role: config.constants.ROLE.USER, // 1,
+        isActive: updateResult[1][0].is_active,
+        isVerified: updateResult[1][0].is_verified
+      }
+      const token = await util.generateJwtToken(payload)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, { token: token })
+    } catch (err) {
       console.log(err)
       const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
       const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
       util.failureResponse(res, errorCode, errorMessage)
-    })
+    }
   }
 
   async uploadFile (req, res) {
@@ -128,6 +126,7 @@ class ProfileController {
     try {
       // const attributes = ['id', 'name', 'username', 'email', 'phone_number', 'date_of_birth', 'profile_picture', 'biography', 'university_code']
       const profileData = await profileService.getAccountDetails(req.decoded) // await commonService.findOne(User, { id: req.decoded.id }, attributes)
+      console.log(profileData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
     } catch (err) {
       console.log(err)

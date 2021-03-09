@@ -245,6 +245,31 @@ router.get('/followers', auth.verifyToken, userController.getFollowers)
 /**
  * @swagger
  *
+ * /user/followers/search:
+ *   get:
+ *     tags :
+ *      - User
+ *     summary: For searching followers.
+ *     description: >
+ *      This resource will be used for for searching followers..
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: keyword
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: For searching followers.
+ */
+router.get('/followers/search', auth.verifyToken, userController.searchFollowers)
+
+/**
+ * @swagger
+ *
  * /resend_Otp:
  *   post:
  *     tags :
