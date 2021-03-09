@@ -254,11 +254,11 @@ class UserService {
   getTrackAndCount (mediaType) {
     // console.log('ffffffffffff')
     return new Promise((resolve, reject) => {
-      StreamStats.findAndCountAll({
+      StreamStats.findAll({
         attributes: [
           // 'media_metadata',
           [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
-          [Sequelize.fn('count', Sequelize.col('media_id')), 'Count'],
+          // [Sequelize.fn('count', Sequelize.col('media_id')), 'Count'],
           // 'date',
           'media_id'
         ],

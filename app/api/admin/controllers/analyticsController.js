@@ -224,7 +224,7 @@ class AnalyticsController {
         const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
         const trackAndCount = await userService.getTrackAndCount(req.query.media_type)
         console.log('trackAndCount', trackAndCount)
-        const mediaIds = trackAndCount.rows.map(post => { return post.media_id })
+        const mediaIds = trackAndCount.map(post => { return post.media_id })
         // console.log('mediaIds', mediaIds)
         // const trackDetailsAndCount = await commonService.findAll(StreamStats, { media_id: mediaIds }, ['media_id', 'media_metadata'])
         const trackDetailsAndCount = await userService.getTrackDetailsAndCount(mediaIds, pagination)
