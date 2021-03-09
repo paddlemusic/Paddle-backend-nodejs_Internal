@@ -428,5 +428,263 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  getShareTrackAndCount (mediaType) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          // [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+          [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount']
+
+          // 'date',
+          /* 'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active' */
+        ],
+        where: {
+          media_type: mediaType
+
+        },
+
+        raw: true,
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getShareDetailsAndCount (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active',
+          'created_at'
+          // [Sequelize.fn('DISTINCT', Sequelize.col('media_id')), 'media_id']
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUniversityShareTrackAndCount (mediaType, universityId) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          // [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+          [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount']
+          // 'date',
+          /* 'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active' */
+        ],
+        where: {
+          media_type: mediaType
+
+        },
+
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          where: { university_code: universityId },
+          attributes: []
+          // as: 'post'
+        }],
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUniversityShareDetailsAndCount (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active',
+          'created_at'
+          // [Sequelize.fn('DISTINCT', Sequelize.col('media_id')), 'media_id']
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyShareTrackAndCount (mediaType, startDate, endDate) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          // [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+          [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount']
+
+          // 'date',
+          /* 'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active' */
+        ],
+        where: {
+          media_type: mediaType,
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          }
+
+        },
+
+        raw: true,
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyShareDetailsAndCount (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active',
+          'created_at'
+          // [Sequelize.fn('DISTINCT', Sequelize.col('media_id')), 'media_id']
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyShareTrackAndCountUniversityWise (mediaType, universityId, startDate, endDate) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          // [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+          [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount']
+          // 'date',
+          /* 'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active' */
+        ],
+        where: {
+          media_type: mediaType,
+          created_at: {
+            [Op.between]: [startDate, endDate]
+          }
+
+        },
+
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          where: { university_code: universityId },
+          attributes: []
+          // as: 'post'
+        }],
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  monthlyShareTrackDetailsAndCountUniversityWise (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      UserPost.findAll({
+        attributes: [
+          'media_id',
+          'media_image',
+          'media_name',
+          'meta_data',
+          'meta_data2',
+          'caption',
+          'shared_with',
+          'is_active',
+          'created_at'
+          // [Sequelize.fn('DISTINCT', Sequelize.col('media_id')), 'media_id']
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 module.exports = UserService
