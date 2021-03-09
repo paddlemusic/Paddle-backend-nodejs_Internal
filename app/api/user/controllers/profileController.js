@@ -113,8 +113,9 @@ class ProfileController {
         fileType: fileType,
         buffer: req.file.buffer
       }
-      const data = await s3Bucket.uploadToS3(body)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+      const upload = await s3Bucket.uploadToS3(body)
+      await commonService.update(User, { profile_picture: upload.Location }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { Location: upload.Location })
     } catch (error) {
       console.log('Error is:', error)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
