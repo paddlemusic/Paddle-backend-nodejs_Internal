@@ -1,6 +1,7 @@
 const User = require('../../../models/user')
 const University = require('../../../models/university')
 const UserPost = require('../../../models/userPost')
+const StreamStats = require('../../../models/streamStats')
 const Sequelize = require('sequelize')
 const config = require('../../../config')
 const sgMail = require('@sendgrid/mail')
@@ -112,7 +113,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       console.log(params)
       const userAttribute = ['name', 'phone_number', 'profile_picture']
-      User.update(params, { where: { id: adminId, role: 2 }, raw: true, attributes: userAttribute })
+      User.update(params, { where: { id: adminId, role: config.constants.ROLE.ADMIN }, raw: true, attributes: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -245,6 +246,182 @@ class UserService {
           attributes: []
           // as: 'post'
         }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTrackAndCount (mediaType) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          // 'media_metadata',
+          [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          // 'date',
+          'media_id'
+        ],
+        where: {
+          media_type: mediaType
+
+        },
+
+        raw: true,
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTrackDetailsAndCountUniversityWise (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          'media_metadata',
+          'media_id'
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyTrackDetailsAndCountUniversityWise (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          'media_metadata',
+          'media_id'
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyTrackDetailsAndCount (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          'media_metadata',
+          'media_id'
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTrackDetailsAndCount (mediaIds, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAndCountAll({
+        attributes: [
+          'media_metadata',
+          'media_id'
+        ],
+        where: {
+          media_id: mediaIds
+
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyTrackAndCount (mediaType, startDate, endDate) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          // 'media_metadata',
+          [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          // 'date',
+          'media_id'
+        ],
+        where: {
+          date: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_type: mediaType
+
+        },
+
+        raw: true,
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getTrackAndCountUniversityWise (mediaType, universityId) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          // 'media_metadata',
+          [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          // 'date',
+          'media_id'
+        ],
+        where: {
+          media_type: mediaType,
+          university_id: universityId
+
+        },
+
+        raw: true,
+        group: ['media_id']
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyTrackAndCountUniversityWise (mediaType, universityId, startDate, endDate) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      StreamStats.findAll({
+        attributes: [
+          // 'media_metadata',
+          [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
+          // 'date',
+          'media_id'
+        ],
+        where: {
+          date: {
+            [Op.between]: [startDate, endDate]
+          },
+          media_type: mediaType,
+          university_id: universityId
+
+        },
+
+        raw: true,
+        group: ['media_id']
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })

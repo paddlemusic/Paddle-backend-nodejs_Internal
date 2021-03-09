@@ -28,7 +28,7 @@ class UserController {
         if (didMatch) {
           const payload = {
             id: loginResponse.id,
-            username: loginResponse.username,
+            // username: loginResponse.username,
             role: 2,
             isActive: loginResponse.is_active
           }
