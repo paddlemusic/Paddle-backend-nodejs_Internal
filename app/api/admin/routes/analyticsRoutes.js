@@ -34,7 +34,7 @@ const analyticsController = new AnalyticsController()
  *     produces:
  *       - application/json
  */
-router.get('/getTotalShares', analyticsController.getsharesTotally)
+router.get('/getTotalSharesLikes', analyticsController.getSharesLikesTotally)
 
 /**
  * @swagger
@@ -79,7 +79,7 @@ router.get('/getTotalShares', analyticsController.getsharesTotally)
  *     produces:
  *       - application/json
  */
-router.get('/getMonthlyShares', analyticsController.getSharesMonthly)
+router.get('/getMonthlySharesLikes', analyticsController.getSharesLikesMonthly)
 
 /**
  * @swagger
