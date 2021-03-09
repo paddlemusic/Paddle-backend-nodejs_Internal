@@ -10,7 +10,7 @@ const auth = require('../../../middleware/authenticate')
  * /addMedia:
  *   post:
  *     tags :
- *      - chart
+ *      - Chart
  *     summary: To Add Media.
  *     consumes:
  *        - application/json
@@ -71,7 +71,7 @@ router.post('/addMedia', auth.verifyToken, chartController.addMedia)
  * /getchart/{type}:
  *   get:
  *     tags :
- *      - chart
+ *      - Chart
  *     summary: Get Charts for Tracks/Artist.
  *     consumes:
  *        - application/json

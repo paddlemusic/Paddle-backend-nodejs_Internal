@@ -8,24 +8,21 @@ const LikeUnlike = require('../../../models/likePost')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const moment = require('moment')
-
-class CustomError extends Error {
-  constructor (message) {
-    super(message)
-    this.name = 'CustomError'
-  }
-}
+const sequelize = require('../../../models')
+// const UserStats = require('../../../models/userStats')
+const CustomError = require('../../../utils/customError')
+const config = require('../../../config')
 
 class UserService {
   signup (params) {
     return new Promise((resolve, reject) => {
-      params.role = 1 // 1->User, 2->Admin
+      params.role = config.constants.ROLE.USER // 1->User, 2->Admin
       params.email = params.email.toLowerCase()
       console.log(params)
       User.create(params)
         .then(result => resolve(result))
         .catch(err => {
-          if (err.original.code === '23505' || err.original.code === 23505) {
+          if (err.original && (err.original.code === '23505' || err.original.code === 23505)) {
             switch (err.errors[0].path) {
               case 'phone_number':
                 reject(new CustomError('Phone number is already registered.'))
@@ -96,7 +93,7 @@ class UserService {
     return new Promise((resolve, reject) => {
       const query = {}
       query.is_verified = true
-      query.verification_token = null
+      query.verification_token = params.verification_token
       User.update(query, { where: { email: params.email } })
         .then(result => resolve(result))
         .catch(err => reject(err))
@@ -105,10 +102,10 @@ class UserService {
 
   login (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
-        'password', 'is_privacy', 'is_verified', 'is_active', 'is_blocked', 'createdAt', 'updatedAt']
+      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number', 'university_code',
+        'password', 'is_privacy', 'is_verified', 'is_active', 'top_tracks_count', 'top_artist_count', 'created_at', 'updated_at']
       const criteria = {
-        role: 1,
+        role: config.constants.ROLE.USER,
         email: (params.email).toLowerCase()
       }
       User.findOne({ where: criteria, attributes: userAttribute })
@@ -141,8 +138,8 @@ class UserService {
 
   isUserAlreadyExist (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['name', 'username', 'email', 'phophone_number', 'date_of_birth', 'social_user_id',
-        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token', 'id']
+      const userAttribute = ['name', 'username', 'email', 'phone_number', 'date_of_birth', 'social_user_id',
+        'password', 'role', 'device_token', 'is_active', 'is_verified', 'verification_token', 'id', 'university_code']
       User.findOne({ where: params, raw: true }, { attribute: userAttribute })
         .then(result => resolve(result))
         .catch(err => reject(err))
@@ -152,7 +149,7 @@ class UserService {
   forgotPassword (params) {
     return new Promise((resolve, reject) => {
       const criteria = {
-        role: 1,
+        role: config.constants.ROLE.USER,
         email: params.email
       }
       User.findOne({ where: criteria })
@@ -165,35 +162,6 @@ class UserService {
     return new Promise((resolve, reject) => {
       console.log('params are:', params)
       SaveArtist.create(params) */
-
-  editDetails (params) {
-    return new Promise((resolve, reject) => {
-      console.log(params)
-      const userAttribute = ['id', 'name', 'username', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
-      User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
-        .then(result => resolve(result))
-        .catch(err => {
-          if (err.original.code === '23505' || err.original.code === 23505) {
-            switch (err.errors[0].path) {
-              case 'phone_number':
-                reject(new CustomError('Phone number is already registered.'))
-                break
-              case 'email':
-                reject(new CustomError('Email address is already registered.'))
-                break
-              case 'username':
-                reject(new CustomError('Username is already registered.'))
-                break
-              default:
-                reject(err)
-            }
-          } else {
-            console.log(err)
-            reject(err)
-          }
-        })
-    })
-  }
 
   getFollowing (params) {
     return new Promise((resolve, reject) => {
@@ -335,6 +303,50 @@ class UserService {
       ).then(result => resolve(result))
         .catch(err => reject(err))
     })
+  }
+
+  // async submitUserStats (params, didOpenApp) {
+  //   // return new Promise((resolve, reject) => {
+  //   //   // params.app_open_count = sequelize.literal('app_open_count + 1')
+  //   //   UserStats.findOrCreate({
+  //   //     where: params
+  //   //   })
+  //   //     .then(result => resolve(result))
+  //   //     .catch(err => reject(err))
+  //   // })
+  //   const findOrCreate = await UserStats.findOrCreate({ where: params })
+  //   console.log(findOrCreate)
+  //   if (didOpenApp) {
+  //     // increment open_app_count
+  //   }
+  //   return findOrCreate
+  // }
+
+  async submitUserStats (params) {
+    console.log(params)
+    const updateQuery = params.did_open_app
+      ? ', app_open_count = "User_Stats".app_open_count + 1;'
+      : ';'
+    const rawQuery =
+             `INSERT INTO
+                "User_Stats" (
+                user_id,
+                university_id,
+                "date",
+                app_usage_time,
+                app_open_count)
+              VALUES ( $1, $2, $3, $4, $5) 
+              ON CONFLICT 
+                (user_id,
+                "date") 
+              DO UPDATE
+              SET
+                app_usage_time = "User_Stats".app_usage_time + $4
+                ${updateQuery}`
+    const data = await sequelize.query(rawQuery, {
+      bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
+    })
+    return data
   }
 }
 

@@ -9,6 +9,8 @@ const routes = require('../routes/index')
 const config = require('../config')
 const utils = require('../utils/utils')
 const constants = require('../config/constants')
+const CronJobService = require('../api/user/services/cronJobService')
+const cronJobService = new CronJobService()
 
 function loader (app) {
   app.use(cookieParser())
@@ -21,6 +23,7 @@ function loader (app) {
     limit: '50mb'
   }))
   app.use(cors())
+
   app.use(passport.initialize())
   app.use((req, res, next) => {
     const language = req.params.language || req.headers.language
@@ -44,7 +47,11 @@ function loader (app) {
     res.send('<center><p><b>This is the Paddle app server.</b></p></center>')
   })
 
+  cronJobService.cleanUserStatsScheduler()
+  cronJobService.cleanStreamingStatsScheduler()
+
   routes(app)
+
   app.use((req, res, next) => {
     const langMsg = config.messages[req.app.get('lang')]
     utils.failureResponse(res, constants.NOT_FOUND, langMsg.routeNotFound)

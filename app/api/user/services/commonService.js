@@ -1,3 +1,5 @@
+const CustomError = require('../../../utils/customError')
+
 class CommonService {
   create (table, params) {
     return new Promise((resolve, reject) => {
@@ -12,7 +14,14 @@ class CommonService {
     return new Promise((resolve, reject) => {
       table.update(params, { where: condition, returning: returning })
         .then(result => resolve(result))
-        .catch(err => reject(err))
+        .catch(err => {
+          if (err.original && (err.original.code === '23505' || err.original.code === 23505)) {
+            if (err.errors[0].path === 'email') {
+              reject(new CustomError('Email address is already registered.'))
+            }
+          }
+          reject(err)
+        })
     })
   }
 
@@ -80,7 +89,7 @@ class CommonService {
 
   bulkCreate (table, params) {
     return new Promise((resolve, reject) => {
-      table.bulkCreate(params, { ignoreDuplicates: true })
+      table.bulkCreate(params, { ignoreDuplicates: true, attributes: ['id'] })
         .then(result => resolve(result))
         .catch(err => {
           (err.original.code === '23505' || err.original.code === '23503')

@@ -31,9 +31,11 @@ const generateJwtToken = function (payload) {
     const secret = config.JWT.secret
     const data = {
       id: payload.id,
-      username: payload.email,
+      username: payload.username,
       role: payload.role,
-      is_active: payload.isActive
+      is_active: payload.isActive,
+      is_verified: payload.isVerified,
+      university_code: payload.universityId
     }
     // console.log('token data is:', data)
     jwt.sign(data, secret, { expiresIn: '30d' }, (err, token) => {
@@ -81,33 +83,40 @@ const getOtpFromJwt = function (token) {
     })
   })
 }
-const sendEmail = async function (toEmail, name) {
+const sendEmail = async function (toEmail, name, type) {
   return new Promise((resolve, reject) => {
     const otp = otpGenerator.generate(4, {
       digits: true, alphabets: false, upperCase: false, specialChars: false
     })
     console.log(otp)
+    const emailSubject = type === config.constants.OTPType.VERIFY_ACCOUNT
+      ? 'Paddle | Verify your account'
+      : 'Paddle | Reset Password'
+
+    const emailSubBody = type === config.constants.OTPType.VERIFY_ACCOUNT
+      ? `Your Paddle account verification OTP is ${otp}.`
+      : `Your Paddle account password reset OTP is ${otp}.`
+
+    const emailBody =
+      `Hi ${name},\n${emailSubBody}\nThis OTP will be expired in 5 minutes.\n\nThanks,\nPaddle Support Team`
+
     const mailOptions = {
-      to: 'eresh.sharma@algoworks.com',
+      to: toEmail, // 'eresh.sharma@algoworks.com',
       from: config.SENDGRID.fromEmail,
-      subject: 'Password change request',
-      text: `Hi ${name} \n 
-      Your password recovery otp is ${otp}. \n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+      subject: emailSubject,
+      text: emailBody
     }
-    sgMail.send(mailOptions, (err, result) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-      } else {
-        mailOptions.otp = otp
-        // console.log(mailOptions)
-        resolve(mailOptions)
-      }
-    })
+
+    sgMail.send(mailOptions)
+
+    mailOptions.otp = otp
+    resolve(mailOptions)
+  }).catch(error => {
+    throw (error)
   })
 }
 
-const sendOTP = async function (phoneNumber) {
+/* const sendOTP = async function (phoneNumber) {
   return new Promise((resolve, reject) => {
     const accountSid = config.Twilio.accountSid
     const authToken = config.Twilio.authToken
@@ -131,7 +140,7 @@ const sendOTP = async function (phoneNumber) {
         resolve()
       })
   })
-}
+} */
 
 function encryptPassword (plainTextPassword) {
   return new Promise((resolve, reject) => {
@@ -160,15 +169,35 @@ function generatePasswordReset () {
   })
 }
 
+function generateVerificationToken (payload) {
+  return new Promise((resolve, reject) => {
+    const secret = config.JWT.secret
+    // const data = {
+    //   verificationType: payload.verificationType,
+    //   isOTPVerified: payload.isOTPVerified
+    // }
+    jwt.sign(payload, secret, { expiresIn: '300s' }, (err, token) => {
+      if (err) {
+        console.log(err)
+        reject(err)
+      } else {
+        console.log(token)
+        resolve(token)
+      }
+    })
+  })
+}
+
 module.exports = {
   successResponse,
   failureResponse,
   generateJwtToken,
   getJwtFromOtp,
   getOtpFromJwt,
-  sendOTP,
+  // sendOTP,
   encryptPassword,
   comparePassword,
   generatePasswordReset,
-  sendEmail
+  sendEmail,
+  generateVerificationToken
 }

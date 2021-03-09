@@ -6,6 +6,7 @@ const storage = multer.memoryStorage({
   }
 })
 const upload = multer({ storage }).single('image')
+console.log('upload is:', upload)
 module.exports = {
   upload: upload
 }

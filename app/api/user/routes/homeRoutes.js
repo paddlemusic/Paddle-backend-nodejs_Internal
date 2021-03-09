@@ -10,7 +10,7 @@ const authenticate = require('../../../middleware/authenticate')
  * /createPost:
  *   post:
  *     tags :
- *      - home
+ *      - Home
  *     summary: Create User Post.
  *     produces:
  *       - application/json
@@ -63,7 +63,7 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  * /getPosts:
  *   get:
  *     tags :
- *      - home
+ *      - Home
  *     summary: get User posts.
  *     description: >
  *      This resource will be used for getting user's posts .
@@ -88,30 +88,30 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
 
-/**
- * @swagger
- *
- * /getUserSharedAsFriendPost/{shared_with}:
- *   get:
- *     tags :
- *      - home
- *     summary: get User posts by shared_with friend.
- *     description: >
- *      This resource will be used for getting shared with friend posts .
- *     parameters:
- *      - in: header
- *        name: Authorization
- *        schema:
- *        type: string
- *        required: true
- *      - in: path
- *        name: shared_with
- *        schema:
- *        type: string
- *        required: true
- *     produces:
- *       - application/json
- */
+// /**
+//  * @swagger
+//  *
+//  * /getUserSharedAsFriendPost/{shared_with}:
+//  *   get:
+//  *     tags :
+//  *      - Home
+//  *     summary: get User posts by shared_with friend.
+//  *     description: >
+//  *      This resource will be used for getting shared with friend posts .
+//  *     parameters:
+//  *      - in: header
+//  *        name: Authorization
+//  *        schema:
+//  *        type: string
+//  *        required: true
+//  *      - in: path
+//  *        name: shared_with
+//  *        schema:
+//  *        type: string
+//  *        required: true
+//  *     produces:
+//  *       - application/json
+//  */
 // router.get('/getUserSharedAsFriendPost/:shared_with', authenticate.verifyToken, homePageController.getUserSharedAsFriendPost)
 /**
  * @swagger
@@ -119,7 +119,7 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  * /likeunlike/{post_id}/{type}:
  *   post:
  *     tags :
- *      - home
+ *      - Home
  *     summary: LIKE OR UNLIKE .
  *     description: >
  *      This resource will be used ffor liking and unliking .
@@ -139,11 +139,56 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *        schema:
  *        type: string
  *        required: true
- *        description: (type = like) to like a post & (type=unlike) to unlike a post
- *     produces:
- *       - application/json
+ *     responses:
+ *          default:
+ *              description: Delete tracks from playlists response object.
  */
 
 router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageController.likeUnlikePost)
 
+/**
+ * @swagger
+ *
+ * /userShare/{type}:
+ *   post:
+ *     tags :
+ *      - Home
+ *     summary: This resource will be used to create post from end user as a SHARE TO ALL post OR as SHARE TO FRIEND post.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: body
+ *          name: body
+ *          required: true
+ *          description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ *          schema:
+ *              type: object
+ *              properties:
+ *                  media_id:
+ *                      type: string
+ *                      required: true
+ *                  caption:
+ *                      type: string
+ *                  media_image:
+ *                      type: string
+ *                      required: false
+ *                  meta_data:
+ *                      type: string
+ *                      required: false
+ *                  shared_with:
+ *                      type: string
+ *                      required: true
+ *     responses:
+ *          default:
+ *              description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
+ */
+router.post('/userShare/:media_type', authenticate.verifyToken, homePageController.userShare)
 module.exports = router

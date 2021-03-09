@@ -16,27 +16,40 @@ const UserRating = require('../../../models/userRating')
 // const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
+const moment = require('moment')
+// const UserStats = require('../../../models/userStats')
 
 class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.signup.validateAsync(req.body).then(async () => {
+      if (req.body.passcode !== config.constants.PASSCODE) {
+        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.invalidPasscode)
+      }
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
       const signupData = await userService.signup(req.body)
       //  const otp = await util.sendOTP(signupData.dataValues.phone_number)
       const username = [signupData.dataValues.name.replace(' ', '_'), signupData.dataValues.id].join('_')
       await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
-      const otp = await util.sendEmail(signupData.dataValues.email, signupData.dataValues.name)
+      const otp = await util
+        .sendEmail(signupData.dataValues.email, signupData.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (otp) {
-        const otpJwt = await util.getJwtFromOtp(otp.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: signupData.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(otp.otp)
+        const payload = {
+          otp: otp.otp,
+          email: signupData.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: signupData.dataValues.id })
       }
       const payload = {
         id: signupData.dataValues.id,
         username: signupData.dataValues.username,
-        role: 1,
-        isActive: signupData.dataValues.is_active
+        universityId: signupData.dataValues.university_code,
+        role: config.constants.ROLE.USER, // 1,
+        isActive: signupData.dataValues.is_active,
+        isVerified: signupData.dataValues.is_verified
       }
       const token = await util.generateJwtToken(payload)
       signupData.dataValues.token = token
@@ -66,8 +79,14 @@ class UserController {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
         return
       }
-      const otp = await util.getOtpFromJwt(verificationToken.verification_token)
-      if (otp.otp === req.body.otp) {
+      const token = await util.getOtpFromJwt(verificationToken.verification_token)
+      if (token.otp === req.body.otp && token.email === req.body.email) {
+        const payload = {
+          email: token.email,
+          isOTPVerified: true
+        }
+        const verificationToken = await util.generateVerificationToken(payload)// util.getJwtForResetPassword(payload)
+        req.body.verification_token = verificationToken
         await userService.verifyUser(req.body)
         util.successResponse(res, config.constants.SUCCESS, langMsg.userVerified, {})
       } else {
@@ -81,6 +100,39 @@ class UserController {
     })
   }
 
+  async changeEmailAddress (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.changeEmailAddress.validateAsync(req.body)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      }
+      const verificationStatus = await commonService.findOne(User, { id: req.decoded.id }, ['is_verified', 'name'])
+      if (verificationStatus.is_verified) {
+        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.notAllowed)
+      }
+      await commonService.update(User, validationResult, { id: req.decoded.id })
+      const sendEmail = await util
+        .sendEmail(validationResult.email, verificationStatus.name, config.constants.OTPType.VERIFY_ACCOUNT)
+      if (sendEmail) {
+        // const otpJwt = await util.getJwtFromOtp(sendEmail.otp)
+        const payload = {
+          otp: sendEmail.otp,
+          email: validationResult.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: req.decoded.id })
+      }
+      util.successResponse(res, config.constants.SUCCESS,
+        langMsg.success, {})
+    } catch (error) {
+      console.log(error)
+      const errorMessage = error.name === 'CustomError' ? error.message : langMsg.internalServerError
+      const errorCode = error.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      util.failureResponse(res, errorCode, errorMessage)
+    }
+  }
+
   async login (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.login.validateAsync(req.body).then(async () => {
@@ -92,20 +144,23 @@ class UserController {
         util.failureResponse(res, config.constants.FORBIDDEN, langMsg.userDeactivated)
       } else if (!loginResponse.dataValues.password) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
-      } else if (loginResponse.dataValues.is_blocked === true) {
-        console.log('blocked person')
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.isBlocked)
       } else {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
         if (didMatch) {
           const payload = {
+            // id: loginResponse.dataValues.id,
+            // username: loginResponse.dataValues.username,
+            // role: 1,
+            // isActive: loginResponse.dataValues.is_active
             id: loginResponse.dataValues.id,
             username: loginResponse.dataValues.username,
-            role: 1,
-            isActive: loginResponse.dataValues.is_active
+            universityId: loginResponse.dataValues.university_code,
+            role: config.constants.ROLE.USER, // 1,
+            isActive: loginResponse.dataValues.is_active,
+            isVerified: loginResponse.dataValues.is_verified
           }
           const token = await util.generateJwtToken(payload)
-          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.dataValues.token = token
           delete loginResponse.dataValues.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
@@ -126,23 +181,33 @@ class UserController {
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await userService.forgotPassword(req.body)
       if (!userExist) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
+      const getEmail = await util
+        .sendEmail(userExist.dataValues.email, userExist.dataValues.name, config.constants.OTPType.RESET_PASSWORD)
       if (getEmail) {
-        const otpJwt = await util.getJwtFromOtp(getEmail.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: userExist.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
+        const payload = {
+          otp: getEmail.otp,
+          email: userExist.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: userExist.dataValues.id })
       }
-      await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
-      const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
-      const token = await util.generateJwtToken(payload)
-      userExist.dataValues.token = token
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      // await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
+
+      // We do not need to send token in forget password response.
+
+      // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
+      // const token = await util.generateJwtToken(payload)
+      // userExist.dataValues.token = token
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+      // util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
@@ -158,23 +223,32 @@ class UserController {
       req.body.password = passwordHash
       const userExist = await userService.forgotPassword(req.body)
       if (!userExist) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const resetPasswordToken = await util.generatePasswordReset()
-      await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
-      const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
-      console.log('resetpasswordtakendetails', getResetPasswordToken)
-      const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
-      if (!resetPassword) {
-        util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      // const resetPasswordToken = await util.generatePasswordReset()
+      // await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
+      // const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
+      // console.log('resetpasswordtakendetails', getResetPasswordToken)
+      // const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
+      // if (!resetPassword) {
+      //   util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      // }
+      const verificationToken = await util.getOtpFromJwt(userExist.dataValues.verification_token)
+      if (verificationToken.email === userExist.dataValues.email && verificationToken.isOTPVerified) {
+        await commonService.update(User,
+          { password: passwordHash, verification_token: null },
+          { email: verificationToken.email })
+        return util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, {})
+      } else {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.tokenExpired)
       }
-      userExist.dataValues.token = resetPasswordToken
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, userExist.dataValues)
+
+      // userExist.dataValues.token = resetPasswordToken
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
@@ -190,20 +264,25 @@ class UserController {
       if (!userExist) {
         util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }
-      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name)
+      const getEmail = await util.sendEmail(userExist.dataValues.email, userExist.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (getEmail) {
-        const otpJwt = await util.getJwtFromOtp(getEmail.otp)
-        await userService.updateVerificationToken({ otp: otpJwt, id: userExist.dataValues.id })
+        // const otpJwt = await util.getJwtFromOtp(getEmail.otp)
+        const payload = {
+          otp: getEmail.otp,
+          email: userExist.dataValues.email
+        }
+        const verificationToken = await util.generateVerificationToken(payload)
+        await userService.updateVerificationToken({ otp: verificationToken, id: userExist.dataValues.id })
       }
-      const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
-      const token = await util.generateJwtToken(payload)
-      userExist.dataValues.token = token
-      delete userExist.dataValues.password
-      delete userExist.dataValues.role
-      delete userExist.dataValues.device_token
-      delete userExist.dataValues.verification_token
-      delete userExist.dataValues.social_user_id
-      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
+      // const token = await util.generateJwtToken(payload)
+      // userExist.dataValues.token = token
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+      util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, {})
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
     }).catch(err => {
@@ -226,17 +305,23 @@ class UserController {
           username: req.user.id,
           social_user_id: req.user.id,
           email: req.user.emails[0].value || req.user.email,
-          role: '1'
+          role: config.constants.ROLE.USER
         }
         userExistData = await userService.isUserAlreadyExist({ social_user_id: userData.social_user_id })
         console.log('isUserExist:', userExistData)
         console.log('msg:', config.messages.en.loginSuccess)
         if (userExistData) {
           const data = {
+            // id: userExistData.id,
+            // email: req.user.emails[0].value || req.user.email,
+            // role: '1',
+            // isActive: true
             id: userExistData.id,
-            email: req.user.emails[0].value || req.user.email,
-            role: '1',
-            isActive: true
+            username: userExistData.username,
+            universityId: userExistData.university_code,
+            role: config.constants.ROLE.USER,
+            isActive: userExistData.is_active,
+            isVerified: userExistData.is_verified
           }
           const token = await util.generateJwtToken(data)
           userExistData.token = token
@@ -251,10 +336,16 @@ class UserController {
               const username = [socialData.name.replace(' ', '_'), socialData.id].join('_')
               await commonService.update(User, { username: username }, { id: socialData.id })
               const data = {
+                // id: socialData.id,
+                // email: req.user.emails[0].value || req.user.email,
+                // role: '1',
+                // isActive: true
                 id: socialData.id,
-                email: req.user.emails[0].value || req.user.email,
-                role: '1',
-                isActive: true
+                username: socialData.username,
+                universityId: socialData.university_code,
+                role: config.constants.ROLE.USER,
+                isActive: socialData.is_active,
+                isVerified: socialData.is_verified
               }
               const token = await util.generateJwtToken(data)
               socialData.token = token
@@ -276,67 +367,61 @@ class UserController {
     }
   }
 
-  // By Bipin
-  async editDetails (req, res) {
+  async changePassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    schema.editDetails.validateAsync(req.body).then(async () => {
-      // const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
-      req.body.id = req.decoded.id
-      const updateResult = await userService.editDetails(req.body) // commonService.update(User, req.body, { id: req.decoded.id })
-      // console.log(currentEmail)
-      console.log(JSON.stringify(updateResult))
-      // if (req.body.email !== currentEmail.email) {
-      // const otp = await util.sendOTP(req.body.phone_number)
-      //   const otp = await util.sendEmail(req.body.email, req.body.name)
-      //   if (otp) {
-      //     const otpJwt = await util.getJwtFromOtp(otp.otp)
-      //     await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
-      //   }
-      //   await commonService.update(User, { is_verified: false }, { id: req.decoded.id })
-      //   util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
-      //   return
-      // }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, {})
-    }, reject => {
-      console.log(reject)
-      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    schema.changePassowrd.validateAsync(req.body).then(async () => {
+      const data = await commonService.findOne(User, { id: req.decoded.id }, ['password'])
+      console.log('OLd pwd is:', data.old_password)
+      const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
+      if (isPasswordMatched) {
+        const passwordHash = await util.encryptPassword(req.body.new_password)
+        const updateResult = await commonService.update(User, { password: passwordHash }, { id: req.decoded.id })
+        // console.log('updateResult:', updateResult)
+        if (updateResult) { util.successResponse(res, config.constants.SUCCESS, langMsg.changePassowrd, {}) }
+      } else {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.incorrectPassword)
+      }
     }).catch(err => {
       console.log(err)
-      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-      util.failureResponse(res, errorCode, errorMessage)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
   }
 
-  // By simnan
-  // async editDetails (req, res) {
-  //   const langMsg = config.messages[req.app.get('lang')]
-  //   schema.editDetails.validateAsync(req.body).then(async () => {
-  //     const currentEmail = await commonService.findOne(User, { id: req.decoded.id }, ['email'])
-  //     const updateResult = await commonService.update(User, req.body, { id: req.decoded.id })
-  //     console.log(currentEmail)
-  //     console.log(JSON.stringify(updateResult))
-  //     if (req.body.email !== currentEmail.email) {
-  //       // const otp = await util.sendOTP(req.body.phone_number)
-  //       const otp = await util.sendEmail(req.body.email, req.body.name)
-  //       if (otp) {
-  //         const otpJwt = await util.getJwtFromOtp(otp.otp)
-  //         await commonService.update(User, { verification_token: otpJwt }, { id: req.decoded.id })
-  //       }
-  //       await commonService.update(User, { is_verified: false }, { id: req.decoded.id })
-  //       util.successResponse(res, config.constants.ACCEPTED, langMsg.updateSuccess, {})
-  //       return
-  //     }
-  //     util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, {})
-  //   }, reject => {
-  //     util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
-  //   }).catch(err => {
-  //     console.log(err)
-  //     const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-  //     const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-  //     util.failureResponse(res, errorCode, errorMessage)
-  //   })
-  // }
+  async getUniversity (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { is_active: true }
+      const attributes = ['id', 'name', 'city', 'created_at', 'updated_at']
+      const data = await commonService.findAll(University, condition, attributes)
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getCountryCallingCode (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const data = await country.getCachedCountryCallingCode()
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async logout (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      await commonService.update(User, { device_token: null }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.logOut, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 
   async follow (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -426,60 +511,6 @@ class UserController {
     }
   }
 
-  async changePassword (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    schema.changePassowrd.validateAsync(req.body).then(async () => {
-      const data = await commonService.findOne(User, { id: req.decoded.id }, ['password'])
-      console.log('OLd pwd is:', data.old_password)
-      const isPasswordMatched = await util.comparePassword(req.body.old_password, data.password)
-      if (isPasswordMatched) {
-        const passwordHash = await util.encryptPassword(req.body.new_password)
-        const updateResult = await commonService.update(User, { password: passwordHash }, { id: req.decoded.id })
-        // console.log('updateResult:', updateResult)
-        if (updateResult) { util.successResponse(res, config.constants.SUCCESS, langMsg.changePassowrd, {}) }
-      } else {
-        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.incorrectPassword)
-      }
-    }).catch(err => {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    })
-  }
-
-  async getUniversity (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      const data = await commonService.findAll(University, {})
-      console.log(data)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
-  async getCountryCallingCode (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      const data = await country.getCachedCountryCallingCode()
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
-  async logout (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      await commonService.update(User, { device_token: null }, { id: req.decoded.id })
-      util.successResponse(res, config.constants.SUCCESS, langMsg.logOut, {})
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  }
-
   async isUsernameAvailable (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -523,47 +554,29 @@ class UserController {
     }
   }
 
-  /*  async likePost (req, res) {
+  async submitStats (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-
-    const validationResult = await schema.likePost.validateAsync(req.body)
-    if (validationResult.error) {
-      util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
-      return
-    }
-    const alreadyLiked = await commonService.findOne(LikeUnlike, { user_id: req.decoded.id, media_type: req.query.media_type, media_id: req.body.media_id, is_liked: true })
-    // console.log(alreadyLiked)
     try {
-      if (alreadyLiked) {
-        util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
+      const validationResult = await schema.submitStats.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
-      } else {
-        const params = {
-          user_id: req.decoded.id,
-          is_liked: true,
-          media_type: req.query.media_type,
-          media_id: req.body.media_id
-        }
-        const data = await commonService.create(LikeUnlike, params)
-        console.log(data)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
       }
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
-    }
-  } */
+      console.log(validationResult)
 
-/*  async unlikePost (req, res) {
-    const langMsg = config.messages[req.app.get('lang')]
-    try {
-      const data = await commonService.update(LikeUnlike, { is_liked: false }, { user_id: req.decoded.id })
-      console.log(data)
+      // const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
+      validationResult.user_id = req.decoded.id
+      validationResult.university_id = req.decoded.university_code || null// university.university_code
+      validationResult.date = moment().utc().format('YYYY-MM-DD')
+
+      const response = await userService.submitUserStats(validationResult)
+      console.log(response)
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, { })
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  } */
+  }
 }
 module.exports = UserController

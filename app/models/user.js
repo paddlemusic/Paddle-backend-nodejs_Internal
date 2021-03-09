@@ -21,15 +21,11 @@ const User = sequelize.define('User', {
     allowNull: true,
     defaultValue: false
   },
-  is_blocked: {
-    type: DataTypes.BOOLEAN,
-    allowNull: true,
-    defaultValue: false
-  },
   email: {
     type: DataTypes.STRING,
     allowNull: true,
-    unique: true
+    unique: true,
+    validate: { isEmail: true }
   },
   phone_number: {
     type: DataTypes.STRING,
@@ -42,7 +38,8 @@ const User = sequelize.define('User', {
   },
   profile_picture: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: true,
+    validate: { isURL: true }
   },
   social_user_id: {
     type: DataTypes.STRING,
@@ -55,15 +52,17 @@ const User = sequelize.define('User', {
   },
   role: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    allowNull: true,
+    validate: { min: 1, max: 2 }
   },
   device_token: {
     type: DataTypes.STRING,
     allowNull: true
   },
   university_code: {
-    type: DataTypes.INTEGER,
-    allowNull: true
+    type: DataTypes.SMALLINT,
+    allowNull: true,
+    validate: { min: 1 }
   },
   is_active: {
     type: DataTypes.BOOLEAN,
@@ -83,6 +82,18 @@ const User = sequelize.define('User', {
   },
   resetPasswordExpires: {
     type: DataTypes.DATE
+  },
+  top_tracks_count: {
+    type: DataTypes.SMALLINT,
+    allowNull: false,
+    defaultValue: 10,
+    validate: { is: /^(0|3|5|10)/ }
+  },
+  top_artist_count: {
+    type: DataTypes.SMALLINT,
+    allowNull: false,
+    defaultValue: 10,
+    validate: { is: /^(0|3|5|10)/ }
   }
 },
 {
@@ -93,8 +104,8 @@ const User = sequelize.define('User', {
 User.belongsTo(University, {
   sourceKey: 'id',
   foreignKey: 'university_code',
-  onDelete: 'Cascade',
-  onUpdate: 'Cascade'
+  onDelete: 'SET NULL',
+  onUpdate: 'SET NULL'
 })
 
 module.exports = User

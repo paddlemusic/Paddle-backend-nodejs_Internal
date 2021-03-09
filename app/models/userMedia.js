@@ -10,12 +10,12 @@ const UserMedia = sequelize.define('User_Media', {
   },
   media_id: {
     type: DataTypes.STRING,
-    allowNull: false, // required,
+    allowNull: false,
     unique: 'user_id_media_id_media_type'
   },
   media_image: {
     type: DataTypes.STRING,
-    allowNull: true // required
+    allowNull: true
   },
   media_name: {
     type: DataTypes.STRING,
@@ -31,8 +31,14 @@ const UserMedia = sequelize.define('User_Media', {
   },
   media_type: {
     type: DataTypes.INTEGER,
-    allowNull: false, // required
+    allowNull: false,
     unique: 'user_id_media_id_media_type'
+  },
+  usermedia_type: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    unique: 'user_id_media_id_media_type'
+    // defaultValue: 1
   }
 },
 {
@@ -48,5 +54,5 @@ UserMedia.belongsTo(User, {
 })
 
 // UserMedia.removeAttribute('id')
-// UserMedia.sync()
+// UserMedia.sync({ alter: true })
 module.exports = UserMedia
