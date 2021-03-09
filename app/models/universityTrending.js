@@ -1,6 +1,7 @@
 const DataTypes = require('sequelize').DataTypes
 const sequelize = require('./index')
 const University = require('./university')
+// const User = require('./user')
 
 const UniversityTrending = sequelize.define('University_Trending', {
   university_id: {

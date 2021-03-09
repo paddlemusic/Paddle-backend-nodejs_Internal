@@ -13,7 +13,7 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['id', 'name', 'city', 'created_at', 'updated_at'],
+        attributes: ['id', 'name', 'city', 'is_active', 'created_at', 'updated_at'],
         order: [['id', 'ASC']],
         raw: true
       }).then(result => resolve(result))
@@ -31,7 +31,7 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['id', 'name', 'created_at'],
+        attributes: ['id', 'name', 'city', 'is_active', 'created_at', 'updated_at'],
         // group: ['id'],
         order: [['id', 'ASC']],
         raw: true

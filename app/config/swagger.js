@@ -81,7 +81,7 @@ const options = {
     },
     {
       name: 'admin-analytics',
-      description: 'Everything about universities management',
+      description: 'Everything about analytics management',
       externalDocs: {
         description: 'Find out more',
         url: 'http://swagger.io'

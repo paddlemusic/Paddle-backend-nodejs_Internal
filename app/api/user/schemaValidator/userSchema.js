@@ -54,8 +54,8 @@ const schema = {
   }),
   submitStats: Joi.object().keys({
     app_usage_time: Joi.number().min(0).default(0),
-    did_open_app: Joi.boolean().default(false),
-    date: Joi.date().format('YYYY-MM-DD').required()
+    did_open_app: Joi.boolean().default(false)
+    // date: Joi.date().format('YYYY-MM-DD').required()
   })
 }
 

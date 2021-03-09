@@ -846,6 +846,47 @@ router.get('/get/:usermedia_type/:media_type', authenticate.verifyToken, userMed
 /**
  * @swagger
  *
+ * /search/{usermedia_type}/{media_type}:
+ *   get:
+ *     tags :
+ *      - User Media
+ *     summary: Search tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *        - in: query
+ *          name: keyword
+ *          schema:
+ *          type: string
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *     responses:
+ *          default:
+ *              description: Search tracks/artist to Top and Saved Songs/Artist
+ */
+router.get('/search/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.trackArtistSearch)
+
+/**
+ * @swagger
+ *
  * /{usermedia_type}/{media_type}:
  *   delete:
  *     tags :

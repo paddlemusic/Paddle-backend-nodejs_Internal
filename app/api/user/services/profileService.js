@@ -14,6 +14,7 @@ const UserService = require('../services/userService')
 const userService = new UserService()
 
 const config = require('../../../config')
+const University = require('../../../models/university')
 
 class ProfileService {
   async getProfile (params) {
@@ -60,11 +61,12 @@ class ProfileService {
     })
   }
 
-  editDetails (params) {
+  editDetails (params, id) {
     return new Promise((resolve, reject) => {
       console.log(params)
-      const userAttribute = ['id', 'name', 'username', 'phone_number', 'date_of_birth', 'biography', 'profile_picture']
-      User.update(params, { where: { id: params.id }, returning: true, attributes: userAttribute })
+      // const userAttribute = ['id', 'username', 'is_active',
+      // 'is_verified', 'university_code']
+      User.update(params, { where: { id: id }, returning: true })
         .then(result => resolve(result))
         .catch(err => {
           if (err.original.code === '23505' || err.original.code === 23505) {
@@ -86,6 +88,24 @@ class ProfileService {
             reject(err)
           }
         })
+    })
+  }
+
+  getAccountDetails (params) {
+    return new Promise((resolve, reject) => {
+      console.log(params)
+      const userAttribute = ['id', 'name', 'username', 'email',
+        'phone_number', 'date_of_birth', 'biography', 'profile_picture']
+      User.findOne({
+        where: { id: params.id },
+        attributes: userAttribute,
+        include: [{
+          model: University,
+          attributes: ['name', 'city', 'is_active']
+        }]
+      })
+        .then(result => resolve(result))
+        .catch(err => { reject(err) })
     })
   }
 }

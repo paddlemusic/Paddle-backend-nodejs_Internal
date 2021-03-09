@@ -132,8 +132,37 @@ exports.verifyToken = (req, res, next) => {
 }
 
 exports.verifyAdminToken = (req, res, next) => {
+  console.log(req.headers)
   const secret = config.JWT.secret
   const token = req.headers.authorization
+  const LangMsg = config.messages[req.app.get('lang')]
+  if (token) {
+    console.log(req.path)
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) {
+        console.log(LangMsg.invalidToken)
+        util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
+      } else {
+        // console.log('DEcoded is:', decoded)
+        if (Number(decoded.role) !== 2) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.invaldRole)
+        } else if (!decoded.is_active) {
+          util.failureResponse(res, config.constants.FORBIDDEN, LangMsg.userDeactivated)
+        } else {
+          req.decoded = decoded
+          next()
+        }
+      }
+    })
+  } else {
+    util.failureResponse(res, config.constants.UNAUTHORIZED, LangMsg.tokenMissing)
+  }
+}
+
+exports.verificationToken = (req, res, next) => {
+  console.log(req.headers)
+  const secret = config.JWT.secret
+  const token = req.headers.mailtoken
   const LangMsg = config.messages[req.app.get('lang')]
   if (token) {
     console.log(req.path)
