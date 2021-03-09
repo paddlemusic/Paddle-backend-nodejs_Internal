@@ -185,7 +185,9 @@ class AnalyticsController {
   async getstreamsTotally (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     // let trackAndCount
-    let streamCount = []
+    const streamData = {}
+
+    // let streamCount = []
     // let mediaIds
     // let streamCount2
     // console.log(req.query)
@@ -213,15 +215,16 @@ class AnalyticsController {
             })
           }
         }
-        streamCount = result.map((item, i) => Object.assign({}, item, trackAndCountUniversityWise[i]))
-        console.log('unviersity wise', streamCount)
+        streamData.mediaData = result.map((item, i) => Object.assign({}, item, trackAndCountUniversityWise[i]))
+        streamData.count = result.length
+        console.log('unviersity wise', streamData)
       } else {
         // const streamCount2 = await commonService.findAll(StreamStats, { media_type: req.query.media_type }, [[Sequelize.fn('sum', Sequelize.col('count')), 'streamCount']])
         // streamCount = await commonService.findAll(StreamStats, { media_type: req.query.media_type }, ['media_metadata', [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'], 'date'])
         const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
         const trackAndCount = await userService.getTrackAndCount(req.query.media_type)
         console.log('trackAndCount', trackAndCount)
-        const mediaIds = trackAndCount.map(post => { return post.media_id })
+        const mediaIds = trackAndCount.rows.map(post => { return post.media_id })
         // console.log('mediaIds', mediaIds)
         // const trackDetailsAndCount = await commonService.findAll(StreamStats, { media_id: mediaIds }, ['media_id', 'media_metadata'])
         const trackDetailsAndCount = await userService.getTrackDetailsAndCount(mediaIds, pagination)
@@ -232,7 +235,7 @@ class AnalyticsController {
         // console.log('aaaaaa', unique)
         const result = []
         const map = new Map()
-        for (const item of trackDetailsAndCount.rows) {
+        for (const item of trackDetailsAndCount) {
           if (!map.has(item.media_id)) {
             map.set(item.media_id, true)
             result.push({
@@ -243,11 +246,11 @@ class AnalyticsController {
         }
         // result.count = trackDetailsAndCount.count
         console.log('check here alsso', result)
-        streamCount = result.map((item, i) => Object.assign({}, item, trackAndCount[i]))
-        // streamCount.count = trackDetailsAndCount.count
-        console.log('WholeWise', streamCount)
+        streamData.mediaData = result.map((item, i) => Object.assign({}, item, trackAndCount[i]))
+        streamData.count = result.length
+        console.log('WholeWise', streamData)
       }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -256,7 +259,8 @@ class AnalyticsController {
 
   async getStreamsMonthly (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    let streamCount
+    // let streamCount
+    const streamData = {}
     try {
       const validationResult = await AnalyticsSchema.getStreamMonthly.validateAsync(req.query)
       if (validationResult.error) {
@@ -285,8 +289,9 @@ class AnalyticsController {
             })
           }
         }
-        streamCount = result.map((item, i) => Object.assign({}, item, monthlyTrackAndCountUniversityWise[i]))
-        console.log('unviersity wise', streamCount)
+        streamData.mediaData = result.map((item, i) => Object.assign({}, item, monthlyTrackAndCountUniversityWise[i]))
+        streamData.count = result.length
+        console.log('unviersity wise', streamData)
       } else {
         const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
         const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
@@ -310,10 +315,11 @@ class AnalyticsController {
             })
           }
         }
-        streamCount = result.map((item, i) => Object.assign({}, item, monthlyTrackAndCount[i]))
-        console.log('Whole wise', streamCount)
+        streamData.mediaData = result.map((item, i) => Object.assign({}, item, monthlyTrackAndCount[i]))
+        streamData.count = result.length
+        console.log('Whole wise', streamData)
       }
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamCount)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamData)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
