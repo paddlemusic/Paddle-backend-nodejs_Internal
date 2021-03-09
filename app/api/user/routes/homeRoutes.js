@@ -190,5 +190,6 @@ router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageCont
  *          default:
  *              description: In case of SHARE TO ALL the "shared_with" field will be send blank else for SHARE TO FRIEND "shared_with" field will be the user_id of a friend.
  */
-router.post('/userShare/:media_type', authenticate.verifyToken, homePageController.userShare)
+router.post('/userShare/:media_type', authenticate.verifyToken, homePageController.createUserPost)
+
 module.exports = router
