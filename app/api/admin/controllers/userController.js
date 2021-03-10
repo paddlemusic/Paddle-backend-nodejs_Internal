@@ -16,7 +16,7 @@ class UserController {
     schema.login.validateAsync(req.body).then(async () => {
       // const loginResponse = await userService.login(req.body)
       // console.log('lets try2', loginResponse)
-      const loginResponse = await commonService.findOne(User, { role: 2, email: (req.body.email).toLowerCase() }, ['id', 'name', 'username', 'email', 'phone_number',
+      const loginResponse = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: (req.body.email).toLowerCase() }, ['id', 'name', 'username', 'email', 'phone_number',
         'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt'])
       // console.log( loginResponse)
       if (!loginResponse) {
@@ -28,7 +28,7 @@ class UserController {
         if (didMatch) {
           const payload = {
             id: loginResponse.id,
-            username: loginResponse.username,
+            // username: loginResponse.username,
             role: 2,
             isActive: loginResponse.is_active
           }
@@ -126,6 +126,7 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+  // to be removed later
 
   async userSearch (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -151,10 +152,10 @@ class UserController {
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -235,7 +236,7 @@ class UserController {
   async forgotPassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
-      const userExist = await commonService.findOne(User, { role: 2, email: req.body.email })
+      const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
       // console.log('aaaaaaaaaaaaaaaa', userExist)
       if (!userExist) {
         return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
@@ -314,7 +315,7 @@ class UserController {
     schema.resetPassword.validateAsync(req.body).then(async () => {
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
-      const userExist = await commonService.findOne(User, { role: 2, email: req.body.email })
+      const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
       if (!userExist) {
         return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
       }

@@ -2,7 +2,7 @@ const University = require('../../../models/university')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
-class ProfileService {
+class UniversityService {
   getUniversities (name, pagination) {
     return new Promise((resolve, reject) => {
       University.findAndCountAll({
@@ -40,4 +40,4 @@ class ProfileService {
     })
   }
 }
-module.exports = ProfileService
+module.exports = UniversityService
