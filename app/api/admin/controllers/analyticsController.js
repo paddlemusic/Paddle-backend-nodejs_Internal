@@ -1,5 +1,6 @@
 const CommonService = require('../services/commonService')
 const UserService = require('../services/userService')
+const AnalyticsService = require('../services/analyticsService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const moment = require('moment')
@@ -14,6 +15,7 @@ const Op = Sequelize.Op
 
 const commonService = new CommonService()
 const userService = new UserService()
+const analyticsService = new AnalyticsService()
 
 class AnalyticsController {
   async getSharesLikesTotally (req, res) {
@@ -437,6 +439,178 @@ class AnalyticsController {
         console.log('Whole wise', streamData)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, streamData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  // optimized code for analytics
+  async getStreamStats (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      /* const validationResult = await AnalyticsSchema.getStream.validateAsync(req.query)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      } */
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      if (Number(req.query.time_span) === 1) {
+        // Get All stream stats
+        if (Number(req.query.university_id) >= 1) {
+          const totalCount = await analyticsService.getStreamStatsUniversityWiseCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseStreamStats(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const totalCount = await analyticsService.getStreamStatsTotalCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getStreamStats(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get Streams on monthly basis
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
+
+          const totalCount = await analyticsService.getUniversityWiseStreamStatsMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseMonthlyStreamStats(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+
+          const totalCount = await analyticsService.getStreamStatsMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getMonthlyStreamStats(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getSharesLikes (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      /* const validationResult = await AnalyticsSchema.getStream.validateAsync(req.query)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      } */
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      if (Number(req.query.time_span) === 1) {
+        // Get All share/likes
+        if (Number(req.query.university_id) >= 1) {
+          const totalCount = await analyticsService.getUserPostUniversityWiseCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseUserPost(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const totalCount = await analyticsService.getUserPostTotalCount(req.query)
+          console.log('totalCount', totalCount)
+          const allUserPost = await analyticsService.getUserPost(req.query, pagination)
+          console.log('allStreamStats', allUserPost)
+          const data = { count: totalCount, mediaData: allUserPost }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get Shares/likes on monthly basis
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss ')
+
+          const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseMonthlyUserPost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+          const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getMonthlyUserPost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = { count: totalCount, mediaData: allStreamStats }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getSignups (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      /* const validationResult = await AnalyticsSchema.getStream.validateAsync(req.query)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      } */
+      // const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      if (Number(req.query.time_span) === 1) {
+        // Get All signup count
+        if (Number(req.query.university_id) >= 1) {
+          const streamCount = await commonService.findAndCountAll(User, { university_code: req.query.university_id })
+          console.log('unviersity wise', streamCount.count)
+          const data = { signupCount: streamCount.count }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const streamCount = await commonService.findAndCountAll(User)
+          console.log('Whole wise', streamCount.count)
+          const data = { signupCount: streamCount.count }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get Signup on monthly basis
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+          const streamCount = await commonService.findAndCountAll(User, { university_code: req.query.university_id, created_at: { [Op.between]: [startDate, endDate] } })
+          console.log('unviersity wise', streamCount.count)
+          const data = { signupCount: streamCount.count }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+          const streamCount = await commonService.findAndCountAll(User, { created_at: { [Op.between]: [startDate, endDate] } })
+          console.log('Whole wise', streamCount.count)
+          const data = { signupCount: streamCount.count }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
