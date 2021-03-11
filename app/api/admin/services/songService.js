@@ -1,10 +1,10 @@
 // const StreamStats = require('../../../models/streamStats')
-// const StreamStats = require('../../../models/streamStats')
-// const Sequelize = require('sequelize')
+const StreamStats = require('../../../models/streamStats')
+const Sequelize = require('sequelize')
 // const University = require('../../../models/university')
-// const Op = Sequelize.Op
+const Op = Sequelize.Op
 class ProfileService {
-  /* getSongs (name, pagination) {
+  getSongs (name, pagination) {
     return new Promise((resolve, reject) => {
       StreamStats.findAndCountAll({
         where: {
@@ -17,28 +17,16 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],
-        // attributes: ['university_id', 'media_metadata', 'date'],
+        // attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],
+        attributes: ['university_id', 'media_metadata', 'date'],
         order: [['university_id', 'ASC']],
-        raw: true,
-        include: [{
-          model: University,
-          required: true,
-          where: {
-            // role: 1,
-            name: {
-              [Op.iLike]: '%' + name + '%'
-            }
-          },
-          attributes: ['id', 'name']
-          // as: 'post'
-        }]
+        raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
 
-  fetchChart (universityId, mediaType, pagination) {
+  /* fetchChart (universityId, mediaType, pagination) {
     return new Promise((resolve, reject) => {
       StreamStats.findAndCountAll({
         where: {

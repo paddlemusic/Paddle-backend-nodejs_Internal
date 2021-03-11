@@ -640,7 +640,7 @@ class AnalyticsController {
         } else {
           const appUsageCount = await analyticsService.getTotalAppUsage()
           console.log('Whole wise', appUsageCount)
-          const data = { appUsageCount: appUsageCount[0].appUsageTime }
+          const data = { appUsageTime: appUsageCount[0].appUsageTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       } else {
@@ -661,7 +661,7 @@ class AnalyticsController {
           const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
           const appUsageCount = await analyticsService.getMonthlyTotalAppUsage(startDate, endDate)
           console.log('Whole wise', appUsageCount)
-          const data = { appUsageCount: appUsageCount[0].appUsageTime }
+          const data = { appUsageTime: appUsageCount[0].appUsageTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       }
