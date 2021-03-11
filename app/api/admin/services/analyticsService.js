@@ -1,6 +1,7 @@
 const StreamStats = require('../../../models/streamStats')
 const UserPost = require('../../../models/userPost')
 const User = require('../../../models/user')
+const UserStats = require('../../../models/userStats')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
@@ -342,6 +343,39 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
+  }
+
+  getTotalAppUsage () {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserStats.findAll({
+        attributes: [
+          [Sequelize.fn('sum', Sequelize.col('app_usage_time')), 'appUsageTime']
+        ],
+        raw: true
+
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getMonthlyTotalAppUsage (startDate, endDate) {
+    // console.log('ffffffffffff')
+    return new Promise((resolve, reject) => {
+      UserStats.findAll({
+        where: {
+          date: {
+            [Op.between]: [startDate, endDate]
+          }
+        },
+        attributes: [
+          [Sequelize.fn('sum', Sequelize.col('app_usage_time')), 'appUsageTime']
+        ],
+        raw: true
+
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
   }
 }
 

@@ -436,4 +436,42 @@ router.get('/getShareLike', analyticsController.getSharesLikes)
  */
 router.get('/getSignups', analyticsController.getSignups)
 
+/**
+ * @swagger
+ *
+ * /getAppUsageTime:
+ *   get:
+ *     tags :
+ *      - admin-analytics
+ *     summary: Get Total & Monthly App_Usage_Time For User_App( all over /Via university).
+ *     description: >
+ *      This resource will be used to get App_Usage_Time of user_app for admin panel .
+ *     parameters:
+ *      - in: query
+ *        name: university_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: university_id = 0 for all universities App_Usage_Time,university_id >= 1 for specific university App_Usage_Time .
+ *      - in: query
+ *        name: time_span
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: time_span = 1 for getting total App_Usage_Time,time_span !=1 for monthly App_Usage_Time .
+ *      - in: query
+ *        name: month
+ *        schema:
+ *        type: integer
+ *        description: Month for which the App_Usage_Time need to be found.
+ *      - in: query
+ *        name: year
+ *        schema:
+ *        type: integer
+ *        description: Year for which the App_Usage_Time need to be found.
+ *     produces:
+ *       - application/json
+ */
+router.get('/getAppUsageTime', analyticsController.getAppUsageTime)
+
 module.exports = router

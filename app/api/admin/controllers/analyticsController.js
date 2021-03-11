@@ -8,6 +8,7 @@ const moment = require('moment')
 const UserPost = require('../../../models/userPost')
 // const StreamStats = require('../../../models/streamStats')
 const User = require('../../../models/user')
+const UserStats = require('../../../models/userStats')
 const AnalyticsSchema = require('../schemaValidator/analyticsSchema')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -18,6 +19,7 @@ const userService = new UserService()
 const analyticsService = new AnalyticsService()
 
 class AnalyticsController {
+  // ################ TO BE REMOVED lATER ########################
   async getSharesLikesTotally (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     const streamData = {}
@@ -445,6 +447,8 @@ class AnalyticsController {
     }
   }
 
+  // ################################## TO BE REMOVED LATER  ###########################################
+
   // optimized code for analytics
   async getStreamStats (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -608,6 +612,56 @@ class AnalyticsController {
           const streamCount = await commonService.findAndCountAll(User, { created_at: { [Op.between]: [startDate, endDate] } })
           console.log('Whole wise', streamCount.count)
           const data = { signupCount: streamCount.count }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async getAppUsageTime (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      /* const validationResult = await AnalyticsSchema.getStream.validateAsync(req.query)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      } */
+      // const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      if (Number(req.query.time_span) === 1) {
+        // Get All app usage count
+        if (Number(req.query.university_id) >= 1) {
+          const appUsageTime = await commonService.findAll(UserStats, { university_id: req.query.university_id }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
+          console.log('University wise', appUsageTime[0].sum)
+          const data = { appUsageTime: appUsageTime[0].sum }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const appUsageCount = await analyticsService.getTotalAppUsage()
+          console.log('Whole wise', appUsageCount)
+          const data = { appUsageCount: appUsageCount[0].appUsageTime }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get All app usage on monthly basis
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+          const appUsageTime = await commonService.findAll(UserStats, { university_id: req.query.university_id, date: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
+          console.log('Whole wise', appUsageTime[0].sum)
+          const data = { appUsageTime: appUsageTime[0].sum }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+          const appUsageCount = await analyticsService.getMonthlyTotalAppUsage(startDate, endDate)
+          console.log('Whole wise', appUsageCount)
+          const data = { appUsageCount: appUsageCount[0].appUsageTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       }
