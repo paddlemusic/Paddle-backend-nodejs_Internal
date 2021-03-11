@@ -131,7 +131,6 @@ router.get('/getAccountDetails', authenticate.verifyToken, profileController.get
  *          default:
  *              description: upload image to Amazon S3 bucket .
  */
-
 router.post('/upload', authenticate.verifyToken, uploadMiddleware.upload, profileController.uploadFile)
 
 /**
