@@ -12,7 +12,7 @@ const schema = {
   playlist: Joi.object().keys({
     name: Joi.string().max(50).trim().allow(null).allow(''),
     description: Joi.string().max(200).trim().allow(null).allow(''),
-    image: Joi.string().trim().allow(null).allow('')
+    image: Joi.array().items(Joi.string().trim().uri().allow(null).allow(''))
   }),
   deletePlaylist: Joi.object().keys({
     playlist_id: Joi.number().min(1).required()
