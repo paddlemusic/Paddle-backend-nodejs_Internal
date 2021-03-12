@@ -108,6 +108,8 @@ const sendEmail = async function (toEmail, name, type) {
     }
 
     sgMail.send(mailOptions)
+      .then(result => { console.log(result) })
+      .catch(err => { console.log(err) })
 
     mailOptions.otp = otp
     resolve(mailOptions)
