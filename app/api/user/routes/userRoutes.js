@@ -7,6 +7,7 @@ const userController = new UserController()
 
 const auth = require('../../../middleware/authenticate')
 const authenticate = require('../../../middleware/authenticate')
+const uploadMiddleware = require('../../../middleware/upload')
 
 /**
  * @swagger
@@ -220,6 +221,30 @@ router.post('/forgotPassword', userController.forgotPassword)
  *       - application/json
  */
 router.post('/resetPassword', userController.resetPassword)
+
+/**
+ * @swagger
+ *
+ * /upload:
+ *   post:
+ *     tags :
+ *      - User
+ *     summary: To upload an image.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - multipart/form-data
+ *     parameters:
+ *      - in: formData
+ *        name: image
+ *        schema:
+ *        type: file
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: upload image to Amazon S3 bucket .
+ */
+router.post('/upload', uploadMiddleware.upload, userController.uploadFile)
 
 /**
  * @swagger

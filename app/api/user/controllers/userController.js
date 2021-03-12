@@ -18,6 +18,7 @@ const UserRating = require('../../../models/userRating')
 // const utils = require('../utils/utils')
 const moment = require('moment')
 // const UserStats = require('../../../models/userStats')
+const s3Bucket = require('../services/s3Bucket')
 
 class UserController {
   async signup (req, res) {
@@ -408,6 +409,27 @@ class UserController {
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async uploadFile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (!req.file) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.failed)
+      }
+      const myFile = req.file.originalname.split('.')
+      const fileType = myFile[myFile.length - 1]
+      const body = {
+        fileType: fileType,
+        buffer: req.file.buffer
+      }
+      const upload = await s3Bucket.uploadToS3(body)
+      // await commonService.update(User, { profile_picture: upload.Location }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { Location: upload.Location })
+    } catch (error) {
+      console.log('Error is:', error)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
