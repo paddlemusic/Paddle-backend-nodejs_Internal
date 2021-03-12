@@ -49,6 +49,11 @@ const uploadMiddleware = require('../../../middleware/upload')
  *        schema:
  *        type: integer
  *        required: false
+ *      - in: body
+ *        name: profile_picture
+ *        schema:
+ *        type: string
+ *        required: false
  *     produces:
  *       - application/json
  */

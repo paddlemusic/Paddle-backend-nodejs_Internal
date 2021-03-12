@@ -34,6 +34,8 @@ const authenticate = require('../../../middleware/authenticate')
  *                      type: string
  *                  description:
  *                      type: string
+ *                  image:
+ *                      type: array
  *     responses:
  *          default:
  *              description: Create playlist response object.
@@ -72,6 +74,8 @@ router.post('/playlist/create', authenticate.verifyToken, userMediaController.cr
  *                      type: string
  *                  description:
  *                      type: string
+ *                  image:
+ *                      type: array
  *     responses:
  *          default:
  *              description: Update playlist response object.
