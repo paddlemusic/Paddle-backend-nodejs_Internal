@@ -44,5 +44,23 @@ class ProfileService {
         .catch(err => reject(err))
     })
   } */
+
+  songsViaUniversity (universityId, pagination) {
+    return new Promise((resolve, reject) => {
+      StreamStats.findAndCountAll({
+        where: {
+          university_id: universityId,
+          media_type: 1
+        },
+        limit: pagination.limit,
+        offset: pagination.offset,
+        // attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],
+        attributes: ['university_id', 'media_metadata', 'date'],
+        order: [['university_id', 'ASC']],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
 }
 module.exports = ProfileService

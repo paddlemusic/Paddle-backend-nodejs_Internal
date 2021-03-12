@@ -35,4 +35,6 @@ const songController = new SongController()
  */
 router.get('/getSongs', songController.getSongs)
 
+router.get('/songsViaUniversity/:id', songController.getSongsViaUniversity)
+
 module.exports = router
