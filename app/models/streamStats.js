@@ -21,7 +21,7 @@ const StreamStats = sequelize.define('Stream_Stats', {
     unique: 'stream_stats_un_key'
   },
   media_metadata: {
-    type: DataTypes.JSON,
+    type: DataTypes.JSONB,
     allowNull: true
   },
   date: {

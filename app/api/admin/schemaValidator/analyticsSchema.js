@@ -8,7 +8,8 @@ const schema = {
     university_id: Joi.number().required(),
     media_type: Joi.number().required(),
     page: Joi.number(),
-    pageSize: Joi.number()
+    pageSize: Joi.number(),
+    time_span: Joi.number()
   }),
   getSignups: Joi.object().keys({
     university_code: Joi.number().required()

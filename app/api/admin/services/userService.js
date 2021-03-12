@@ -118,6 +118,7 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+  // #######################################################
 
   getSharesPerUniversity (mediaId, universityId, mediaType) {
     return new Promise((resolve, reject) => {
@@ -686,5 +687,7 @@ class UserService {
         .catch(err => reject(err))
     })
   }
+
+  // ################################################################################
 }
 module.exports = UserService
