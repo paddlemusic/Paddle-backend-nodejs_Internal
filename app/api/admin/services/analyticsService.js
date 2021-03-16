@@ -377,6 +377,49 @@ class AnalyticsService {
         .catch(err => reject(err))
     })
   }
+
+  async getStatsDataUniversityWise (universityId, datesInMonth, openTime, pagination) {
+    const result = await UserStats.findAll({
+      where: {
+        date: datesInMonth,
+        university_id: universityId,
+        app_open_count: {
+          [Op.gte]: openTime
+        }
+      },
+      attributes: [
+        [Sequelize.fn('count', Sequelize.col('user_id')), 'count'],
+        'user_id'
+      ],
+      group: ['user_id'],
+      raw: true,
+      limit: pagination.limit,
+      offset: pagination.offset
+    })
+    // console.log(result)
+    return result
+  }
+
+  async getStatsData (datesInMonth, openTime, pagination) {
+    const result = await UserStats.findAll({
+      where: {
+        date: datesInMonth,
+        app_open_count: {
+          [Op.gte]: openTime
+        }
+      },
+      attributes: [
+        [Sequelize.fn('count', Sequelize.col('user_id')), 'count'],
+        'user_id'
+      ],
+      group: ['user_id'],
+      raw: true,
+      limit: pagination.limit,
+      offset: pagination.offset
+    })
+    // console.log(result)
+    return result
+  }
 }
 
 module.exports = AnalyticsService

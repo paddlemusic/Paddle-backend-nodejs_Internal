@@ -474,4 +474,42 @@ router.get('/getSignups', analyticsController.getSignups)
  */
 router.get('/getAppUsageTime', analyticsController.getAppUsageTime)
 
+/**
+ * @swagger
+ *
+ * /getAppOpenData:
+ *   get:
+ *     tags :
+ *      - admin-analytics
+ *     summary: Get No. Of Users Openining App at least some time in a day(monthly basis)( all over /Via university).
+ *     description: >
+ *      This resource will be used to get App_Usage_Time of user_app for admin panel .
+ *     parameters:
+ *      - in: query
+ *        name: university_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: university_id = 0 for all universities AppOpeningUserCount,university_id >= 1 for specific university AppOpeningUserCount .
+ *      - in: query
+ *        name: open_time
+ *        schema:
+ *        type: integer
+ *        required: true
+ *        description: open_time = 1 for getting total AppOpeningUserCount at least once a day,time_span ==2 for getting total AppOpeningUserCount at least twicee a day .
+ *      - in: query
+ *        name: month
+ *        schema:
+ *        type: integer
+ *        description: Month for which the AppOpeningUserCount to be found.
+ *      - in: query
+ *        name: year
+ *        schema:
+ *        type: integer
+ *        description: Year for which the AppOpeningUserCount need to be found.
+ *     produces:
+ *       - application/json
+ */
+router.get('/getAppOpenData', analyticsController.getAppOpenData)
+
 module.exports = router

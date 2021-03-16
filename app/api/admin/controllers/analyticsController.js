@@ -670,6 +670,132 @@ class AnalyticsController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async getAppOpenData (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (Number(req.query.university_id) >= 1) {
+        const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+        let startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+        let count = 0
+        const daysInMonth = moment(startDate).daysInMonth()
+        console.log('days in month', daysInMonth)
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
+        console.log('start', startDate)
+        console.log('end', endDate)
+        const datesInMonth = []
+        datesInMonth.push(startDate)
+        for (let day = 1; day < daysInMonth; day++) {
+          const date = moment(startDate).add(1, 'days').format('YYYY-MM-DD')
+          datesInMonth.push(date)
+          startDate = date
+        }
+        /* const weeks = []
+      const firstDate = moment([req.query.year, req.query.month - 1]).toDate()
+      const daysInMonth2 = moment(firstDate).daysInMonth()
+      const lastDate = moment(firstDate).add(daysInMonth2, 'days').toDate()
+      const numDays = lastDate.getDate()
+
+      // const firstDate = moment([req.query.year, req.query.month]).toDate()
+      console.log(firstDate)
+      console.log(daysInMonth2)
+      // const lastDate = moment(firstDate).add(1, 'months').subtract(1, 'days').toDate()
+      console.log(lastDate)
+      // const numDays = lastDate.getDate()
+      console.log(numDays)
+
+      let dayOfWeekCounter = firstDate.getDay()
+
+      for (let date = 1; date <= numDays; date++) {
+        if (dayOfWeekCounter === 0 || weeks.length === 0) {
+          weeks.push([])
+        }
+        weeks[weeks.length - 1].push(date)
+        dayOfWeekCounter = (dayOfWeekCounter + 1) % 7
+      }
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@', weeks
+        .filter((w) => !!w.length)
+        .map((w) => ({
+          start: w[0],
+          end: w[w.length - 1],
+          dates: w
+        }))) */
+        // const getStats = await commonService.findAndCountAll(UserStats, { university_id: req.query.university_id, app_open_count: { [Op.gte]: 2 }, date: datesInMonth }, [[Sequelize.fn('count', Sequelize.col('user_id')), 'count'], 'user_id'])
+        const getStats = await analyticsService.getStatsDataUniversityWise(req.query.university_id, datesInMonth, req.query.open_time, pagination)
+        console.log('via university', getStats)
+        const countsData = getStats.map(post => { return post.count })
+        console.log(countsData)
+        countsData.forEach(element => {
+          if (Number(element) === daysInMonth) {
+            count = count + 1
+          }
+        })
+        const data = { appUsageCount: count }
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+      } else {
+        const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+        let startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+        let count = 0
+        const daysInMonth = moment(startDate).daysInMonth()
+        console.log('days in month', daysInMonth)
+        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
+        console.log('start', startDate)
+        console.log('end', endDate)
+        const datesInMonth = []
+        datesInMonth.push(startDate)
+        for (let day = 1; day < daysInMonth; day++) {
+          const date = moment(startDate).add(1, 'days').format('YYYY-MM-DD')
+          datesInMonth.push(date)
+          startDate = date
+        }
+        /* const weeks = []
+      const firstDate = moment([req.query.year, req.query.month - 1]).toDate()
+      const daysInMonth2 = moment(firstDate).daysInMonth()
+      const lastDate = moment(firstDate).add(daysInMonth2, 'days').toDate()
+      const numDays = lastDate.getDate()
+
+      // const firstDate = moment([req.query.year, req.query.month]).toDate()
+      console.log(firstDate)
+      console.log(daysInMonth2)
+      // const lastDate = moment(firstDate).add(1, 'months').subtract(1, 'days').toDate()
+      console.log(lastDate)
+      // const numDays = lastDate.getDate()
+      console.log(numDays)
+
+      let dayOfWeekCounter = firstDate.getDay()
+
+      for (let date = 1; date <= numDays; date++) {
+        if (dayOfWeekCounter === 0 || weeks.length === 0) {
+          weeks.push([])
+        }
+        weeks[weeks.length - 1].push(date)
+        dayOfWeekCounter = (dayOfWeekCounter + 1) % 7
+      }
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@', weeks
+        .filter((w) => !!w.length)
+        .map((w) => ({
+          start: w[0],
+          end: w[w.length - 1],
+          dates: w
+        }))) */
+        // const getStats = await commonService.findAndCountAll(UserStats, { university_id: req.query.university_id, app_open_count: { [Op.gte]: 2 }, date: datesInMonth }, [[Sequelize.fn('count', Sequelize.col('user_id')), 'count'], 'user_id'])
+        const getStats = await analyticsService.getStatsData(datesInMonth, req.query.open_time, pagination)
+        console.log('all over', getStats)
+        const countsData = getStats.map(post => { return post.count })
+        console.log(countsData)
+        countsData.forEach(element => {
+          if (Number(element) === daysInMonth) {
+            count = count + 1
+          }
+        })
+        const data = { appUsageCount: count }
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 
 module.exports = AnalyticsController
