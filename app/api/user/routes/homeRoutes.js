@@ -38,6 +38,9 @@ const authenticate = require('../../../middleware/authenticate')
  *                  media_id:
  *                      type: string
  *                      required: true
+ *                  playURI:
+ *                      type: string
+ *                      required: false
  *                  caption:
  *                      type: string
  *                  media_image:
@@ -139,6 +142,11 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *        schema:
  *        type: string
  *        required: true
+ *      - in: path
+ *        name: playURI
+ *        schema:
+ *        type: string
+ *        required: false
  *     responses:
  *          default:
  *              description: Delete tracks from playlists response object.
@@ -175,6 +183,9 @@ router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageCont
  *                  media_id:
  *                      type: string
  *                      required: true
+ *                  playURI:
+ *                      type: string
+ *                      required: false
  *                  caption:
  *                      type: string
  *                  media_image:

@@ -29,6 +29,10 @@ const StreamStats = sequelize.define('Stream_Stats', {
     allowNull: false,
     unique: 'stream_stats_un_key'
   },
+  play_uri: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   count: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -51,6 +55,6 @@ const StreamStats = sequelize.define('Stream_Stats', {
 
 StreamStats.removeAttribute('id')
 
-// StreamStats.sync({ force: true })
+// StreamStats.sync({ alter: true })
 
 module.exports = StreamStats

@@ -32,7 +32,7 @@ class ChartService {
     let values = ''
     params.forEach(param => {
       if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}')`
+      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI}')`// added play_uri
       values += value
     })
     const rawQuery =
@@ -42,13 +42,15 @@ class ChartService {
                 media_id,
                 media_type,
                 media_metadata,
-                "date")
+                "date",
+                "play_uri")
               VALUES ${values} 
               ON CONFLICT 
                 (university_id,
                   media_id,
                   media_type,
-                  "date") 
+                  "date",
+                  "play_uri") 
               DO UPDATE
               SET
                 count = "Stream_Stats".count + 1`
@@ -89,7 +91,7 @@ class ChartService {
             [Op.gte]: moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
           }
         },
-        attributes: ['media_id', 'media_type', 'media_metadata'],
+        attributes: ['media_id', 'media_type', 'media_metadata', 'play_uri'], // added play_uri
         limit: pagination.limit,
         offset: pagination.offset,
         order: [['count', 'DESC']]

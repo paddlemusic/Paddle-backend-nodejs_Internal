@@ -33,6 +33,9 @@ const auth = require('../../../middleware/authenticate')
  *                    media_id:
  *                     type: string
  *                     required: true
+ *                    playURI:
+ *                     type: string
+ *                     required: false
  *                    media_type:
  *                     type: integer
  *                     required: true
@@ -49,6 +52,9 @@ const auth = require('../../../middleware/authenticate')
  *                    media_id:
  *                     type: string
  *                     required: true
+ *                    playURI:
+ *                     type: string
+ *                     required: false
  *                    media_type:
  *                     type: integer
  *                     required: true

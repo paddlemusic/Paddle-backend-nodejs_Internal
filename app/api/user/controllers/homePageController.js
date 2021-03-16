@@ -33,6 +33,7 @@ class HomePageController {
       const param = {
         user_id: req.decoded.id,
         media_id: req.body.media_id,
+        play_uri: req.body.playURI, // added play_uri key
         caption: req.body.caption,
         // shared_with: req.body.shared_with,
         media_image: req.body.media_image,

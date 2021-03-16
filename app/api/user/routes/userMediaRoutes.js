@@ -36,6 +36,8 @@ const authenticate = require('../../../middleware/authenticate')
  *                      type: string
  *                  image:
  *                      type: array
+ *                  playURI:
+ *                      type: string
  *     responses:
  *          default:
  *              description: Create playlist response object.
@@ -76,6 +78,8 @@ router.post('/playlist/create', authenticate.verifyToken, userMediaController.cr
  *                      type: string
  *                  image:
  *                      type: array
+ *                  playURI:
+ *                      type: string
  *     responses:
  *          default:
  *              description: Update playlist response object.
@@ -166,6 +170,7 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                   "tracksData":[
  *                          {
  *                    "media_id": "1",
+ *                    "playURI": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -173,6 +178,7 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                          },
  *                          {
  *                    "media_id": "2",
+ *                    "playURI": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -355,7 +361,7 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, u
  *   get:
  *     tags :
  *      - User Media
- *     summary: Delete tracks from a Playlist.
+ *     summary: Get tracks from a Playlist.
  *     produces:
  *       - application/json
  *     consumes:
@@ -776,6 +782,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                   "tracksData":[
  *                          {
  *                    "media_id": "1",
+ *                    "playURI": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -783,6 +790,7 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          },
  *                          {
  *                    "media_id": "2",
+ *                    "playURI": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -797,6 +805,9 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          media_id:
  *                              type: string
  *                              required:  true
+ *                          playURI:
+ *                              type: string
+ *                              required:  false
  *                          media_image:
  *                              type: string
  *                          media_name:
@@ -967,6 +978,11 @@ router.delete('/:usermedia_type/:media_type', authenticate.verifyToken, userMedi
  *          type: integer
  *          required: true
  *          description: count in range of 0, 3, 5, 10.
+ *        - in: path
+ *          name: playURI
+ *          schema:
+ *          type: string
+ *          required: false
  *     responses:
  *          default:
  *              description: Set/update Top artitst/tracks

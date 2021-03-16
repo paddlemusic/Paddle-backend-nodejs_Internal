@@ -108,6 +108,7 @@ class UserMediaController {
         return {
           playlist_id: req.params.playlist_id,
           media_id: item.media_id,
+          play_uri: item.playURI, // added playURI in addtracks
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -132,7 +133,7 @@ class UserMediaController {
         ['id', 'name', 'description', 'created_at', 'updated_at', 'image'])
       console.log(playlistData)
       const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.id },
-        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at'])
+        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at', 'paly_uri']) // added playURI in response
       console.log(trackData)
       trackData.playlist = playlistData
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
@@ -221,6 +222,7 @@ class UserMediaController {
         return {
           user_id: req.decoded.id,
           media_id: item.media_id,
+          paly_uri: item.playURI, // added playURI in addsongs/artist
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -271,7 +273,7 @@ class UserMediaController {
         usermedia_type: req.params.usermedia_type
       }
       const attributes = ['media_id', 'media_name', 'media_image', 'meta_data',
-        'meta_data2', 'media_type', 'created_at', 'updated_at']
+        'meta_data2', 'media_type', 'created_at', 'updated_at', 'paly_uri']// added playURI in getsong/artistData response
 
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes, pagination)
