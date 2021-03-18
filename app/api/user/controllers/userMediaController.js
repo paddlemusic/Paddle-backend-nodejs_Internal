@@ -84,7 +84,7 @@ class UserMediaController {
     try {
       const condition = { user_id: req.decoded.id }
       const playlistData = await commonService.findAndCountAll(UserPlaylist, condition,
-        ['id', 'name', 'description', 'createdAt', 'updatedAt'])
+        ['id', 'name', 'description', 'image', 'createdAt', 'updatedAt'])
       console.log(playlistData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, playlistData)
     } catch (err) {
