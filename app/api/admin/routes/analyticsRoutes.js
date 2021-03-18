@@ -512,4 +512,6 @@ router.get('/getAppUsageTime', analyticsController.getAppUsageTime)
  */
 router.get('/getAppOpenData', analyticsController.getAppOpenData)
 
+router.get('/getWeeklyAppOpenData', analyticsController.getWeeklyAppOpenData)
+
 module.exports = router

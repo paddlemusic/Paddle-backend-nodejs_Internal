@@ -1,6 +1,7 @@
 // const StreamStats = require('../../../models/streamStats')
 const StreamStats = require('../../../models/streamStats')
 const Sequelize = require('sequelize')
+const config = require('../../../config/index')
 // const University = require('../../../models/university')
 const Op = Sequelize.Op
 class ProfileService {
@@ -13,7 +14,7 @@ class ProfileService {
               [Op.iLike]: '%' + name + '%'
             }
           },
-          media_type: 1
+          media_type: config.constants.MEDIA_TYPE.TRACK
         },
         limit: pagination.limit,
         offset: pagination.offset,
@@ -50,7 +51,7 @@ class ProfileService {
       StreamStats.findAndCountAll({
         where: {
           university_id: universityId,
-          media_type: 1
+          media_type: config.constants.MEDIA_TYPE.TRACK
         },
         limit: pagination.limit,
         offset: pagination.offset,
