@@ -39,7 +39,6 @@ const User = sequelize.define('User', {
   profile_picture: {
     type: DataTypes.STRING,
     allowNull: true,
-    validate: { isURL: true }
   },
   social_user_id: {
     type: DataTypes.STRING,
@@ -77,12 +76,12 @@ const User = sequelize.define('User', {
   verification_token: {
     type: DataTypes.STRING
   },
-  resetPasswordToken: {
-    type: DataTypes.STRING
-  },
-  resetPasswordExpires: {
-    type: DataTypes.DATE
-  },
+  // resetPasswordToken: {
+  //   type: DataTypes.STRING
+  // },
+  // resetPasswordExpires: {
+  //   type: DataTypes.DATE
+  // },
   top_tracks_count: {
     type: DataTypes.SMALLINT,
     allowNull: false,
