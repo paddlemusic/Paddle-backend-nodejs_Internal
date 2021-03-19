@@ -3,7 +3,7 @@ const UserService = require('../services/userService')
 const AnalyticsService = require('../services/analyticsService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
-const lodash = require('lodash')
+// const lodash = require('lodash')
 const moment = require('moment')
 // const UniversityTrending = require('../../../models/universityTrending')
 const UserPost = require('../../../models/userPost')
@@ -798,7 +798,7 @@ class AnalyticsController {
     }
   }
 
-  async getWeeklyAppOpenData(req, res) {
+  async getWeeklyAppOpenData (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
@@ -812,11 +812,12 @@ class AnalyticsController {
 
       const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
 
-      let weeklyUsersCount = {}
+      const weeklyUsersCount = {}
       let usersCount = 0
       weeklyUsersData[0].forEach(weekData => {
-        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ? 
-        (weeklyUsersCount[[weekData.user_id]] + 1) : (1)
+        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]]
+          ? (weeklyUsersCount[[weekData.user_id]] + 1)
+          : (1)
         if (Number(weeklyUsersCount[[weekData.user_id]]) === Number(weekCount)) {
           usersCount++
         }
