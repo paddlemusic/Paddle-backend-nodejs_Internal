@@ -798,115 +798,33 @@ class AnalyticsController {
     }
   }
 
-  async getWeeklyAppOpenData (req, res) {
+  async getWeeklyAppOpenData(req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      if (Number(req.query.university_id) >= 1) {
-        const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-        let startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
-        let count = 0
-        const daysInMonth = moment(startDate).daysInMonth()
-        console.log('days in month', daysInMonth)
-        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
-        console.log('start', startDate)
-        console.log('end', endDate)
-        const datesInMonth = []
-        datesInMonth.push(startDate)
-        for (let day = 1; day < daysInMonth; day++) {
-          const date = moment(startDate).add(1, 'days').format('YYYY-MM-DD')
-          datesInMonth.push(date)
-          startDate = date
+      const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+      const daysInMonth = moment(startDate).daysInMonth()
+      const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
+
+      const getWeeks = await analyticsService.getWeeks(startDate, endDate, req.query.university_id)
+      const weekDayStartingDate = getWeeks[1].rows.map(post => { return moment(post.weekdate).format('YYYY-MM-DD') })
+
+      const weekCount = weekDayStartingDate.length
+
+      const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
+
+      let weeklyUsersCount = {}
+      weeklyUsersData[0].forEach(weekData => {
+        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ? (weeklyUsersCount[[weekData.user_id]] + 1) : (1)
+      })
+      console.log(weeklyUsersCount)
+
+      let usersCount = 0
+      for (const user in weeklyUsersCount) {
+        if (Number(weeklyUsersCount[user]) === Number(weekCount)) {
+          usersCount++
         }
-        // const getStats = await commonService.findAndCountAll(UserStats, { university_id: req.query.university_id, app_open_count: { [Op.gte]: 2 }, date: datesInMonth }, [[Sequelize.fn('count', Sequelize.col('user_id')), 'count'], 'user_id'])
-        const getStats = await analyticsService.getStatsDataUniversityWise(req.query.university_id, datesInMonth, req.query.open_time, pagination)
-        console.log('via university', getStats)
-        const countsData = getStats.map(post => { return post.count })
-        console.log(countsData)
-        countsData.forEach(element => {
-          if (Number(element) === daysInMonth) {
-            count = count + 1
-          }
-        })
-        const data = { appUsageCount: count }
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-      } else {
-        const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
-        // const count = 0
-        const daysInMonth = moment(startDate).daysInMonth()
-        console.log('days in month', daysInMonth)
-        const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
-        console.log('start', startDate)
-        console.log('end', endDate)
-        const weekDayEndingDate = []
-        const weekDayStartingDate = []
-        // const Ids = []
-        // const arrays = []
-        // const IdsData = []
-        // const 2dArray = []
-        let weekCount = 0
-        // let t = 0
-
-        const getWeeks = await analyticsService.getWeeks(startDate, endDate)
-        // console.log('check this', getWeeks[1].rows.weekdate)
-        const StartingDate = getWeeks[1].rows.map(post => { return post.weekdate })
-        // console.log('StartingDate', StartingDate)
-        // const data = { appUsageCount: getWeeks }
-        StartingDate.forEach(element => {
-          weekDayStartingDate.push(moment(element).format('YYYY-MM-DD'))
-        })
-        console.log('weekDayStartingDate', weekDayStartingDate)
-        weekDayStartingDate.forEach(element => {
-          weekDayEndingDate.push(moment(element).add(5, 'days').format('YYYY-MM-DD'))
-        })
-        console.log('weekDayEndingDate', weekDayEndingDate)
-        weekDayStartingDate.forEach(element => {
-          weekCount++
-        })
-        console.log('eekcount', weekCount)
-        const arr = []
-        for (let i = 0; i < weekCount; i++) {
-          arr[i] = []
-        }
-        console.log(arr)
-        for (let j = 0; j < weekCount; j++) {
-          const getStats = await analyticsService.getWeekslyStatsData(weekDayStartingDate[j], weekDayEndingDate[j])
-          arr[j] = getStats.map(post => { return post.user_id })
-        }
-        console.log('arr data', arr)
-        /* arr.forEach(element => {
-          weekDayStartingDate.forEach(async (num1, index) => {
-            const num2 = weekDayEndingDate[index]
-            const getStats = await analyticsService.getWeekslyStatsData(num1, num2)
-            console.log('@@@@@@@@@@@@@@@@', getStats)
-            element = getStats.map(post => { return post.user_id })
-            // Ids.push(getStats.map(post => { return post.user_id }))
-
-            // IdsData = getStats.map(post => { return post.user_id })
-            // console.log(IdsData)
-
-            console.log('ids data', arr)
-            // console.log('ids data', Ids[0])
-          })
-        }) */
-        /* weekDayStartingDate.forEach(async (num1, index) => {
-          const num2 = weekDayEndingDate[index]
-          const getStats = await analyticsService.getWeekslyStatsData(num1, num2)
-          console.log('@@@@@@@@@@@@@@@@', getStats)
-          Ids.push(getStats.map(post => { return post.user_id }))
-
-          // IdsData = getStats.map(post => { return post.user_id })
-          // console.log(IdsData)
-
-          // console.log('ids data', Ids)
-          // console.log('ids data', Ids[0])
-        }) */
-        console.log('final', arr)
-        for (let k = 0; k < weekCount - 1; k++) {
-          const diff = lodash.difference(arr[k], arr[k + 1])
-          console.log(diff)
-        }
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
       }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { usersCount: usersCount })
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

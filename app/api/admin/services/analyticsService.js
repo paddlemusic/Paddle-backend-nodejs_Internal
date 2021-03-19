@@ -422,14 +422,11 @@ class AnalyticsService {
     return result
   }
 
-  async getWeeks (startDate, endDate) {
-    // console.log(params)
-    /* let values = ''
-    params.forEach(param => {
-      if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI}')`// added play_uri
-      values += value
-    }) */
+  async getWeeks (startDate, endDate, university_id = null) {
+    let subQuery = ''
+    if (university_id) {
+      subQuery = ` AND university_id = ${university_id} `
+    }
     const rawQuery =
              `SELECT
              date_trunc('week', "date"::date) as weekdate
@@ -438,6 +435,7 @@ class AnalyticsService {
            where
              date >= '${startDate}'
              and date <= '${endDate}'
+             ${subQuery}
            group by
              1
            order by
@@ -447,6 +445,27 @@ class AnalyticsService {
       // bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
     })
     // console.log('marjaneya', data)
+    return data
+  }
+
+  async getAppOpenDataWeekly (startDate, endDate, university_id = null) {
+    let subQuery = ''
+    if (university_id) {
+      subQuery = ` AND university_id = ${university_id} `
+    }
+    const rawQuery =
+             `SELECT
+                distinct(user_id),
+                date_trunc('week', "date"::date) as weekdate
+              FROM "User_Stats"
+              WHERE
+                date >= '${startDate}' AND
+                date <= '${endDate}' 
+                ${subQuery}
+              GROUP BY
+                weekdate, user_id`
+    const data = await sequelize.query(rawQuery, {
+    })
     return data
   }
 
