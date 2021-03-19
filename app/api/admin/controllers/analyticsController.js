@@ -813,17 +813,16 @@ class AnalyticsController {
       const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
 
       let weeklyUsersCount = {}
+      let usersCount = 0
       weeklyUsersData[0].forEach(weekData => {
-        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ? (weeklyUsersCount[[weekData.user_id]] + 1) : (1)
+        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ? 
+        (weeklyUsersCount[[weekData.user_id]] + 1) : (1)
+        if (Number(weeklyUsersCount[[weekData.user_id]]) === Number(weekCount)) {
+          usersCount++
+        }
       })
       console.log(weeklyUsersCount)
 
-      let usersCount = 0
-      for (const user in weeklyUsersCount) {
-        if (Number(weeklyUsersCount[user]) === Number(weekCount)) {
-          usersCount++
-        }
-      }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, { usersCount: usersCount })
     } catch (err) {
       console.log(err)
