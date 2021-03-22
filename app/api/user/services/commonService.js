@@ -41,13 +41,14 @@ class CommonService {
     })
   }
 
-  findAndCountAll (table, condition, attributes, pagination = null) {
+  findAndCountAll (table, condition, attributes, pagination = null, orderBy = null) {
     return new Promise((resolve, reject) => {
       table.findAndCountAll({
         where: condition,
         attributes: attributes,
         limit: pagination ? pagination.limit : null,
-        offset: pagination ? pagination.offset : null
+        offset: pagination ? pagination.offset : null,
+        order: orderBy
       })
         .then(result => resolve(result))
         .catch(err => reject(err))

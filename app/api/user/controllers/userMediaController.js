@@ -14,6 +14,9 @@ const PlaylistTrack = require('../../../models/playlistTrack')
 const User = require('../../../models/user')
 // const UserShare = require('../../../models/userPost')
 const UserMedia = require('../../../models/userMedia')
+const constants = require('../../../config/constants')
+const UserMediaService = require('../services/userMediaService')
+const userMediaService = new UserMediaService()
 
 class UserMediaController {
 /* Playlist Methods
@@ -133,7 +136,7 @@ class UserMediaController {
         ['id', 'name', 'description', 'created_at', 'updated_at', 'image'])
       console.log(playlistData)
       const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.id },
-        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at', 'paly_uri']) // added playURI in response
+        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at', 'play_uri']) // added playURI in response
       console.log(trackData)
       trackData.playlist = playlistData
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
@@ -222,7 +225,7 @@ class UserMediaController {
         return {
           user_id: req.decoded.id,
           media_id: item.media_id,
-          paly_uri: item.playURI, // added playURI in addsongs/artist
+          play_uri: item.playURI, // added playURI in addsongs/artist
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -253,7 +256,7 @@ class UserMediaController {
         return {
           user_id: req.decoded.id,
           media_id: item.media_id,
-          paly_uri: item.playURI, // added playURI in addsongs/artist
+          play_uri: item.playURI, // added playURI in addsongs/artist
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -304,11 +307,23 @@ class UserMediaController {
         media_type: req.params.media_type,
         usermedia_type: req.params.usermedia_type
       }
-      const attributes = ['media_id', 'media_name', 'media_image', 'meta_data',
-        'meta_data2', 'media_type', 'created_at', 'updated_at', 'paly_uri']// added playURI in getsong/artistData response
-
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-      const userMedia = await commonService.findAndCountAll(UserMedia, condition, attributes, pagination)
+
+      if (Number(req.params.usermedia_type) === constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS) {
+        const counts = await commonService
+          .findOne(User, { id: req.decoded.id }, ['top_tracks_count', 'top_artist_count'])
+        // condition.order = Number(req.params.media_type) === constants.MEDIA_TYPE.TRACK
+        //   ? { [Op.lte]: counts.top_tracks_count }
+        //   : { [Op.lte]: counts.top_artist_count }
+        pagination.limit = Number(req.params.media_type) === constants.MEDIA_TYPE.TRACK
+          ? counts.top_tracks_count
+          : counts.top_artist_count
+      }
+      // added playURI in getsong/artistData response
+
+      // const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const userMedia = await userMediaService.getUserMedia(condition, pagination)
+      // await commonService.findAndCountAll(UserMedia, condition, pagination)
       console.log(userMedia)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userMedia)
     } catch (err) {

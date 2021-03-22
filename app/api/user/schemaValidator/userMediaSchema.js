@@ -11,18 +11,18 @@ const schema = {
   }),
   playlist: Joi.object().keys({
     name: Joi.string().max(50).trim().allow(null).allow(''),
-    playURI: Joi.string(),
+    playURI: Joi.string().trim().allow('').allow(null),
     description: Joi.string().max(200).trim().allow(null).allow(''),
     image: Joi.array().items(Joi.string().trim().uri().allow(null).allow(''))
   }),
   deletePlaylist: Joi.object().keys({
     playlist_id: Joi.number().min(1).required(),
-    playURI: Joi.string()
+    playURI: Joi.string().trim().allow('').allow(null)
   }),
   tracks: Joi.object().keys({
     tracksData: Joi.array().items(Joi.object().keys({
       media_id: Joi.string().required(),
-      playURI: Joi.string(),
+      playURI: Joi.string().trim().allow('').allow(null),
       media_image: Joi.string().allow('').allow(null),
       media_name: Joi.string().allow('').allow(null),
       meta_data: Joi.string().allow('').allow(null),
@@ -31,7 +31,7 @@ const schema = {
   }),
   deleteTrack: Joi.object().keys({
     track_ids: Joi.array().items(Joi.string()).unique(),
-    playURI: Joi.string()
+    playURI: Joi.string().trim().allow('').allow(null)
   }),
   rateApp: Joi.object().keys({
     rating: Joi.number().min(0).max(5).required(),
@@ -40,7 +40,7 @@ const schema = {
   topMediaCount: Joi.object().keys({
     media_type: Joi.number().min(1).max(2).required(), // /^(1|2)/
     count: Joi.number().min(0).max(10).required(), // /^(0|3|5|10)/
-    playURI: Joi.string()
+    playURI: Joi.string().trim().allow('').allow(null)
   }),
   track: Joi.object().keys({
     ids: Joi.array().items(Joi.string()).unique()
@@ -58,7 +58,7 @@ const schema = {
   userMedia: Joi.object().keys({
     tracksData: Joi.array().items(Joi.object().keys({
       media_id: Joi.string().required(),
-      playURI: Joi.string(),
+      playURI: Joi.string().trim().allow('').allow(null),
       media_image: Joi.string().allow('').allow(null),
       media_name: Joi.string().allow('').allow(null),
       meta_data: Joi.string().allow('').allow(null),
