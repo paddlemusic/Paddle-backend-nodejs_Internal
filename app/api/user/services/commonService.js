@@ -92,9 +92,21 @@ class CommonService {
     return { limit, offset }
   }
 
-  bulkCreate (table, params) {
+  bulkCreate (table, params, ignoreDuplicates = true) {
     return new Promise((resolve, reject) => {
-      table.bulkCreate(params, { ignoreDuplicates: true, attributes: ['id'] })
+      table.bulkCreate(params, { ignoreDuplicates: ignoreDuplicates, attributes: ['id'] })
+        .then(result => resolve(result))
+        .catch(err => {
+          (err.original.code === '23505' || err.original.code === '23503')
+            ? resolve(err)
+            : reject(err)
+        })
+    })
+  }
+
+  bulkUpdate (table, params, coloumn) {
+    return new Promise((resolve, reject) => {
+      table.bulkCreate(params, { updateOnDuplicate: coloumn })
         .then(result => resolve(result))
         .catch(err => {
           (err.original.code === '23505' || err.original.code === '23503')

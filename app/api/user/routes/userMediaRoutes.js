@@ -825,6 +825,90 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
 /**
  * @swagger
  *
+ * /{usermedia_type}/{media_type}/order:
+ *   put:
+ *     tags :
+ *      - User Media
+ *     summary: Order tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *        - in: body
+ *          name: data
+ *          description: Tracks Or artist Data.
+ *          required: true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example: {
+ *                   "tracksData":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "playURI": "",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "playURI": "",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
+ *          definitions:
+ *              TrackArtistIds:
+ *                  type: object
+ *                  properties:
+ *                          media_id:
+ *                              type: string
+ *                              required:  true
+ *                          playURI:
+ *                              type: string
+ *                              required:  false
+ *                          media_image:
+ *                              type: string
+ *                          media_name:
+ *                              type: string
+ *                          meta_data:
+ *                              type: string
+ *                          meta_data2:
+ *                              type: string
+ *                          order:
+ *                              type: number
+ *     responses:
+ *          default:
+ *              description: Order tracks/artist to Top and Saved Songs/Artist
+ */
+router.put('/:usermedia_type/:media_type/order', authenticate.verifyToken, userMediaController.orderUserMedia)
+
+/**
+ * @swagger
+ *
  * /get/{usermedia_type}/{media_type}:
  *   get:
  *     tags :

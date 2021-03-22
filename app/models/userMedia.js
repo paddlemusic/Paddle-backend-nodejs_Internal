@@ -43,6 +43,10 @@ const UserMedia = sequelize.define('User_Media', {
     allowNull: true,
     unique: 'user_id_media_id_media_type'
     // defaultValue: 1
+  },
+  order: {
+    type: DataTypes.SMALLINT,
+    allowNull: true
   }
 },
 {

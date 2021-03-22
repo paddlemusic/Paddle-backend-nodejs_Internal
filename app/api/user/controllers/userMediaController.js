@@ -240,6 +240,38 @@ class UserMediaController {
     }
   }
 
+  async orderUserMedia (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.userMedia.validateAsync(req.body)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      }
+      req.body.user_id = req.decoded.id
+      const data = req.body.tracksData
+      const params = data.map((item) => {
+        return {
+          user_id: req.decoded.id,
+          media_id: item.media_id,
+          paly_uri: item.playURI, // added playURI in addsongs/artist
+          media_image: item.media_image,
+          media_name: item.media_name,
+          meta_data: item.meta_data,
+          meta_data2: item.meta_data,
+          media_type: req.params.media_type,
+          usermedia_type: req.params.usermedia_type,
+          order: item.order
+        }
+      })
+      const mediaData = await commonService.bulkUpdate(UserMedia, params, ['order'])
+      console.log('Data is:', mediaData)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async deleteUserMedia (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {

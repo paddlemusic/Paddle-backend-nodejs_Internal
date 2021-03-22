@@ -34,34 +34,22 @@ class ProfileController {
 
   async getProfile (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
-    let profileData
+
     try {
+      // let finalResponse
       const userId = req.params.userId
       let isFollowing = false
-      const body = {
-        user_id: userId // (5)
-      }
-      if (req.decoded.id /* 1 */ === Number(userId)) {
-        profileData = await profileService.getProfile(body)
-      } else {
+
+      const profileData = await profileService.getProfile({ user_id: userId })
+      if (Number(req.decoded.id) !== Number(userId)) {
         const condition = { user_id: userId, follower_id: req.decoded.id }
         const following = await commonService.findOne(UserFollower, condition)
         if (following) { isFollowing = true }
-        const userDetail = await commonService.findOne(User, { id: body.user_id }, ['is_privacy'])
-        if (!userDetail.is_privacy) {
-          profileData = await profileService.getProfile(body)
-        } else {
-          const result = await commonService.findOne(UserFollower, { user_id: userId, follower_id: req.decoded.id }) // user (1) is following user(5) or not
-          console.log('result is:', result)
-          if (result) {
-            profileData = await profileService.getProfile(body)
-          } else {
-            profileData = await profileService.getProfile(body)
-            console.log('Profile data is:', profileData)
-            delete profileData.topSong
-            delete profileData.topArtist
-            delete profileData.recentPost
-          }
+
+        if (profileData.userDetail.is_privacy && !isFollowing) {
+          delete profileData.topSong
+          delete profileData.topArtist
+          delete profileData.recentPost
         }
       }
       profileData.isFollowing = isFollowing
@@ -71,6 +59,49 @@ class ProfileController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  // Original Method
+  // async getProfile (req, res) {
+  //   const langMsg = config.messages[req.app.get('lang')]
+  //   let profileData
+  //   try {
+  //     const userId = req.params.userId
+  //     let isFollowing = false
+  //     const body = {
+  //       user_id: userId // (5)
+  //     }
+  //     if (req.decoded.id /* 1 */ === Number(userId)) {
+  //       profileData = await profileService.getProfile(body)
+  //     } else {
+  //       const condition = { user_id: userId, follower_id: req.decoded.id }
+  //       const following = await commonService.findOne(UserFollower, condition)
+  //       if (following) { isFollowing = true }
+  //       const userDetail = await commonService.findOne(User, { id: body.user_id }, ['is_privacy', 'top_tracks_count', 'top_artist_count'])
+  //       if (!userDetail.is_privacy) {
+  //         profileData = await profileService.getProfile(body)
+  //       } else {
+  //         const result = await commonService.findOne(UserFollower, { user_id: userId, follower_id: req.decoded.id }) // user (1) is following user(5) or not
+  //         console.log('result is:', result)
+  //         if (result) {
+  //           profileData = await profileService.getProfile(body)
+  //         } else {
+  //           profileData = await profileService.getProfile(body)
+  //           console.log('Profile data is:', profileData)
+  //           delete profileData.topSong
+  //           delete profileData.topArtist
+  //           delete profileData.recentPost
+  //         }
+  //       }
+  //     }
+  //     profileData.isFollowing = isFollowing
+  //     profileData.top_tracks_count = userDetail.top_tracks_count
+  //     profileData.top_artist_count = userDetail.top_artist_count
+  //     util.successResponse(res, config.constants.SUCCESS, langMsg.success, profileData)
+  //   } catch (err) {
+  //     console.log(err)
+  //     util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+  //   }
+  // }
 
   async editDetails (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
