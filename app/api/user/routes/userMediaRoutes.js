@@ -171,6 +171,7 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                          {
  *                    "media_id": "1",
  *                    "playURI": "",
+ *                    "artist_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -179,6 +180,7 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                          {
  *                    "media_id": "2",
  *                    "playURI": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -783,6 +785,8 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          {
  *                    "media_id": "1",
  *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -791,6 +795,8 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          {
  *                    "media_id": "2",
  *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -865,6 +871,8 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
  *                          {
  *                    "media_id": "1",
  *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -873,6 +881,8 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
  *                          {
  *                    "media_id": "2",
  *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -888,6 +898,12 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
  *                              type: string
  *                              required:  true
  *                          playURI:
+ *                              type: string
+ *                              required:  false
+ *                          artist_id:
+ *                              type: string
+ *                              required:  false
+ *                          album_id:
  *                              type: string
  *                              required:  false
  *                          media_image:

@@ -5,6 +5,8 @@ const schema = {
     track: Joi.object().keys({
       media_id: Joi.string().required(),
       playURI: Joi.string(),
+      artist_id: Joi.string().trim().allow('').allow(null), // added artist_id
+      album_id: Joi.string().trim().allow('').allow(null), // added album_id
       media_type: Joi.number().equal(1).default(1).required(),
       media_metadata: Joi.object().keys({
         name: Joi.string().trim(),

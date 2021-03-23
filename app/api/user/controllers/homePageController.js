@@ -34,6 +34,8 @@ class HomePageController {
         user_id: req.decoded.id,
         media_id: req.body.media_id,
         play_uri: req.body.playURI, // added play_uri key
+        artist_id: req.body.artist_id, // added artist_d key
+        album_id: req.body.album_id, // added album_id key
         caption: req.body.caption,
         // shared_with: req.body.shared_with,
         media_image: req.body.media_image,

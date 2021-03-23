@@ -112,6 +112,8 @@ class UserMediaController {
           playlist_id: req.params.playlist_id,
           media_id: item.media_id,
           play_uri: item.playURI, // added playURI in addtracks
+          artist_id: item.artist_id, // added artist_id in addtracks
+          album_id: item.album_id, // added album_id in addtracks
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -136,7 +138,7 @@ class UserMediaController {
         ['id', 'name', 'description', 'created_at', 'updated_at', 'image'])
       console.log(playlistData)
       const trackData = await commonService.findAndCountAll(PlaylistTrack, { playlist_id: playlistData.id },
-        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at', 'play_uri']) // added playURI in response
+        ['media_id', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'updated_at', 'play_uri', 'artist_id', 'album_id']) // added playURI,artist_id,album_id in response
       console.log(trackData)
       trackData.playlist = playlistData
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, trackData)
@@ -226,6 +228,8 @@ class UserMediaController {
           user_id: req.decoded.id,
           media_id: item.media_id,
           play_uri: item.playURI, // added playURI in addsongs/artist
+          artist_id: item.artist_id, // added artist_id in addsongs/artist
+          album_id: item.album_id, // added album_id in addsongs/artist
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,
@@ -257,6 +261,8 @@ class UserMediaController {
           user_id: req.decoded.id,
           media_id: item.media_id,
           play_uri: item.playURI, // added playURI in addsongs/artist
+          artist_id: item.artist_id, // added artist_id in addsongs/artist
+          album_id: item.album_id, // added album_id in addsongs/artist
           media_image: item.media_image,
           media_name: item.media_name,
           meta_data: item.meta_data,

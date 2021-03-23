@@ -23,6 +23,8 @@ const schema = {
     tracksData: Joi.array().items(Joi.object().keys({
       media_id: Joi.string().required(),
       playURI: Joi.string().trim().allow('').allow(null),
+      artist_id: Joi.string().trim().allow('').allow(null), // added artist_id
+      album_id: Joi.string().trim().allow('').allow(null), // added album_id
       media_image: Joi.string().allow('').allow(null),
       media_name: Joi.string().allow('').allow(null),
       meta_data: Joi.string().allow('').allow(null),
@@ -40,7 +42,9 @@ const schema = {
   topMediaCount: Joi.object().keys({
     media_type: Joi.number().min(1).max(2).required(), // /^(1|2)/
     count: Joi.number().min(0).max(10).required(), // /^(0|3|5|10)/
-    playURI: Joi.string().trim().allow('').allow(null)
+    playURI: Joi.string().trim().allow('').allow(null),
+    artist_id: Joi.string().trim().allow('').allow(null), // added artist_id
+    album_id: Joi.string().trim().allow('').allow(null) // added album_id
   }),
   track: Joi.object().keys({
     ids: Joi.array().items(Joi.string()).unique()
@@ -59,6 +63,8 @@ const schema = {
     tracksData: Joi.array().items(Joi.object().keys({
       media_id: Joi.string().required(),
       playURI: Joi.string().trim().allow('').allow(null),
+      artist_id: Joi.string().trim().allow('').allow(null), // added artist_id
+      album_id: Joi.string().trim().allow('').allow(null), // added album_id
       media_image: Joi.string().allow('').allow(null),
       media_name: Joi.string().allow('').allow(null),
       meta_data: Joi.string().allow('').allow(null),

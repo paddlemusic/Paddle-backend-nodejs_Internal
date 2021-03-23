@@ -33,6 +33,14 @@ const StreamStats = sequelize.define('Stream_Stats', {
     type: DataTypes.STRING,
     allowNull: true
   },
+  artist_id: { // added key artist_id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  album_id: { // added key album id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   count: {
     type: DataTypes.INTEGER,
     allowNull: false,

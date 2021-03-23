@@ -41,6 +41,12 @@ const authenticate = require('../../../middleware/authenticate')
  *                  playURI:
  *                      type: string
  *                      required: false
+ *                  artist_id:
+ *                      type: string
+ *                      required: false
+ *                  album_id:
+ *                      type: string
+ *                      required: false
  *                  caption:
  *                      type: string
  *                  media_image:
@@ -184,6 +190,12 @@ router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageCont
  *                      type: string
  *                      required: true
  *                  playURI:
+ *                      type: string
+ *                      required: false
+ *                  artist_id:
+ *                      type: string
+ *                      required: false
+ *                  album_id:
  *                      type: string
  *                      required: false
  *                  caption:

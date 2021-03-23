@@ -32,7 +32,7 @@ class ChartService {
     let values = ''
     params.forEach(param => {
       if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI}')`// added play_uri
+      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI}','${param.artist_id}','${param.album_id}')`// added play_uri,artist_id,album_id
       values += value
     })
     const rawQuery =
@@ -43,14 +43,18 @@ class ChartService {
                 media_type,
                 media_metadata,
                 "date",
-                "play_uri")
+                "play_uri",
+                "artist_id",
+                "album_id")
               VALUES ${values} 
               ON CONFLICT 
                 (university_id,
                   media_id,
                   media_type,
                   "date",
-                  "play_uri") 
+                  "play_uri",
+                  "artist_id",
+                  "album_id")
               DO UPDATE
               SET
                 count = "Stream_Stats".count + 1`
@@ -91,7 +95,7 @@ class ChartService {
             [Op.gte]: moment().utc().subtract(15, 'days').format('YYYY-MM-DD')
           }
         },
-        attributes: ['media_id', 'media_type', 'media_metadata', 'play_uri'], // added play_uri
+        attributes: ['media_id', 'media_type', 'media_metadata', 'play_uri', 'artist_id', 'album_id'], // added play_uri,artist_id,alb
         limit: pagination.limit,
         offset: pagination.offset,
         order: [['count', 'DESC']]
