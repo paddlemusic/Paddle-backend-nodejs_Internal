@@ -33,12 +33,15 @@ class HomePageController {
       const param = {
         user_id: req.decoded.id,
         media_id: req.body.media_id,
+        play_uri: req.body.playURI, // added play_uri key
+        artist_id: req.body.artist_id, // added artist_d key
+        album_id: req.body.album_id, // added album_id key
         caption: req.body.caption,
         // shared_with: req.body.shared_with,
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
-        meta_data2: req.body.meta_data,
+        meta_data2: req.body.meta_data2,
         media_type: req.params.media_type
       }
       const params = []
@@ -52,7 +55,8 @@ class HomePageController {
 
       console.log('params are:', params)
       // await commonService.create(UserPost, params)
-      await commonService.bulkCreate(UserPost, params)
+      const data = await commonService.bulkCreate(UserPost, params, false)
+      console.log(data)
 
       // ------NOTIFICATION: DON'T REMOVE------ //
       // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
@@ -72,6 +76,20 @@ class HomePageController {
       //   const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
       //   await notificationService.sendNotification(sharedwithToken, payload)
       // }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async deleteUserPosts (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { id: req.params.id, user_id: req.decoded.id }
+      const deletePostData = await commonService.delete(UserPost, condition)
+      console.log('post data is:', deletePostData)
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)

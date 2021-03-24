@@ -104,7 +104,7 @@ class UserController {
         return
       }
       // console.log(req.params.id)
-      const myProfile = await commonService.findOne(User, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      const myProfile = await commonService.findOne(User, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth', 'created_at', 'updated_at'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)

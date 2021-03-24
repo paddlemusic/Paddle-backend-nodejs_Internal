@@ -18,13 +18,9 @@ const University = require('../../../models/university')
 
 class ProfileService {
   async getProfile (params) {
-    // let userDetail, topSongDetails, topArtistDetails, recentPostsDetails, pagination, follwerDetails, followingDetails
-    // const userDetail = await commonService.findOne(User, { id: params.user_id }, ['name', 'id', 'profile_picture', 'is_privacy'])
-    // console.log('Params is:', JSON.stringify(userDetail, null, 2))
-
-    console.log('Params is:', params)
-    // return new Promise((resolve, reject) => {
-    const userDetail = await commonService.findOne(User, { id: params.user_id }, ['id', 'name', 'username', 'profile_picture', 'is_privacy', 'biography'])
+    const userDetail = await commonService
+      .findOne(User, { id: params.user_id },
+        ['id', 'name', 'username', 'profile_picture', 'is_privacy', 'biography', 'top_tracks_count', 'top_artist_count'])
     const follwerDetails = await UserFollower.findAndCountAll({
       where: { user_id: params.user_id },
       raw: true
@@ -33,13 +29,27 @@ class ProfileService {
       where: { follower_id: params.user_id },
       raw: true
     })
-    const topSongDetails = await commonService.findAll(UserMedia,
-      { user_id: params.user_id, media_type: config.constants.MEDIA_TYPE.TRACK, usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS },
-      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type'])
+    const topSongDetails = await commonService.findAndCountAll(UserMedia,
+      {
+        user_id: params.user_id,
+        media_type: config.constants.MEDIA_TYPE.TRACK,
+        usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS
+        // order: { [Op.lte]: userDetail.top_tracks_count }
+      },
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'order', 'created_at', 'updated_at'],
+      { limit: userDetail.top_tracks_count, offset: 0 },
+      [['order', 'ASC'], ['created_at', 'DESC']])
 
-    const topArtistDetails = await commonService.findAll(UserMedia,
-      { user_id: params.user_id, media_type: config.constants.MEDIA_TYPE.ARTIST, usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS },
-      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type'])
+    const topArtistDetails = await commonService.findAndCountAll(UserMedia,
+      {
+        user_id: params.user_id,
+        media_type: config.constants.MEDIA_TYPE.ARTIST,
+        usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS
+        // order: { [Op.lte]: userDetail.top_artist_count }
+      },
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'order', 'created_at', 'updated_at'],
+      { limit: userDetail.top_artist_count, offset: 0 },
+      [['order', 'ASC'], ['created_at', 'DESC']])
     const pagination = commonService.getPagination(null, 0)
     const recentPostsDetails = await userService.getMyRecentPosts(params.user_id, pagination)
 
@@ -47,8 +57,8 @@ class ProfileService {
       userDetail,
       follower: follwerDetails.count,
       following: followingDetails.count,
-      topSong: topSongDetails,
-      topArtist: topArtistDetails,
+      topSong: topSongDetails.rows,
+      topArtist: topArtistDetails.rows,
       recentPost: recentPostsDetails
     }
 

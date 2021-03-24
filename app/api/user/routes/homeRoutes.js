@@ -38,6 +38,15 @@ const authenticate = require('../../../middleware/authenticate')
  *                  media_id:
  *                      type: string
  *                      required: true
+ *                  playURI:
+ *                      type: string
+ *                      required: false
+ *                  artist_id:
+ *                      type: string
+ *                      required: false
+ *                  album_id:
+ *                      type: string
+ *                      required: false
  *                  caption:
  *                      type: string
  *                  media_image:
@@ -87,6 +96,63 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  *       - application/json
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
+
+/**
+ * @swagger
+ *
+ * /getPosts:
+ *   get:
+ *     tags :
+ *      - Home
+ *     summary: get User posts.
+ *     description: >
+ *      This resource will be used for getting user's posts .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
+
+/**
+ * @swagger
+ *
+ * /post/{id}:
+ *   delete:
+ *     tags :
+ *      - Home
+ *     summary: Delete recent posts
+ *     description: >
+ *      This resource will be used for deleting user's recent posts .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.delete('/post/:id', authenticate.verifyToken, homePageController.deleteUserPosts)
 
 // /**
 //  * @swagger
@@ -139,6 +205,11 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
  *        schema:
  *        type: string
  *        required: true
+ *      - in: path
+ *        name: playURI
+ *        schema:
+ *        type: string
+ *        required: false
  *     responses:
  *          default:
  *              description: Delete tracks from playlists response object.
@@ -175,6 +246,15 @@ router.post('/likeunlike/:post_id/:type', authenticate.verifyToken, homePageCont
  *                  media_id:
  *                      type: string
  *                      required: true
+ *                  playURI:
+ *                      type: string
+ *                      required: false
+ *                  artist_id:
+ *                      type: string
+ *                      required: false
+ *                  album_id:
+ *                      type: string
+ *                      required: false
  *                  caption:
  *                      type: string
  *                  media_image:

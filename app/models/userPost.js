@@ -12,6 +12,18 @@ const UserPost = sequelize.define('User_Post', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  play_uri: { // added playURI
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  artist_id: { // added key artist_id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  album_id: { // added key album id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   media_image: {
     type: DataTypes.STRING,
     allowNull: true

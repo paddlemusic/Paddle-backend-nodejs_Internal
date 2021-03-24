@@ -33,21 +33,28 @@ class CommonService {
     })
   }
 
-  findAll (table, condition, attributes) {
+  findAll (table, condition, attributes, pagination = null) {
     return new Promise((resolve, reject) => {
-      table.findAll({ where: condition, raw: true, attributes: attributes })
+      table.findAll({
+        where: condition,
+        raw: true,
+        attributes: attributes,
+        limit: pagination ? pagination.limit : null,
+        offset: pagination ? pagination.offset : null
+      })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })
   }
 
-  findAndCountAll (table, condition, attributes, pagination = null) {
+  findAndCountAll (table, condition, attributes, pagination = null, orderBy = null) {
     return new Promise((resolve, reject) => {
       table.findAndCountAll({
         where: condition,
         attributes: attributes,
         limit: pagination ? pagination.limit : null,
-        offset: pagination ? pagination.offset : null
+        offset: pagination ? pagination.offset : null,
+        order: orderBy
       })
         .then(result => resolve(result))
         .catch(err => reject(err))
@@ -92,9 +99,21 @@ class CommonService {
     return { limit, offset }
   }
 
-  bulkCreate (table, params) {
+  bulkCreate (table, params, ignoreDuplicates = true) {
     return new Promise((resolve, reject) => {
-      table.bulkCreate(params, { ignoreDuplicates: true, attributes: ['id'] })
+      table.bulkCreate(params, { ignoreDuplicates: ignoreDuplicates, attributes: ['id'] })
+        .then(result => resolve(result))
+        .catch(err => {
+          (err.original.code === '23505' || err.original.code === '23503')
+            ? resolve(err)
+            : reject(err)
+        })
+    })
+  }
+
+  bulkUpdate (table, params, coloumn) {
+    return new Promise((resolve, reject) => {
+      table.bulkCreate(params, { updateOnDuplicate: coloumn })
         .then(result => resolve(result))
         .catch(err => {
           (err.original.code === '23505' || err.original.code === '23503')
