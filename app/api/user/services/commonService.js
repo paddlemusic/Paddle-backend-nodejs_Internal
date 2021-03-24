@@ -33,9 +33,15 @@ class CommonService {
     })
   }
 
-  findAll (table, condition, attributes) {
+  findAll (table, condition, attributes, pagination = null) {
     return new Promise((resolve, reject) => {
-      table.findAll({ where: condition, raw: true, attributes: attributes })
+      table.findAll({
+        where: condition,
+        raw: true,
+        attributes: attributes,
+        limit: pagination ? pagination.limit : null,
+        offset: pagination ? pagination.offset : null
+      })
         .then(result => resolve(result))
         .catch(err => reject(err))
     })

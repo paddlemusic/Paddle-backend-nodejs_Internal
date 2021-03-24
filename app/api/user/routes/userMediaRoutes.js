@@ -1117,4 +1117,32 @@ router.post('/:media_type/:count', authenticate.verifyToken, userMediaController
 
 router.get('/isSaved/:media_id', authenticate.verifyToken, userMediaController.isMediaSaved)
 
+/**
+ * @swagger
+ *
+ * /{media_type}/cover:
+ *   get:
+ *     tags :
+ *      - User Media
+ *     summary: Fetch cover image of saved songs/artist
+ *     description: >
+ *      This resource will Fetch cover image of saved songs/artist.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: media_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: This resource will Fetch cover image of saved songs/artist.
+ */
+
+router.get('/:media_type/cover', authenticate.verifyToken, userMediaController.getCoverImage)
+
 module.exports = router

@@ -55,7 +55,7 @@ class HomePageController {
 
       console.log('params are:', params)
       // await commonService.create(UserPost, params)
-      await commonService.bulkCreate(UserPost, params)
+      await commonService.bulkCreate(UserPost, params, false)
 
       // ------NOTIFICATION: DON'T REMOVE------ //
       // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])

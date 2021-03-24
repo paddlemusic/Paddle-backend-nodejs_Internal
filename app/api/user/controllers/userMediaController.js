@@ -416,6 +416,29 @@ class UserMediaController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async getCoverImage (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = {
+        user_id: req.decoded.id,
+        media_type: req.params.media_type,
+        usermedia_type: constants.USER_MEDIA_TYPE.SAVED_TRACKS_ARTIST
+      }
+      const pagination = {
+        limit: 4,
+        offset: 0
+      }
+      const attributes = [Sequelize.fn('DISTINCT', Sequelize.col('media_image'))]
+      const data = await commonService.findAll(UserMedia, condition, attributes, pagination)
+      const coverImages = data.map(mediaImage => { return mediaImage.media_image })
+      console.log('coverImages\n', coverImages)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, (coverImages.length < 4) ? [coverImages[0]] : coverImages)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 
 module.exports = UserMediaController
