@@ -97,6 +97,63 @@ router.post('/createPost/:media_type', authenticate.verifyToken, homePageControl
  */
 router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
 
+/**
+ * @swagger
+ *
+ * /getPosts:
+ *   get:
+ *     tags :
+ *      - Home
+ *     summary: get User posts.
+ *     description: >
+ *      This resource will be used for getting user's posts .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: page
+ *        schema:
+ *        type: integer
+ *        required: false
+ *      - in: query
+ *        name: pageSize
+ *        schema:
+ *        type: integer
+ *        required: false
+ *     produces:
+ *       - application/json
+ */
+router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPosts)
+
+/**
+ * @swagger
+ *
+ * /post/{id}:
+ *   delete:
+ *     tags :
+ *      - Home
+ *     summary: Delete recent posts
+ *     description: >
+ *      This resource will be used for deleting user's recent posts .
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.delete('/post/:id', authenticate.verifyToken, homePageController.deleteUserPosts)
+
 // /**
 //  * @swagger
 //  *

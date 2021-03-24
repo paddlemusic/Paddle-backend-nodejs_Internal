@@ -82,6 +82,20 @@ class HomePageController {
     }
   }
 
+  async deleteUserPosts (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { id: req.params.id, user_id: req.decoded.id }
+      const deletePostData = await commonService.delete(UserPost, condition)
+      console.log('post data is:', deletePostData)
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async getUserPosts (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
