@@ -41,7 +41,7 @@ class HomePageController {
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
-        meta_data2: req.body.meta_data,
+        meta_data2: req.body.meta_data2,
         media_type: req.params.media_type
       }
       const params = []
@@ -55,7 +55,8 @@ class HomePageController {
 
       console.log('params are:', params)
       // await commonService.create(UserPost, params)
-      await commonService.bulkCreate(UserPost, params, false)
+      const data = await commonService.bulkCreate(UserPost, params, false)
+      console.log(data)
 
       // ------NOTIFICATION: DON'T REMOVE------ //
       // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
