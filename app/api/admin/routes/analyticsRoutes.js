@@ -34,7 +34,7 @@ const analyticsController = new AnalyticsController()
  *     produces:
  *       - application/json
  */
-router.get('/getTotalSharesLikes', analyticsController.getSharesLikesTotally)
+// router.get('/getTotalSharesLikes', analyticsController.getSharesLikesTotally)
 
 /**
  * @swagger
@@ -79,7 +79,7 @@ router.get('/getTotalSharesLikes', analyticsController.getSharesLikesTotally)
  *     produces:
  *       - application/json
  */
-router.get('/getMonthlySharesLikes', analyticsController.getSharesLikesMonthly)
+// router.get('/getMonthlySharesLikes', analyticsController.getSharesLikesMonthly)
 
 /**
  * @swagger
@@ -112,7 +112,7 @@ router.get('/getMonthlySharesLikes', analyticsController.getSharesLikesMonthly)
  *     produces:
  *       - application/json
  */
-router.get('/getTotalLikes', analyticsController.getLikesTotally)
+// router.get('/getTotalLikes', analyticsController.getLikesTotally)
 
 /**
  * @swagger
@@ -157,7 +157,7 @@ router.get('/getTotalLikes', analyticsController.getLikesTotally)
  *     produces:
  *       - application/json
  */
-router.get('/getMonthlyLikes', analyticsController.getLikesMonthly)
+// router.get('/getMonthlyLikes', analyticsController.getLikesMonthly)
 
 /**
  * @swagger
@@ -179,7 +179,7 @@ router.get('/getMonthlyLikes', analyticsController.getLikesMonthly)
  *     produces:
  *       - application/json
  */
-router.get('/getTotalSignups', analyticsController.getAppSignups)
+// router.get('/getTotalSignups', analyticsController.getAppSignups)
 
 /**
  * @swagger
@@ -213,7 +213,7 @@ router.get('/getTotalSignups', analyticsController.getAppSignups)
  *     produces:
  *       - application/json
  */
-router.get('/getMonthlySignups', analyticsController.getAppSignupsMonthly)
+// router.get('/getMonthlySignups', analyticsController.getAppSignupsMonthly)
 
 /**
  * @swagger
@@ -247,7 +247,7 @@ router.get('/getMonthlySignups', analyticsController.getAppSignupsMonthly)
  *       - application/json
  */
 
-router.get('/getTotalStreams', analyticsController.getstreamsTotally)
+// router.get('/getTotalStreams', analyticsController.getstreamsTotally)
 
 /**
  * @swagger
@@ -292,7 +292,7 @@ router.get('/getTotalStreams', analyticsController.getstreamsTotally)
  *     produces:
  *       - application/json
  */
-router.get('/getMonthlyStreams', analyticsController.getStreamsMonthly)
+// router.get('/getMonthlyStreams', analyticsController.getStreamsMonthly)
 
 /**
  * @swagger
