@@ -10,11 +10,21 @@ class AnalyticsService {
   // total stream services
 
   async getStreamStats (params, pagination) {
+    const where = {
+      media_type: params.media_type
+    }
+
+    if (!(params.university_id === null)) {
+      where.university_id = params.university_id
+    }
+    console.log('where condition', where)
     const result = await StreamStats.findAll({
-      where: {
-        media_type: params.media_type
-        // university_id: params.university_id
-      },
+      where: where,
+
+      // where: {
+      //  media_type: params.media_type
+      // university_id: params.university_id
+      // },
       attributes: [
         [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
         'media_id',
@@ -29,7 +39,7 @@ class AnalyticsService {
     return result
   }
 
-  async getUniversityWiseStreamStats (params, pagination) {
+  async getUniversityWiseStreamStats (params, pagination) { // to be removed
     const result = await StreamStats.findAll({
       where: {
         media_type: params.media_type,
@@ -50,10 +60,19 @@ class AnalyticsService {
   }
 
   async getStreamStatsTotalCount (params) {
+    const where = {
+      media_type: params.media_type
+    }
+
+    if (!(params.university_id === null)) {
+      where.university_id = params.university_id
+    }
+    console.log('where condition', where)
     const result = await StreamStats.count({
-      where: {
-        media_type: params.media_type
-      },
+      where: where,
+      // where: {
+      //  media_type: params.media_type
+      // },
       distinct: true,
       col: 'media_id'
     })
@@ -61,7 +80,7 @@ class AnalyticsService {
     return result
   }
 
-  async getStreamStatsUniversityWiseCount (params) {
+  async getStreamStatsUniversityWiseCount (params) { // to be removed
     const result = await StreamStats.count({
       where: {
         media_type: params.media_type,
@@ -77,13 +96,25 @@ class AnalyticsService {
   // monthly stream services
 
   async getStreamStatsMonthlyCount (params, startDate, endDate) {
-    const result = await StreamStats.count({
-      where: {
-        date: {
-          [Op.between]: [startDate, endDate]
-        },
-        media_type: params.media_type
+    const where = {
+      date: {
+        [Op.between]: [startDate, endDate]
       },
+      media_type: params.media_type
+    }
+
+    if (!(params.university_id === null)) {
+      where.university_id = params.university_id
+    }
+    console.log('where condition', where)
+    const result = await StreamStats.count({
+      where: where,
+      // where: {
+      // date: {
+      //   [Op.between]: [startDate, endDate]
+      //  },
+      // media_type: params.media_type
+      // },
       distinct: true,
       col: 'media_id'
     })
@@ -91,7 +122,7 @@ class AnalyticsService {
     return result
   }
 
-  async getUniversityWiseStreamStatsMonthlyCount (params, startDate, endDate) {
+  async getUniversityWiseStreamStatsMonthlyCount (params, startDate, endDate) { // to be removed
     const result = await StreamStats.count({
       where: {
         date: {
@@ -107,7 +138,7 @@ class AnalyticsService {
     return result
   }
 
-  async getUniversityWiseMonthlyStreamStats (params, startDate, endDate, pagination) {
+  async getUniversityWiseMonthlyStreamStats (params, startDate, endDate, pagination) { // to be removed
     const result = await StreamStats.findAll({
       where: {
         date: {
@@ -131,14 +162,26 @@ class AnalyticsService {
   }
 
   async getMonthlyStreamStats (params, startDate, endDate, pagination) {
-    const result = await StreamStats.findAll({
-      where: {
-        date: {
-          [Op.between]: [startDate, endDate]
-        },
-        media_type: params.media_type
-        // university_id: params.university_id
+    const where = {
+      date: {
+        [Op.between]: [startDate, endDate]
       },
+      media_type: params.media_type
+    }
+
+    if (!(params.university_id === null)) {
+      where.university_id = params.university_id
+    }
+    console.log('where condition', where)
+    const result = await StreamStats.findAll({
+      where: where,
+      // where: {
+      //   date: {
+      //     [Op.between]: [startDate, endDate]
+      //   },
+      //   media_type: params.media_type
+      // university_id: params.university_id
+      //  },
       attributes: [
         [Sequelize.fn('sum', Sequelize.col('count')), 'streamCount'],
         'media_id',
@@ -379,7 +422,7 @@ class AnalyticsService {
     })
   }
 
-  async getStatsDataUniversityWise (universityId, datesInMonth, openTime, pagination) {
+  async getStatsDataUniversityWise (universityId, datesInMonth, openTime, pagination) { // to be removed
     const result = await UserStats.findAll({
       where: {
         date: datesInMonth,
@@ -401,14 +444,26 @@ class AnalyticsService {
     return result
   }
 
-  async getStatsData (datesInMonth, openTime, pagination) {
+  async getStatsData (universityId, datesInMonth, openTime, pagination) {
+    const where = {
+      date: datesInMonth,
+      app_open_count: {
+        [Op.gte]: openTime
+      }
+    }
+
+    if (!(universityId === null)) {
+      where.university_id = universityId
+    }
+    console.log('where condition', where)
     const result = await UserStats.findAll({
-      where: {
-        date: datesInMonth,
-        app_open_count: {
-          [Op.gte]: openTime
-        }
-      },
+      where: where,
+      // where: {
+      //  date: datesInMonth,
+      //  app_open_count: {
+      //    [Op.gte]: openTime
+      //  }
+      // },
       attributes: [
         [Sequelize.fn('count', Sequelize.col('user_id')), 'count'],
         'user_id'
@@ -422,10 +477,10 @@ class AnalyticsService {
     return result
   }
 
-  async getWeeks (startDate, endDate, university_id = null) {
+  async getWeeks (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if (university_id) {
-      subQuery = ` AND university_id = ${university_id} `
+    if (universityId) {
+      subQuery = ` AND university_id = ${universityId} `
     }
     const rawQuery =
              `SELECT
@@ -448,10 +503,10 @@ class AnalyticsService {
     return data
   }
 
-  async getAppOpenDataWeekly (startDate, endDate, university_id = null) {
+  async getAppOpenDataWeekly (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if (university_id) {
-      subQuery = ` AND university_id = ${university_id} `
+    if (universityId) {
+      subQuery = ` AND university_id = ${universityId} `
     }
     const rawQuery =
              `SELECT

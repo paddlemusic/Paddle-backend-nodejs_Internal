@@ -14,8 +14,11 @@ class UniversityController {
   async addUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
+      // console.log('validationResultaaaaaaaaaaaaaaaaaaaaaaaaaaa')
       const validationResult = await UniversitySchema.addUniversity.validateAsync(req.body)
+      // console.log('validationResultaccccccccccccccccccccccccccccc')
       if (validationResult.error) {
+        console.log('validationResult.error', validationResult)
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
