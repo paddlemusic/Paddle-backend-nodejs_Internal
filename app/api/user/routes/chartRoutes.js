@@ -42,8 +42,24 @@ const auth = require('../../../middleware/authenticate')
  *                    album_id:
  *                     type: string
  *                     required: false
- *                    media_type:
- *                     type: integer
+ *                    media_metadata:
+ *                      type: object
+ *                      properties:
+ *                         name:
+ *                          type: string
+ *                         image:
+ *                           type: 
+ *                         artist_name:
+ *                          type: string
+ *                         album_name:
+ *                           type: string
+ *                         track_type:
+ *                           type: string
+ *               artist:
+ *                 type: object
+ *                 properties:
+ *                    media_id:
+ *                     type: string
  *                     required: true
  *                    media_metadata:
  *                      type: object
@@ -52,23 +68,11 @@ const auth = require('../../../middleware/authenticate')
  *                          type: string
  *                         image:
  *                           type: string
- *               artist:
+ *               album:
  *                 type: object
  *                 properties:
  *                    media_id:
  *                     type: string
- *                     required: true
- *                    playURI:
- *                     type: string
- *                     required: false
- *                    artist_id:
- *                     type: string
- *                     required: false
- *                    album_id:
- *                     type: string
- *                     required: false
- *                    media_type:
- *                     type: integer
  *                     required: true
  *                    media_metadata:
  *                      type: object
