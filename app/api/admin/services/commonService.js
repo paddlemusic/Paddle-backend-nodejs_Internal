@@ -1,9 +1,28 @@
+const CustomError = require('../../../utils/customError')
+
 class CommonService {
   create (table, params) {
     return new Promise((resolve, reject) => {
       table.create(params)
         .then(result => resolve(result))
-        .catch(err => reject(err))
+        //.catch(err => reject(err))
+        .catch(err => {
+          if (err.original && (err.original.code === '23505' || err.original.code === 23505)) {
+            switch (err.errors[0].path) {
+              case 'name':
+                reject(new CustomError('University Name and City must be unique.'))
+                break
+              case 'city':
+                reject(new CustomError('University Name and City must be unique.'))
+                break
+              default:
+                reject(err)
+            }
+          } else {
+            console.log(err)
+            reject(err)
+          }
+        })
     })
   }
 
