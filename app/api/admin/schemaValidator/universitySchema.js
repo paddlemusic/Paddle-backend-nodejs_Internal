@@ -3,14 +3,14 @@ const Joi = require('@hapi/joi')
 const schema = {
   addUniversity: Joi.object().keys({
     name: Joi.string().trim().max(80).required(),
-    city: Joi.string().max(80)
+    city: Joi.string().max(80).required()
   }),
   deleteUniversity: Joi.object().keys({
     id: Joi.number().required()
   }),
   editUniversity: Joi.object().keys({
-    name: Joi.string().trim().max(80),
-    city: Joi.string().max(80)
+    name: Joi.string().trim().max(80).required(),
+    city: Joi.string().max(80).required()
 
   }),
   viewUniversity: Joi.object().keys({
