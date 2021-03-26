@@ -26,10 +26,18 @@ class UniversityController {
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
+      console.log('err is', err)
       console.log(err)
-      const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
-      const errorCode = err.name === 'CustomError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
-      util.failureResponse(res, errorCode, errorMessage)
+      if (err.name === 'ValidationError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.details[0].message)
+      } else if (err.name === 'CustomError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.message)
+      } else {
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      }
+      // const errorMessage = err.name === 'ValidationError' ? err.details[0].message : langMsg.internalServerError
+      // const errorCode = err.name === 'ValidationError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      // util.failureResponse(res, errorCode, errorMessage)
       // util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
@@ -92,7 +100,14 @@ class UniversityController {
       console.log('updated result', updatedResult)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      console.log(err)
+      if (err.name === 'ValidationError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.details[0].message)
+      } else if (err.name === 'SequelizeUniqueConstraintError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.message)
+      } else {
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      }
     }
   }
 
