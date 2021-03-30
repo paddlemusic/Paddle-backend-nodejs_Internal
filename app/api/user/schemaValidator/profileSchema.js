@@ -39,7 +39,7 @@ const schema = {
     name: Joi.string().trim().max(30).required(),
     username: Joi.string().trim().max(30).required(),
     phone_number: Joi.string().trim().max(17).min(10).required(),
-    date_of_birth: Joi.string().trim(),
+    date_of_birth: Joi.string().trim().allow('').allow(null),
     biography: Joi.string().trim().max(300).allow(null).allow(''),
     university_code: Joi.number().min(1).allow(null)
   })

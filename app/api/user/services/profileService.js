@@ -36,7 +36,7 @@ class ProfileService {
         usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS
         // order: { [Op.lte]: userDetail.top_tracks_count }
       },
-      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'order', 'created_at', 'updated_at'],
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'play_uri', 'order', 'created_at', 'updated_at'],
       { limit: userDetail.top_tracks_count, offset: 0 },
       [['order', 'ASC'], ['created_at', 'DESC']])
 
@@ -47,7 +47,7 @@ class ProfileService {
         usermedia_type: config.constants.USER_MEDIA_TYPE.TOP_TRACKS_ARTISTS
         // order: { [Op.lte]: userDetail.top_artist_count }
       },
-      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'order', 'created_at', 'updated_at'],
+      ['media_id', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'usermedia_type', 'play_uri', 'order', 'created_at', 'updated_at'],
       { limit: userDetail.top_artist_count, offset: 0 },
       [['order', 'ASC'], ['created_at', 'DESC']])
     const pagination = commonService.getPagination(null, 0)
