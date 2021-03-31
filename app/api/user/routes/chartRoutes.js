@@ -48,7 +48,7 @@ const auth = require('../../../middleware/authenticate')
  *                         name:
  *                          type: string
  *                         image:
- *                           type: 
+ *                           type:
  *                         artist_name:
  *                          type: string
  *                         album_name:
