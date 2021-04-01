@@ -499,7 +499,9 @@ class UserController {
           type: 'follow'
         }
       }
-      await notificationService.sendNotification([followedData], message)
+      if (followedData.device_token) {
+        await notificationService.sendNotification([followedData], message)
+      }
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
