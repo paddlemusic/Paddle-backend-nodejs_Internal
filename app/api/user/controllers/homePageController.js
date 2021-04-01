@@ -5,8 +5,8 @@ const schema = require('../schemaValidator/homeSchema')
 const UserPost = require('../../../models/userPost')
 const LikePost = require('../../../models/likePost')
 // const UserMedia = require('../../../models/userMedia')
-// const notificationService = require('../services/notificationService')
-// const User = require('../models/user')
+const notificationService = require('../services/notificationService')
+const User = require('../../../models/user')
 
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
@@ -26,18 +26,13 @@ class HomePageController {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
-      // if (Number(req.decoded.id) === Number(req.body.shared_with)) {
-      //   util.failureResponse(res, config.constants.CONFLICT, langMsg.conflict)
-      //   return
-      // }
       const param = {
         user_id: req.decoded.id,
         media_id: req.body.media_id,
-        play_uri: req.body.playURI, // added play_uri key
-        artist_id: req.body.artist_id, // added artist_d key
-        album_id: req.body.album_id, // added album_id key
+        play_uri: req.body.playURI,
+        artist_id: req.body.artist_id,
+        album_id: req.body.album_id,
         caption: req.body.caption,
-        // shared_with: req.body.shared_with,
         media_image: req.body.media_image,
         media_name: req.body.media_name,
         meta_data: req.body.meta_data,
@@ -53,30 +48,34 @@ class HomePageController {
         }
       })
 
-      console.log('params are:', params)
-      // await commonService.create(UserPost, params)
-      const data = await commonService.bulkCreate(UserPost, params, false)
-      console.log(data)
-
-      // ------NOTIFICATION: DON'T REMOVE------ //
-      // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
-      // const payload = {
-      //   message: {
-      //     notification: {
-      //       title: 'Paddle Notification ',
-      //       body: followerName.dataValues.name + ' ' + ' shared a post with you'
-      //     }
-      //   }
-      // }
-      // if (req.body.shared_with === null) {
-      //   const followingData = await userService.getFollowing(req.decoded)
-      //   const followingToken = followingData.rows.map(follower => { return follower.device_token })
-      //   await notificationService.sendNotification(followingToken, payload)
-      // } else {
-      //   const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
-      //   await notificationService.sendNotification(sharedwithToken, payload)
-      // }
+      const createPostData = await commonService.bulkCreate(UserPost, params, false)
+      console.log(createPostData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notiification
+      const user = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+
+      let sharedWithUsersId
+      if (validationResult.shared_with.length === 1 && validationResult.shared_with[0] === null) {
+        const myfollowingData = await userService.getUserFollowing(req.decoded)
+        console.log('myfollowingData', myfollowingData)
+        sharedWithUsersId = myfollowingData.map(data => { return { device_token: data['followed.device_token'] } })
+        console.log('sharedWithUsersId', sharedWithUsersId)
+      } else {
+        sharedWithUsersId = await commonService.findAll(User, { id: validationResult.shared_with }, ['device_token'])
+      }
+
+      const message = {
+        notification: {
+          title: 'New Post',
+          body: `${user.name} shared a new Post.`
+        },
+        data: {
+
+        }
+      }
+      console.log(message)
+      await notificationService.sendNotification(sharedWithUsersId, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -145,7 +144,6 @@ class HomePageController {
         post_id: req.params.post_id
       }
       if (req.params.type === 'like') {
-        // const data = await commonService.findOrCreate(LikePost, param)
         const data = await homeService.likePost(param)
         console.log(data)
       } else {
@@ -153,12 +151,33 @@ class HomePageController {
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notification
+      if (req.params.type === 'like') {
+        const user = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+
+        const userId = await commonService.findOne(UserPost, { id: req.params.post_id }, ['user_id'])
+        console.log(userId)
+        const deviceTokens = await commonService.findOne(User, { id: userId.user_id }, ['device_token'])
+        console.log(deviceTokens)
+        const message = {
+          notification: {
+            title: 'New like!',
+            body: `${user.name} liked your Post.`
+          },
+          data: {
+            post_id: req.params.post_id
+          }
+        }
+        await notificationService.sendNotification([deviceTokens], message)
+      }
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
 
+  // Check if this method is redundant or not. Remove if redundant.
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -182,26 +201,24 @@ class HomePageController {
         media_type: req.params.media_type
       }
       console.log('params are:', params)
-      await commonService.create(UserPost, params)
-      // push notification section
-      /*        const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
-        const payload = {
-          message: {
-            notification: {
-              title: 'Paddle Notification ',
-              body: followerName.dataValues.name + ' ' + ' shared a post with you'
-            }
-          }
-        }
-        if (req.body.shared_with === null) {
-          const followingData = await userService.getFollowing(req.decoded)
-          const followingToken = followingData.rows.map(follower => { return follower.device_token })
-          await notificationService.sendNotification(followingToken, payload)
-        } else {
-          const sharedwithToken = await commonService.findAll(User, { id: req.body.shared_with }, ['device_token'])
-          await notificationService.sendNotification(sharedwithToken, payload)
-        } */
+      const createPostData = await commonService.create(UserPost, params)
+      console.log(createPostData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notification
+      const user = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+      const sharedWithUsersId = await commonService.findAll(User, { id: validationResult.shared_with }, ['device_token'])
+
+      const message = {
+        notification: {
+          title: 'New Post',
+          body: `${user.name} shared a new Post.`
+        },
+        data: {
+          post_id: createPostData.id
+        }
+      }
+      await notificationService.sendNotification(sharedWithUsersId, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

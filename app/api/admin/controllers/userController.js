@@ -34,7 +34,7 @@ class UserController {
           }
           const token = await util.generateJwtToken(payload)
           // console.log('token is', token)
-          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.token = token
           delete loginResponse.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse)

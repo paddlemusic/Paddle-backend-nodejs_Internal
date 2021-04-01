@@ -32,7 +32,7 @@ class ChartService {
     let values = ''
     params.forEach(param => {
       if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI}','${param.artist_id}','${param.album_id}')`// added play_uri,artist_id,album_id
+      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI || ''}','${param.artist_id || ''}','${param.album_id || ''}')`// added play_uri,artist_id,album_id
       values += value
     })
     const rawQuery =
@@ -43,18 +43,15 @@ class ChartService {
                 media_type,
                 media_metadata,
                 "date",
-                "play_uri",
-                "artist_id",
-                "album_id")
+                play_uri,
+                artist_id,
+                album_id)
               VALUES ${values} 
               ON CONFLICT 
                 (university_id,
                   media_id,
                   media_type,
-                  "date",
-                  "play_uri",
-                  "artist_id",
-                  "album_id")
+                  "date")
               DO UPDATE
               SET
                 count = "Stream_Stats".count + 1`
@@ -62,6 +59,7 @@ class ChartService {
     const data = await sequelize.query(rawQuery, {
       // bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
     })
+    console.log(data)
     return data
   }
 

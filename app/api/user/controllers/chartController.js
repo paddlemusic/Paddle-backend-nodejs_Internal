@@ -21,6 +21,8 @@ class ChartController {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
+      //console.log(validationResult)
+      //return
       const date = moment().utc().format('YYYY-MM-DD')
       // const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
       let universityCode = 0

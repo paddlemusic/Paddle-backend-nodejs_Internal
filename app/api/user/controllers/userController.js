@@ -2,7 +2,7 @@
 const UserService = require('../services/userService')
 const User = require('../../../models/user')
 const CommonService = require('../services/commonService')
-// const notificationService = require('../services/notificationService')
+const notificationService = require('../services/notificationService')
 const util = require('../../../utils/utils')
 // const firebase = require('../utils/firebase')
 const country = require('../../../utils/country')
@@ -434,6 +434,23 @@ class UserController {
     }
   }
 
+  async updateDeviceToken (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.updateDeviceToken.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      await commonService.update(User, { device_token: validationResult.device_token }, { id: req.decoded.id })
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async logout (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -464,19 +481,24 @@ class UserController {
         return
       }
       await commonService.create(UserFollower, params)
-      // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
-
-      // const sharedwithToken = await commonService.findAll(User, { id: req.params.user_id }, ['device_token'])
-      // const payload = {
-      //   message: {
-      //     notification: {
-      //       title: 'Paddle Notification ',
-      //       body: followerName.dataValues.name + ' ' + ' started following you'
-      //     }
-      //   }
-      // }
-      // await notificationService.sendNotification(sharedwithToken, payload)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notification
+      const followerData = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+      console.log(followerData)
+      const followedData = await commonService.findOne(User, { id: req.params.user_id }, ['device_token'])
+      console.log(followedData)
+
+      const message = {
+        notification: {
+          title: 'You got a new follower!!',
+          body: `${followedData.name} started following you.`
+        },
+        data: {
+          user_id: followerData.id
+        }
+      }
+      await notificationService.sendNotification(followedData, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

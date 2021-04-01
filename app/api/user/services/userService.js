@@ -231,7 +231,14 @@ class UserService {
       UserFollower.findAll({
         where: { follower_id: userId },
         attributes: ['user_id'],
-        raw: true
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          // where: { university_code: params.university_id },
+          attributes: ['device_token'],
+          as: 'followed'
+        }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
