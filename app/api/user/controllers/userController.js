@@ -492,13 +492,14 @@ class UserController {
       const message = {
         notification: {
           title: 'You got a new follower!!',
-          body: `${followedData.name} started following you.`
+          body: `${followerData.name} started following you.`
         },
         data: {
-          user_id: followerData.id
+          user_id: `${followerData.id}`,
+          type: 'follow'
         }
       }
-      await notificationService.sendNotification(followedData, message)
+      await notificationService.sendNotification([followedData], message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)

@@ -182,11 +182,11 @@ class UserService {
     })
   }
 
-  getFollowers (params, pagination) {
+  getFollowers (params, pagination = null) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { user_id: params.id },
-        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture", "follower"."device_token"')],
         raw: true,
         limit: pagination.limit,
         offset: pagination.offset,

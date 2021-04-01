@@ -57,9 +57,11 @@ class HomePageController {
 
       let sharedWithUsersId
       if (validationResult.shared_with.length === 1 && validationResult.shared_with[0] === null) {
-        const myfollowingData = await userService.getUserFollowing(req.decoded)
-        console.log('myfollowingData', myfollowingData)
-        sharedWithUsersId = myfollowingData.map(data => { return { device_token: data['followed.device_token'] } })
+        const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+        const myfollowersData = await userService.getFollowers(req.decoded, pagination)
+        console.log('myfollowersData', myfollowersData)
+
+        sharedWithUsersId = myfollowersData.rows.map(data => { return { device_token: data.device_token } })
         console.log('sharedWithUsersId', sharedWithUsersId)
       } else {
         sharedWithUsersId = await commonService.findAll(User, { id: validationResult.shared_with }, ['device_token'])
