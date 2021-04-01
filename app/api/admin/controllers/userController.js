@@ -152,10 +152,10 @@ class UserController {
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
+        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: config.constants.ROLE.USER })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
+        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: config.constants.ROLE.USER })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
