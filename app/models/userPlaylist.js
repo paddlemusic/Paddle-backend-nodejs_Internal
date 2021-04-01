@@ -12,7 +12,7 @@ const UserPlaylist = sequelize.define('User_Playlist', {
     allowNull: false
   },
   image: {
-    type: DataTypes.STRING,
+    type: DataTypes.ARRAY(DataTypes.STRING),
     allowNull: true
   },
   description: {
@@ -32,6 +32,6 @@ UserPlaylist.belongsTo(User, {
   onUpdate: 'Cascade'
 })
 
-// UserPlaylist.sync({ alter: true })
+// UserPlaylist.sync({ force: true })
 
 module.exports = UserPlaylist

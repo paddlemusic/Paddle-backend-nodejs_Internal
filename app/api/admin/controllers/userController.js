@@ -16,7 +16,7 @@ class UserController {
     schema.login.validateAsync(req.body).then(async () => {
       // const loginResponse = await userService.login(req.body)
       // console.log('lets try2', loginResponse)
-      const loginResponse = await commonService.findOne(User, { role: 2, email: (req.body.email).toLowerCase() }, ['id', 'name', 'username', 'email', 'phone_number',
+      const loginResponse = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: (req.body.email).toLowerCase() }, ['id', 'name', 'username', 'email', 'phone_number',
         'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt'])
       // console.log( loginResponse)
       if (!loginResponse) {
@@ -28,13 +28,13 @@ class UserController {
         if (didMatch) {
           const payload = {
             id: loginResponse.id,
-            username: loginResponse.username,
+            // username: loginResponse.username,
             role: 2,
             isActive: loginResponse.is_active
           }
           const token = await util.generateJwtToken(payload)
           // console.log('token is', token)
-          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.token = token
           delete loginResponse.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse)
@@ -104,7 +104,7 @@ class UserController {
         return
       }
       // console.log(req.params.id)
-      const myProfile = await commonService.findOne(User, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      const myProfile = await commonService.findOne(User, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth', 'created_at', 'updated_at'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)
@@ -117,7 +117,8 @@ class UserController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
-      const data = await userService.listUsers(userName, pagination)
+      const uniName = req.query.universityName
+      const data = await userService.listUsers(userName, uniName, pagination)
       // console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
@@ -125,6 +126,7 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+  // to be removed later
 
   async userSearch (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
@@ -150,10 +152,10 @@ class UserController {
         return
       }
       if (req.params.type === 'block') {
-        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: false }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
         console.log(data)
       } else if (req.params.type === 'unblock') {
-        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: 1 })
+        const data = await commonService.update(User, { is_active: true }, { id: req.body.ids, role: config.constants.ROLE.ADMIN })
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
@@ -229,9 +231,50 @@ class UserController {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
+  } */
+
+  async forgotPassword (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.forgotPassword.validateAsync(req.body).then(async () => {
+      const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
+      // console.log('aaaaaaaaaaaaaaaa', userExist)
+      if (!userExist) {
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      }
+      const payload = {
+        is_active: userExist.is_active,
+        role: userExist.role,
+        email: userExist.email
+      }
+      const verificationToken = await util.generateVerificationToken(payload)
+      const getEmail = await userService.sendResetLink(userExist.email, verificationToken, userExist.name)
+      if (getEmail) {
+        await userService.updateVerificationToken({ otp: verificationToken, id: userExist.id })
+      }
+      // await commonService.update(User, { is_verified: false }, { id: userExist.dataValues.id })
+
+      // We do not need to send token in forget password response.
+
+      // const payload = { id: userExist.dataValues.id, username: userExist.dataValues.username, role: 1 }
+      // const token = await util.generateJwtToken(payload)
+      userExist.mailToken = verificationToken
+      // userExist.dataValues.token = token
+      delete userExist.password
+      delete userExist.role
+      delete userExist.device_token
+      delete userExist.verification_token
+      delete userExist.social_user_id
+      // util.successResponse(res, config.constants.SUCCESS, langMsg.otpSent, userExist.dataValues)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.linkSent, userExist)
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    })
   }
 
-  async resetPassword (req, res) {
+  /* async resetPassword (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.resetPassword.validateAsync(req.body).then(async () => {
       const passwordHash = await util.encryptPassword(req.body.password)
@@ -266,6 +309,48 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     })
   } */
+
+  async resetPassword (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    schema.resetPassword.validateAsync(req.body).then(async () => {
+      const passwordHash = await util.encryptPassword(req.body.password)
+      req.body.password = passwordHash
+      const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
+      if (!userExist) {
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+      }
+      // const resetPasswordToken = await util.generatePasswordReset()
+      // await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
+      // const getResetPasswordToken = await userService.getResetPasswordToken(req.body)
+      // console.log('resetpasswordtakendetails', getResetPasswordToken)
+      // const resetPassword = await userService.resetPassword({ getResetPasswordToken: getResetPasswordToken.reset_password_token, getResetPasswordExpires: getResetPasswordToken.reset_password_expires, newPassword: req.body.password })
+      // if (!resetPassword) {
+      //   util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.notFound)
+      // }
+      const verificationToken = await util.getOtpFromJwt(userExist.verification_token)
+      console.log('verificationToken is', verificationToken)
+      if (verificationToken.email === userExist.email) {
+        await commonService.update(User,
+          { password: passwordHash, verification_token: null },
+          { email: verificationToken.email })
+        return util.successResponse(res, config.constants.SUCCESS, langMsg.passwordUpdated, {})
+      } else {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.tokenExpired)
+      }
+
+      // userExist.dataValues.token = resetPasswordToken
+      // delete userExist.dataValues.password
+      // delete userExist.dataValues.role
+      // delete userExist.dataValues.device_token
+      // delete userExist.dataValues.verification_token
+      // delete userExist.dataValues.social_user_id
+    }, reject => {
+      util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
+    }).catch(err => {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    })
+  }
 }
 
 module.exports = UserController

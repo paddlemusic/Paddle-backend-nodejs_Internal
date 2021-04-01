@@ -1,5 +1,5 @@
 const CommonService = require('../services/commonService')
-const ProfileService = require('../services/profileService')
+const UniversityService = require('../services/universityService')
 
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
@@ -8,14 +8,17 @@ const UniversitySchema = require('../schemaValidator/universitySchema')
 const Sequelize = require('sequelize')
 
 const commonService = new CommonService()
-const profileService = new ProfileService()
+const universityService = new UniversityService()
 
 class UniversityController {
   async addUniversity (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
+      // console.log('validationResultaaaaaaaaaaaaaaaaaaaaaaaaaaa')
       const validationResult = await UniversitySchema.addUniversity.validateAsync(req.body)
+      // console.log('validationResultaccccccccccccccccccccccccccccc')
       if (validationResult.error) {
+        console.log('validationResult.error', validationResult)
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
@@ -23,8 +26,19 @@ class UniversityController {
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
+      console.log('err is', err)
       console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      if (err.name === 'ValidationError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.details[0].message)
+      } else if (err.name === 'CustomError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.message)
+      } else {
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      }
+      // const errorMessage = err.name === 'ValidationError' ? err.details[0].message : langMsg.internalServerError
+      // const errorCode = err.name === 'ValidationError' ? config.constants.BAD_REQUEST : config.constants.INTERNAL_SERVER_ERROR
+      // util.failureResponse(res, errorCode, errorMessage)
+      // util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
 
@@ -33,7 +47,7 @@ class UniversityController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const uniName = req.query.name
-      const data = await profileService.getUniversities(uniName, pagination)
+      const data = await universityService.getUniversities(uniName, pagination)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
@@ -48,7 +62,7 @@ class UniversityController {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
 
-      const userList = await profileService.searchUniversity(userName, pagination)
+      const userList = await universityService.searchUniversity(userName, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, userList)
     } catch (err) {
       console.log('err is:', err)
@@ -73,6 +87,30 @@ class UniversityController {
     }
   }
 
+  async editUniversity (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await UniversitySchema.editUniversity.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+
+      const updatedResult = await commonService.update(University, req.body, { id: req.params.id })
+      console.log('updated result', updatedResult)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      if (err.name === 'ValidationError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.details[0].message)
+      } else if (err.name === 'SequelizeUniqueConstraintError') {
+        util.failureResponse(res, config.constants.BAD_REQUEST, err.message)
+      } else {
+        util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+      }
+    }
+  }
+
   async toggleUniversityStatus (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -92,22 +130,22 @@ class UniversityController {
     }
   }
 
-  /* async getUniversityDetail (req, res) {
+  async getUniversityDetail (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const validationResult = await schema.viewUserProfile.validateAsync(req.params)
+      const validationResult = await UniversitySchema.viewUniversity.validateAsync(req.params)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       // console.log(req.params.id)
-      const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'username', 'email', 'phone_number', 'date_of_birth'])
+      const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'city', 'created_at'])
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
-  } */
+  }
 }
 
 module.exports = UniversityController

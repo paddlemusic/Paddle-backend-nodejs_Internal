@@ -7,6 +7,7 @@ const userController = new UserController()
 
 const auth = require('../../../middleware/authenticate')
 const authenticate = require('../../../middleware/authenticate')
+const uploadMiddleware = require('../../../middleware/upload')
 
 /**
  * @swagger
@@ -47,6 +48,11 @@ const authenticate = require('../../../middleware/authenticate')
  *        name: university_code
  *        schema:
  *        type: integer
+ *        required: false
+ *      - in: body
+ *        name: profile_picture
+ *        schema:
+ *        type: string
  *        required: false
  *     produces:
  *       - application/json
@@ -224,6 +230,30 @@ router.post('/resetPassword', userController.resetPassword)
 /**
  * @swagger
  *
+ * /upload:
+ *   post:
+ *     tags :
+ *      - User
+ *     summary: To upload an image.
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - multipart/form-data
+ *     parameters:
+ *      - in: formData
+ *        name: image
+ *        schema:
+ *        type: file
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: upload image to Amazon S3 bucket .
+ */
+router.post('/upload', uploadMiddleware.upload, userController.uploadFile)
+
+/**
+ * @swagger
+ *
  * /user/followers:
  *   get:
  *     tags :
@@ -241,6 +271,31 @@ router.post('/resetPassword', userController.resetPassword)
  *              description: Update playlist response object.
  */
 router.get('/followers', auth.verifyToken, userController.getFollowers)
+
+/**
+ * @swagger
+ *
+ * /user/followers/search:
+ *   get:
+ *     tags :
+ *      - User
+ *     summary: For searching followers.
+ *     description: >
+ *      This resource will be used for for searching followers..
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        type: string
+ *        required: true
+ *      - in: query
+ *        name: keyword
+ *        type: string
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: For searching followers.
+ */
+router.get('/followers/search', auth.verifyToken, userController.searchFollowers)
 
 /**
  * @swagger
@@ -409,6 +464,8 @@ router.get('/countries', userController.getCountryCallingCode)
  *              description: isUsernameAvailable response object.
  */
 router.get('/isUsernameAvailable', auth.verifyToken, userController.isUsernameAvailable)
+
+router.post('/deviceToken', auth.verifyToken, userController.updateDeviceToken)
 
 router.post('/rateApp', auth.verifyToken, userController.rateApp)
 

@@ -13,6 +13,18 @@ const UserMedia = sequelize.define('User_Media', {
     allowNull: false,
     unique: 'user_id_media_id_media_type'
   },
+  play_uri: { // added playURI in user media
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  artist_id: { // added key artist_id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  album_id: { // added key album id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
   media_image: {
     type: DataTypes.STRING,
     allowNull: true
@@ -39,6 +51,10 @@ const UserMedia = sequelize.define('User_Media', {
     allowNull: true,
     unique: 'user_id_media_id_media_type'
     // defaultValue: 1
+  },
+  order: {
+    type: DataTypes.SMALLINT,
+    allowNull: true
   }
 },
 {

@@ -34,6 +34,10 @@ const authenticate = require('../../../middleware/authenticate')
  *                      type: string
  *                  description:
  *                      type: string
+ *                  image:
+ *                      type: array
+ *                  playURI:
+ *                      type: string
  *     responses:
  *          default:
  *              description: Create playlist response object.
@@ -71,6 +75,10 @@ router.post('/playlist/create', authenticate.verifyToken, userMediaController.cr
  *                  name:
  *                      type: string
  *                  description:
+ *                      type: string
+ *                  image:
+ *                      type: array
+ *                  playURI:
  *                      type: string
  *     responses:
  *          default:
@@ -162,6 +170,8 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                   "tracksData":[
  *                          {
  *                    "media_id": "1",
+ *                    "playURI": "",
+ *                    "artist_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -169,6 +179,8 @@ router.get('/playlist', authenticate.verifyToken, userMediaController.getPlaylis
  *                          },
  *                          {
  *                    "media_id": "2",
+ *                    "playURI": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -351,7 +363,7 @@ router.delete('/playlist/:playlist_id/deleteTracks', authenticate.verifyToken, u
  *   get:
  *     tags :
  *      - User Media
- *     summary: Delete tracks from a Playlist.
+ *     summary: Get tracks from a Playlist.
  *     produces:
  *       - application/json
  *     consumes:
@@ -772,6 +784,9 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                   "tracksData":[
  *                          {
  *                    "media_id": "1",
+ *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 1",
  *                    "meta_data": "",
@@ -779,6 +794,9 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          },
  *                          {
  *                    "media_id": "2",
+ *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
  *                    "media_image": "",
  *                    "media_name": "song 2",
  *                    "meta_data": "",
@@ -793,6 +811,9 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *                          media_id:
  *                              type: string
  *                              required:  true
+ *                          playURI:
+ *                              type: string
+ *                              required:  false
  *                          media_image:
  *                              type: string
  *                          media_name:
@@ -806,6 +827,100 @@ router.get('/getRecentPosts', authenticate.verifyToken, userMediaController.getR
  *              description: Add tracks/artist to Top and Saved Songs/Artist
  */
 router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.createUserMedia)
+
+/**
+ * @swagger
+ *
+ * /{usermedia_type}/{media_type}/order:
+ *   put:
+ *     tags :
+ *      - User Media
+ *     summary: Order tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *        - in: body
+ *          name: data
+ *          description: Tracks Or artist Data.
+ *          required: true
+ *          schema:
+ *            type: array
+ *            items :
+ *               $ref: '#/definitions/TrackArtistIds'
+ *            example: {
+ *                   "tracksData":[
+ *                          {
+ *                    "media_id": "1",
+ *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
+ *                    "media_image": "",
+ *                    "media_name": "song 1",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          },
+ *                          {
+ *                    "media_id": "2",
+ *                    "playURI": "",
+ *                    "artist_id": "",
+ *                    "album_id": "",
+ *                    "media_image": "",
+ *                    "media_name": "song 2",
+ *                    "meta_data": "",
+ *                    "meta_data2": "",
+ *                          }
+ *                          ]
+ *                     }
+ *          definitions:
+ *              TrackArtistIds:
+ *                  type: object
+ *                  properties:
+ *                          media_id:
+ *                              type: string
+ *                              required:  true
+ *                          playURI:
+ *                              type: string
+ *                              required:  false
+ *                          artist_id:
+ *                              type: string
+ *                              required:  false
+ *                          album_id:
+ *                              type: string
+ *                              required:  false
+ *                          media_image:
+ *                              type: string
+ *                          media_name:
+ *                              type: string
+ *                          meta_data:
+ *                              type: string
+ *                          meta_data2:
+ *                              type: string
+ *                          order:
+ *                              type: number
+ *     responses:
+ *          default:
+ *              description: Order tracks/artist to Top and Saved Songs/Artist
+ */
+router.put('/:usermedia_type/:media_type/order', authenticate.verifyToken, userMediaController.orderUserMedia)
 
 /**
  * @swagger
@@ -842,6 +957,47 @@ router.put('/:usermedia_type/:media_type', authenticate.verifyToken, userMediaCo
  *              description: Get tracks/artist to Top and Saved Songs/Artist
  */
 router.get('/get/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.getUserMedia)
+
+/**
+ * @swagger
+ *
+ * /search/{usermedia_type}/{media_type}:
+ *   get:
+ *     tags :
+ *      - User Media
+ *     summary: Search tracks/artist to Top and Saved Songs/Artist
+ *     produces:
+ *       - application/json
+ *     consumes:
+ *        - application/json
+ *     parameters:
+ *        - in: header
+ *          name: Authorization
+ *          schema:
+ *          type: string
+ *          required: true
+ *        - in: path
+ *          name: media_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *          description: Numeric ID for track & artist, 1 = track & 2 = artist
+ *        - in: path
+ *          name: usermedia_type
+ *          schema:
+ *          type: integer
+ *          required: true
+ *        - in: query
+ *          name: keyword
+ *          schema:
+ *          type: string
+ *          required: true
+ *          description: Numeric ID for topSongArtist & savedSongArtist, 1 = topSongArtist & 2 = savedSongArtist
+ *     responses:
+ *          default:
+ *              description: Search tracks/artist to Top and Saved Songs/Artist
+ */
+router.get('/search/:usermedia_type/:media_type', authenticate.verifyToken, userMediaController.trackArtistSearch)
 
 /**
  * @swagger
@@ -922,6 +1078,11 @@ router.delete('/:usermedia_type/:media_type', authenticate.verifyToken, userMedi
  *          type: integer
  *          required: true
  *          description: count in range of 0, 3, 5, 10.
+ *        - in: path
+ *          name: playURI
+ *          schema:
+ *          type: string
+ *          required: false
  *     responses:
  *          default:
  *              description: Set/update Top artitst/tracks
@@ -955,5 +1116,33 @@ router.post('/:media_type/:count', authenticate.verifyToken, userMediaController
  */
 
 router.get('/isSaved/:media_id', authenticate.verifyToken, userMediaController.isMediaSaved)
+
+/**
+ * @swagger
+ *
+ * /{media_type}/cover:
+ *   get:
+ *     tags :
+ *      - User Media
+ *     summary: Fetch cover image of saved songs/artist
+ *     description: >
+ *      This resource will Fetch cover image of saved songs/artist.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: media_id
+ *        schema:
+ *        type: integer
+ *        required: true
+ *     responses:
+ *          default:
+ *              description: This resource will Fetch cover image of saved songs/artist.
+ */
+
+router.get('/:media_type/cover', authenticate.verifyToken, userMediaController.getCoverImage)
 
 module.exports = router

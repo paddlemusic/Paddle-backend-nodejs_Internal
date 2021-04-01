@@ -29,13 +29,25 @@ const getCachedCountryCallingCode = async () => {
     return cachedCountryCallingCode
   } else {
     let countryCallingCode = await getCountryCallingCode()
-    countryCallingCode = countryCallingCode.map(country => {
-      return {
-        name: country.name,
-        callingCode: country.callingCodes[0],
-        flag: country.flag
+    // countryCallingCode = countryCallingCode.map(country => {
+    //   if (country.name && country.callingCodes[0] && country.flag) {
+    //     return {
+    //       name: country.name,
+    //       callingCode: country.callingCodes[0],
+    //       flag: country.flag
+    //     }
+    //   }
+    // })
+    countryCallingCode = countryCallingCode.reduce((result, country) => {
+      if (country.name && country.callingCodes[0] && country.flag) {
+        result.push({
+          name: country.name,
+          callingCode: country.callingCodes[0],
+          flag: country.flag
+        })
       }
-    })
+      return result
+    }, [])
     cachedCountryCallingCode = countryCallingCode
     return countryCallingCode
   }

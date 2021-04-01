@@ -102,7 +102,7 @@ class UserService {
 
   login (params) {
     return new Promise((resolve, reject) => {
-      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number',
+      const userAttribute = ['id', 'name', 'username', 'email', 'phone_number', 'university_code',
         'password', 'is_privacy', 'is_verified', 'is_active', 'top_tracks_count', 'top_artist_count', 'created_at', 'updated_at']
       const criteria = {
         role: config.constants.ROLE.USER,
@@ -163,12 +163,14 @@ class UserService {
       console.log('params are:', params)
       SaveArtist.create(params) */
 
-  getFollowing (params) {
+  getFollowing (params, pagination) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { follower_id: params.id },
         attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture","followed"."device_token"')],
         raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
         include: [{
           model: User,
           required: true,
@@ -180,15 +182,41 @@ class UserService {
     })
   }
 
-  getFollowers (params) {
+  getFollowers (params, pagination) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { user_id: params.id },
         attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
         raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
         include: [{
           model: User,
           required: true,
+          attributes: [],
+          as: 'follower'
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  searchFollowers (params, pagination) {
+    return new Promise((resolve, reject) => {
+      UserFollower.findAndCountAll({
+        where: { user_id: params.id },
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
+        raw: true,
+        limit: pagination.limit,
+        offset: pagination.offset,
+        include: [{
+          model: User,
+          required: true,
+          where: {
+            name: {
+              [Op.iLike]: params.keyword + '%'
+            }
+          },
           attributes: [],
           as: 'follower'
         }]
@@ -203,7 +231,14 @@ class UserService {
       UserFollower.findAll({
         where: { follower_id: userId },
         attributes: ['user_id'],
-        raw: true
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          // where: { university_code: params.university_id },
+          attributes: ['device_token'],
+          as: 'followed'
+        }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
@@ -246,7 +281,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'like_count'],
+        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'like_count', 'play_uri', 'artist_id', 'album_id'], // added playURI,artist_id,album_id in recent post response
         raw: true
         // result.likes=likes
       }).then(result => resolve(result))

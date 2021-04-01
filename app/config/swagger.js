@@ -80,8 +80,16 @@ const options = {
       }
     },
     {
+      name: 'admin-songs',
+      description: 'Everything about songs management',
+      externalDocs: {
+        description: 'Find out more',
+        url: 'http://swagger.io'
+      }
+    },
+    {
       name: 'admin-analytics',
-      description: 'Everything about universities management',
+      description: 'Everything about analytics management',
       externalDocs: {
         description: 'Find out more',
         url: 'http://swagger.io'

@@ -14,7 +14,8 @@ const schema = {
     email: Joi.string().trim().email().required(),
     university_code: Joi.number().min(0).allow(null),
     password: Joi.string().trim().min(8).max(30).required(),
-    passcode: Joi.string().trim().max(30).min(6).required()
+    passcode: Joi.string().trim().max(30).min(6).required(),
+    profile_picture: Joi.string().trim().uri().allow('').allow(null)
   }),
   sendOTP: Joi.object().keys({
     email: Joi.string().trim().email().required()
@@ -54,8 +55,11 @@ const schema = {
   }),
   submitStats: Joi.object().keys({
     app_usage_time: Joi.number().min(0).default(0),
-    did_open_app: Joi.boolean().default(false),
-    date: Joi.date().format('YYYY-MM-DD').required()
+    did_open_app: Joi.boolean().default(false)
+    // date: Joi.date().format('YYYY-MM-DD').required()
+  }),
+  updateDeviceToken: Joi.object().keys({
+    device_token: Joi.string().trim().required()
   })
 }
 

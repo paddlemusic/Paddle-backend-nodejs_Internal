@@ -21,13 +21,25 @@ const StreamStats = sequelize.define('Stream_Stats', {
     unique: 'stream_stats_un_key'
   },
   media_metadata: {
-    type: DataTypes.JSON,
+    type: DataTypes.JSONB,
     allowNull: true
   },
   date: {
     type: DataTypes.DATEONLY,
     allowNull: false,
     unique: 'stream_stats_un_key'
+  },
+  play_uri: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  artist_id: { // added key artist_id
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  album_id: { // added key album id
+    type: DataTypes.STRING,
+    allowNull: true
   },
   count: {
     type: DataTypes.INTEGER,
@@ -42,15 +54,15 @@ const StreamStats = sequelize.define('Stream_Stats', {
   timestamps: false
 })
 
-// StreamStats.belongsTo(University, {
-//   sourceKey: 'id',
-//   foreignKey: 'university_id',
-//   onDelete: 'Cascade',
-//   onUpdate: 'Cascade'
-// })
+/* StreamStats.belongsTo(University, {
+  sourceKey: 'id',
+  foreignKey: 'university_id',
+  onDelete: 'Cascade',
+  onUpdate: 'Cascade'
+}) */
 
 StreamStats.removeAttribute('id')
 
-// StreamStats.sync({ force: true })
+// StreamStats.sync({ alter: true })
 
 module.exports = StreamStats

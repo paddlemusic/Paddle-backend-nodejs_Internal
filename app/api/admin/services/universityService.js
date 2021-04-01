@@ -2,7 +2,7 @@ const University = require('../../../models/university')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
-class ProfileService {
+class UniversityService {
   getUniversities (name, pagination) {
     return new Promise((resolve, reject) => {
       University.findAndCountAll({
@@ -13,7 +13,7 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['id', 'name', 'city', 'created_at', 'updated_at'],
+        attributes: ['id', 'name', 'city', 'is_active', 'created_at', 'updated_at'],
         order: [['id', 'ASC']],
         raw: true
       }).then(result => resolve(result))
@@ -31,7 +31,7 @@ class ProfileService {
         },
         limit: pagination.limit,
         offset: pagination.offset,
-        attributes: ['id', 'name', 'created_at'],
+        attributes: ['id', 'name', 'city', 'is_active', 'created_at', 'updated_at'],
         // group: ['id'],
         order: [['id', 'ASC']],
         raw: true
@@ -40,4 +40,4 @@ class ProfileService {
     })
   }
 }
-module.exports = ProfileService
+module.exports = UniversityService

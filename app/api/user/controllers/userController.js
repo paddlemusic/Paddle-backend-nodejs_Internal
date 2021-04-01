@@ -2,7 +2,7 @@
 const UserService = require('../services/userService')
 const User = require('../../../models/user')
 const CommonService = require('../services/commonService')
-// const notificationService = require('../services/notificationService')
+const notificationService = require('../services/notificationService')
 const util = require('../../../utils/utils')
 // const firebase = require('../utils/firebase')
 const country = require('../../../utils/country')
@@ -16,8 +16,9 @@ const UserRating = require('../../../models/userRating')
 // const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
 // const utils = require('../utils/utils')
-// const moment = require('moment')
+const moment = require('moment')
 // const UserStats = require('../../../models/userStats')
+const s3Bucket = require('../services/s3Bucket')
 
 class UserController {
   async signup (req, res) {
@@ -160,7 +161,7 @@ class UserController {
             isVerified: loginResponse.dataValues.is_verified
           }
           const token = await util.generateJwtToken(payload)
-          await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
           loginResponse.dataValues.token = token
           delete loginResponse.dataValues.password
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
@@ -412,6 +413,44 @@ class UserController {
     }
   }
 
+  async uploadFile (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (!req.file) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, langMsg.failed)
+      }
+      const myFile = req.file.originalname.split('.')
+      const fileType = myFile[myFile.length - 1]
+      const body = {
+        fileType: fileType,
+        buffer: req.file.buffer
+      }
+      const upload = await s3Bucket.uploadToS3(body)
+      // await commonService.update(User, { profile_picture: upload.Location }, { id: req.decoded.id })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, { Location: upload.Location })
+    } catch (error) {
+      console.log('Error is:', error)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async updateDeviceToken (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.updateDeviceToken.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      await commonService.update(User, { device_token: validationResult.device_token }, { id: req.decoded.id })
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async logout (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -442,19 +481,24 @@ class UserController {
         return
       }
       await commonService.create(UserFollower, params)
-      // const followerName = await commonService.findOne(User, { id: req.decoded.id }, ['name'])
-
-      // const sharedwithToken = await commonService.findAll(User, { id: req.params.user_id }, ['device_token'])
-      // const payload = {
-      //   message: {
-      //     notification: {
-      //       title: 'Paddle Notification ',
-      //       body: followerName.dataValues.name + ' ' + ' started following you'
-      //     }
-      //   }
-      // }
-      // await notificationService.sendNotification(sharedwithToken, payload)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notification
+      const followerData = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+      console.log(followerData)
+      const followedData = await commonService.findOne(User, { id: req.params.user_id }, ['device_token'])
+      console.log(followedData)
+
+      const message = {
+        notification: {
+          title: 'You got a new follower!!',
+          body: `${followedData.name} started following you.`
+        },
+        data: {
+          user_id: followerData.id
+        }
+      }
+      await notificationService.sendNotification(followedData, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -485,7 +529,8 @@ class UserController {
   async getFollowing (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const followingData = await userService.getFollowing(req.decoded)
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const followingData = await userService.getFollowing(req.decoded, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, followingData)
     } catch (err) {
       console.log(err)
@@ -496,7 +541,8 @@ class UserController {
   async getFollowers (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const followerData = await userService.getFollowers(req.decoded)
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      const followerData = await userService.getFollowers(req.decoded, pagination)
       const followersID = followerData.rows.map(follower => { return follower.id })
       const followBackData = await userService.getFollowBack(req.decoded.id, followersID)
       followerData.rows.forEach((follower, index) => {
@@ -504,6 +550,19 @@ class UserController {
           followerData.rows[index].follow_back = follower.id === followBack.id
         })
       })
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, followerData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async searchFollowers (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      req.decoded.keyword = req.query.keyword
+      const followerData = await userService.searchFollowers(req.decoded, pagination)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, followerData)
     } catch (err) {
       console.log(err)
@@ -564,9 +623,10 @@ class UserController {
       }
       console.log(validationResult)
 
-      const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
+      // const university = await commonService.findOne(User, { id: req.decoded.id }, ['university_code'])
       validationResult.user_id = req.decoded.id
-      validationResult.university_id = university.university_code
+      validationResult.university_id = req.decoded.university_code || null// university.university_code
+      validationResult.date = moment().utc().format('YYYY-MM-DD')
 
       const response = await userService.submitUserStats(validationResult)
       console.log(response)
