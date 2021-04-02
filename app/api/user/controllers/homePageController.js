@@ -294,7 +294,27 @@ class HomePageController {
     }
   }
 
-  // Check if this method is redundant or not. Remove if redundant.
+  async getAPost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const postData = await homeService.getAPost(req.params.id)
+
+      const likedByMePost = await commonService
+        .findOne(LikePost, { user_id: req.decoded.id, post_id: req.params.id }, ['post_id'])
+
+      console.log('likedByMePost', likedByMePost)
+      console.log('post data is:', postData)
+
+      postData.liked_by_me = likedByMePost !== null
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  // Redundant Method
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {

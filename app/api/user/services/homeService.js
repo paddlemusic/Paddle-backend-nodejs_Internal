@@ -53,6 +53,29 @@ class HomeService {
     })
   }
 
+  getAPost (postId) {
+    return new Promise((resolve, reject) => {
+      PostShare.findOne({
+        where: {
+          post_id: postId
+        },
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","meta_data2","media_type","caption", "like_count","play_uri","artist_id","album_id"`)], // in response added playURI,artist_id,album_id
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: []
+        }, {
+          model: UserPost,
+          required: true,
+          attributes: []
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
   getUserPostOldMethod (followingId, userId, pagination) {
     console.log('ffffffffffff', followingId, userId)
     return new Promise((resolve, reject) => {
