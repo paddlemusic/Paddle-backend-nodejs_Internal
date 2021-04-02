@@ -307,7 +307,11 @@ class HomePageController {
 
       postData.liked_by_me = likedByMePost !== null
 
-      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+      const response = {
+        count: 1,
+        rows: [postData]
+      }
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, response)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
