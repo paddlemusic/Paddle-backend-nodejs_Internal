@@ -100,6 +100,32 @@ router.get('/getPosts', authenticate.verifyToken, homePageController.getUserPost
 /**
  * @swagger
  *
+ * /getPost/{id}:
+ *   get:
+ *     tags :
+ *      - Home
+ *     summary: get a posts.
+ *     description: >
+ *      This resource will be used for getting a post.
+ *     parameters:
+ *      - in: header
+ *        name: Authorization
+ *        schema:
+ *        type: string
+ *        required: true
+ *      - in: path
+ *        name: id
+ *        schema:
+ *        type: string
+ *        required: true
+ *     produces:
+ *       - application/json
+ */
+router.get('/getPost/:id', authenticate.verifyToken, homePageController.getAPost)
+
+/**
+ * @swagger
+ *
  * /getPosts:
  *   get:
  *     tags :

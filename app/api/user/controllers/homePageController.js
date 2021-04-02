@@ -7,6 +7,7 @@ const LikePost = require('../../../models/likePost')
 // const UserMedia = require('../../../models/userMedia')
 const notificationService = require('../services/notificationService')
 const User = require('../../../models/user')
+const PostShare = require('../../../models/userPostShare')
 
 const CommonService = require('../services/commonService')
 const commonService = new CommonService()
@@ -19,6 +20,82 @@ const homeService = new HomeService()
 
 class HomePageController {
   async createUserPost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const validationResult = await schema.userPost.validateAsync(req.body)
+      if (validationResult.error) {
+        util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+        return
+      }
+      const params = {
+        user_id: req.decoded.id,
+        media_id: validationResult.media_id,
+        play_uri: validationResult.playURI,
+        artist_id: validationResult.artist_id,
+        album_id: validationResult.album_id,
+        caption: validationResult.caption,
+        media_image: validationResult.media_image,
+        media_name: validationResult.media_name,
+        meta_data: validationResult.meta_data,
+        meta_data2: validationResult.meta_data2,
+        media_type: req.params.media_type
+      }
+
+      const createPostData = await commonService.create(UserPost, params)
+      console.log(createPostData)
+
+      const postShareParams = []
+
+      validationResult.shared_with.forEach(shareId => {
+        if (Number(req.decoded.id) !== Number(req.body.shareId)) {
+          postShareParams.push({
+            post_id: createPostData.id,
+            shared_by: req.decoded.id,
+            shared_with: shareId
+          })
+        }
+      })
+      const postShareData = await commonService.bulkCreate(PostShare, postShareParams, false)
+      console.log(postShareData)
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      // Notiification
+      const user = await commonService.findOne(User, { id: req.decoded.id }, ['id', 'name'])
+
+      let sharedWithUsersId
+      if (validationResult.shared_with.length === 1 && validationResult.shared_with[0] === null) {
+        const pagination = commonService.getPagination(null, null)
+        const myfollowersData = await userService.getFollowers(req.decoded, pagination)
+        console.log('myfollowersData', myfollowersData)
+
+        sharedWithUsersId = myfollowersData.rows.map(data => { return { device_token: data.device_token } })
+        console.log('sharedWithUsersId', sharedWithUsersId)
+      } else {
+        sharedWithUsersId = await commonService.findAll(User, { id: validationResult.shared_with }, ['device_token'])
+      }
+
+      const message = {
+        notification: {
+          title: 'New Post',
+          body: `${user.name} shared a new Post.`
+        },
+        data: {
+          post_id: `${createPostData.id}`,
+          type: 'post'
+        }
+      }
+      console.log(message)
+      if (sharedWithUsersId.length) {
+        await notificationService.sendNotification(sharedWithUsersId, message)
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async createUserPostOldMethod (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const validationResult = await schema.userPost.validateAsync(req.body)
@@ -133,6 +210,41 @@ class HomePageController {
     }
   }
 
+  async getUserPostsOldMethod (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+
+      const myfollowingData = await userService.getUserFollowing(req.decoded)
+      const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
+      console.log('myfollowingIDs is: ', myfollowingIDs)
+
+      const postData = await homeService.getUserPost(myfollowingIDs, req.decoded.id, pagination)
+      const postIds = postData.rows.map(post => { return post.id })
+      console.log('postIds', postIds)
+
+      const likedByMePosts = await commonService
+        .findAll(LikePost, { user_id: req.decoded.id, post_id: postIds }, ['post_id'])
+      console.log('likedByMePosts', likedByMePosts)
+
+      postData.rows.forEach((post, index) => {
+        postData.rows[index].liked_by_me = false
+        likedByMePosts.forEach(likedPost => {
+          if (post.id === likedPost.post_id) {
+            postData.rows[index].liked_by_me = true
+          }
+        })
+      })
+
+      console.log('post data is:', postData)
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async likeUnlikePost (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
@@ -147,10 +259,10 @@ class HomePageController {
       }
       if (req.params.type === 'like') {
         const data = await homeService.likePost(param)
-        console.log(data)
+        console.log('like', data)
       } else {
         const data = await homeService.unlikePost(param)
-        console.log(data)
+        console.log('unlike', data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
 
@@ -168,10 +280,13 @@ class HomePageController {
             body: `${user.name} liked your Post.`
           },
           data: {
-            post_id: req.params.post_id
+            post_id: `${req.params.post_id}`,
+            type: 'like'
           }
         }
-        await notificationService.sendNotification([deviceTokens], message)
+        if (deviceTokens.device_token) {
+          await notificationService.sendNotification([deviceTokens], message)
+        }
       }
     } catch (err) {
       console.log(err)
@@ -179,7 +294,27 @@ class HomePageController {
     }
   }
 
-  // Check if this method is redundant or not. Remove if redundant.
+  async getAPost (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const postData = await homeService.getAPost(req.params.id)
+
+      const likedByMePost = await commonService
+        .findOne(LikePost, { user_id: req.decoded.id, post_id: req.params.id }, ['post_id'])
+
+      console.log('likedByMePost', likedByMePost)
+      console.log('post data is:', postData)
+
+      postData.liked_by_me = likedByMePost !== null
+
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, postData)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  // Redundant Method
   async userShare (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {

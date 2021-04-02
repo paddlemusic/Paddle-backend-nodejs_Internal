@@ -3,6 +3,7 @@ const User = require('../../../models/user')
 // const UserMedia = require('../models/userMedia')
 const LikePost = require('../../../models/likePost')
 const UserPost = require('../../../models/userPost')
+const PostShare = require('../../../models/userPostShare')
 const sequelize = require('../../../models')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
@@ -15,6 +16,67 @@ const moment = require('moment')
 
 class HomeService {
   getUserPost (followingId, userId, pagination) {
+    console.log('ffffffffffff', followingId, userId)
+    return new Promise((resolve, reject) => {
+      PostShare.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        where: {
+          [Op.and]: { shared_by: followingId },
+          [Op.or]: [
+            { shared_with: userId },
+            { shared_with: null }
+          ],
+          created_at: {
+            [Op.gte]: moment().subtract(5, 'days').toDate()
+          }
+        },
+        order: [
+          ['created_at', 'DESC']
+        ],
+        //,
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","meta_data2","media_type","caption", "like_count","play_uri","artist_id","album_id"`)], // in response added playURI,artist_id,album_id
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: []
+          // as: 'post'
+        }, {
+          model: UserPost,
+          required: true,
+          attributes: []
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getAPost (postId) {
+    return new Promise((resolve, reject) => {
+      PostShare.findOne({
+        where: {
+          post_id: postId
+        },
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","name","profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","meta_data2","media_type","caption", "like_count","play_uri","artist_id","album_id"`)], // in response added playURI,artist_id,album_id
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: []
+        }, {
+          model: UserPost,
+          required: true,
+          attributes: []
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUserPostOldMethod (followingId, userId, pagination) {
     console.log('ffffffffffff', followingId, userId)
     return new Promise((resolve, reject) => {
       UserPost.findAndCountAll({
