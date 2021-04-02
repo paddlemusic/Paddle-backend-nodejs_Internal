@@ -29,14 +29,18 @@ class UserController {
       }
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
+      
       const signupData = await userService.signup(req.body)
-      //  const otp = await util.sendOTP(signupData.dataValues.phone_number)
+
       const username = [signupData.dataValues.name.replace(' ', '_'), signupData.dataValues.id].join('_')
       await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
+
+      const university = await commonService
+          .findOne(University, {id: signupData.dataValues.university_code}, ['id', 'name', 'city', 'is_active'])
+
       const otp = await util
         .sendEmail(signupData.dataValues.email, signupData.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
       if (otp) {
-        // const otpJwt = await util.getJwtFromOtp(otp.otp)
         const payload = {
           otp: otp.otp,
           email: signupData.dataValues.email
@@ -53,6 +57,7 @@ class UserController {
         isVerified: signupData.dataValues.is_verified
       }
       const token = await util.generateJwtToken(payload)
+
       signupData.dataValues.token = token
       delete signupData.dataValues.password
       delete signupData.dataValues.role
@@ -61,6 +66,8 @@ class UserController {
       delete signupData.dataValues.social_user_id
       delete signupData.dataValues.reset_password_token
       delete signupData.dataValues.reset_password_expires
+      signupData.dataValues.university = university
+
       util.successResponse(res, config.constants.SUCCESS, langMsg.signupSuccess, signupData.dataValues)
     }, reject => {
       util.failureResponse(res, config.constants.BAD_REQUEST, reject.details[0].message)
@@ -148,11 +155,10 @@ class UserController {
       } else {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
         if (didMatch) {
+          const university = await commonService
+          .findOne(University, {id: loginResponse.dataValues.university_code}, ['id', 'name', 'city', 'is_active'])
+
           const payload = {
-            // id: loginResponse.dataValues.id,
-            // username: loginResponse.dataValues.username,
-            // role: 1,
-            // isActive: loginResponse.dataValues.is_active
             id: loginResponse.dataValues.id,
             username: loginResponse.dataValues.username,
             universityId: loginResponse.dataValues.university_code,
@@ -160,10 +166,13 @@ class UserController {
             isActive: loginResponse.dataValues.is_active,
             isVerified: loginResponse.dataValues.is_verified
           }
+
           const token = await util.generateJwtToken(payload)
-          // await commonService.update(User, { device_token: token }, { email: req.body.email.toLowerCase() })
+
           loginResponse.dataValues.token = token
+          loginResponse.dataValues.university = university
           delete loginResponse.dataValues.password
+
           util.successResponse(res, config.constants.SUCCESS, langMsg.loginSuccess, loginResponse.dataValues)
         } else {
           util.failureResponse(res, config.constants.UNAUTHORIZED, langMsg.wrongPassword)
