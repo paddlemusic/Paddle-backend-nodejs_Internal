@@ -12,6 +12,11 @@ const University = sequelize.define('University', {
     allowNull: true,
     unique: 'name_city_un_key'
   },
+  // domain: {
+  //   type: DataTypes.STRING,
+  //   allowNull: false,
+  //   defaultValue: 'mit.edu'
+  // },
   is_active: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

@@ -4,6 +4,7 @@ const UniversityService = require('../services/universityService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const University = require('../../../models/university')
+const UniversityDomain = require('../../../models/universityDomain')
 const UniversitySchema = require('../schemaValidator/universitySchema')
 const Sequelize = require('sequelize')
 
