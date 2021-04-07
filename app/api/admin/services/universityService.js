@@ -1,4 +1,5 @@
 const University = require('../../../models/university')
+const UniversityDomain = require('../../../models/universityDomain')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
@@ -34,6 +35,14 @@ class UniversityService {
         attributes: ['id', 'name', 'city', 'is_active', 'created_at', 'updated_at'],
         // group: ['id'],
         order: [['id', 'ASC']],
+        raw: true
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+  getDomainData () {
+    return new Promise((resolve, reject) => {
+      UniversityDomain.findAndCountAll({
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
