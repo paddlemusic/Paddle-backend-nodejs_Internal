@@ -35,6 +35,7 @@ module.exports = {
     trackDeleted: 'Track deleted successfully',
     artistDeleted: 'Artist deleted successfully',
     logOut: 'User logged out successfully',
-    notAllowed: 'Not allowed.'
+    notAllowed: 'Not allowed.',
+    passcodeOremail: 'Signup failed! Either Passcode or University email address is required.'
   }
 }

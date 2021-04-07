@@ -12,6 +12,7 @@ const userService = new UserService()
 const commonService = new CommonService()
 const UserFollower = require('../../../models/userFollower')
 const University = require('../../../models/university')
+const UniversityDomain = require('../../../models/universityDomain')
 const UserRating = require('../../../models/userRating')
 // const LikeUnlike = require('../../../models/likePost')
 // const { token } = require('morgan')
@@ -24,19 +25,45 @@ class UserController {
   async signup (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     schema.signup.validateAsync(req.body).then(async () => {
-      if (req.body.passcode !== config.constants.PASSCODE) {
-        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.invalidPasscode)
+      if (req.body.passcode) {
+        // User has passcode, no need to verify university email address.
+        if (req.body.passcode !== config.constants.PASSCODE) {
+          return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.invalidPasscode)
+        }
+      } else if (req.body.university_code) {
+        // since user has not entered passcode, we need to verify its university email address.
+        let isUniversityEmail = false
+        const domains = await commonService
+          .findAll(UniversityDomain, { university_id: req.body.university_code }, ['domain'])
+        console.log(domains)
+
+        const reqDomain = req.body.email.split('@').pop()
+        console.log(reqDomain)
+
+        domains.every(function (domain, _) {
+          if (reqDomain.includes(domain.domain)) {
+            isUniversityEmail = true
+            return false
+          }
+          return true
+        })
+
+        if (!isUniversityEmail) {
+          return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.passcodeOremail)
+        }
+      } else {
+        return util.failureResponse(res, config.constants.FORBIDDEN, langMsg.passcodeOremail)
       }
       const passwordHash = await util.encryptPassword(req.body.password)
       req.body.password = passwordHash
-      
+
       const signupData = await userService.signup(req.body)
 
-      const username = [signupData.dataValues.name.replace(' ', '_'), signupData.dataValues.id].join('_')
+      const username = [signupData.dataValues.name.toLowerCase().replace(' ', '_'), signupData.dataValues.id].join('_')
       await commonService.update(User, { username: username }, { id: signupData.dataValues.id })
 
       const university = await commonService
-          .findOne(University, {id: signupData.dataValues.university_code}, ['id', 'name', 'city', 'is_active'])
+        .findOne(University, { id: signupData.dataValues.university_code }, ['id', 'name', 'city', 'is_active'])
 
       const otp = await util
         .sendEmail(signupData.dataValues.email, signupData.dataValues.name, config.constants.OTPType.VERIFY_ACCOUNT)
@@ -156,7 +183,7 @@ class UserController {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.dataValues.password)
         if (didMatch) {
           const university = await commonService
-          .findOne(University, {id: loginResponse.dataValues.university_code}, ['id', 'name', 'city', 'is_active'])
+            .findOne(University, { id: loginResponse.dataValues.university_code }, ['id', 'name', 'city', 'is_active'])
 
           const payload = {
             id: loginResponse.dataValues.id,
