@@ -515,8 +515,6 @@ router.post('/logout', auth.verifyToken, userController.logout)
  *        schema:
  *           type: object
  *           properties:
- *              date:
- *                 type: string
  *              app_usage_time:
  *                 type: number
  *              did_open_app:
