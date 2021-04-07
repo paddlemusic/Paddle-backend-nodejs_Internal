@@ -52,6 +52,11 @@ router.get('/getUniversities', universityController.getUniversity)
  *        schema:
  *        type: string
  *        required: false
+ *      - in: body
+ *        name: domain
+ *        schema:
+ *        type: array
+ *        required: true
  *     produces:
  *       - application/json
  */
