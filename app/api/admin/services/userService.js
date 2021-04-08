@@ -35,14 +35,15 @@ class UserService {
   listUsers (name, uniName, pagination) {
     return new Promise((resolve, reject) => {
       User.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
         where: {
           role: 1,
           name: {
             [Op.iLike]: '%' + name + '%'
           }
         },
-        limit: pagination.limit,
-        offset: pagination.offset,
+        
         // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         // group: ['id'],

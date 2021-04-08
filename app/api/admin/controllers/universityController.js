@@ -62,10 +62,19 @@ class UniversityController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const uniName = req.query.name
-      const data = await universityService.getUniversities(uniName, pagination)
-      console.log(data)
+      let dataCount =0
+     const data = await universityService.getUniversities(uniName, pagination)
+      console.log("data",data)
+      data.rows.forEach(element => {
+        dataCount=dataCount+1
+      })
+      //console.log("data count is",dataCount)
+      for(let k=0;k<dataCount;k++)
+      {
+        data.rows[k].domains=new Array()
+       }
+     
       const domainData= await universityService.getDomainData()
-      console.log("domainData",domainData)
      /* for(let i=0;i<data.count;i++)
       {
         for(let j=0;j<domainData.count;j++)
@@ -76,12 +85,8 @@ class UniversityController {
           }
         }
       }*/
-      for(let i=0;i<data.count;i++)
-      {
-        data.rows[i].domains=[]
-       }
-     
-      for(let i=0;i<data.count;i++)
+
+      for(let i=0;i<dataCount;i++)
       {
         for(let j=0;j<domainData.count;j++)
         {
@@ -91,7 +96,7 @@ class UniversityController {
           }
         }
       }
-      console.log("data",data)
+      //console.log("data",data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
