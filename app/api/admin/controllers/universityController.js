@@ -68,24 +68,13 @@ class UniversityController {
       data.rows.forEach(element => {
         dataCount=dataCount+1
       })
-      //console.log("data count is",dataCount)
+      console.log("data count is",dataCount)
       for(let k=0;k<dataCount;k++)
       {
         data.rows[k].domains=new Array()
        }
      
       const domainData= await universityService.getDomainData()
-     /* for(let i=0;i<data.count;i++)
-      {
-        for(let j=0;j<domainData.count;j++)
-        {
-         if(Number(data.rows[i].id) === Number(domainData.rows[j].university_id))
-          {
-            data.rows[i].domains=[]
-          }
-        }
-      }*/
-
       for(let i=0;i<dataCount;i++)
       {
         for(let j=0;j<domainData.count;j++)
