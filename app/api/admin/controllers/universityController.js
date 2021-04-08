@@ -193,13 +193,13 @@ class UniversityController {
       // console.log(req.params.id)
       const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'city', 'created_at'])
       console.log(myProfile)
-      myProfile.domains=[]
+      myProfile.domain=[]
       console.log(myProfile)
       const domainData = await commonService.findAll(UniversityDomain, { university_id: req.params.id },['domain'])
       console.log(domainData)
       const domainNames = domainData.map(data => { return data.domain })
       domainNames.forEach(domain => {
-        myProfile.domains.push(domain)
+        myProfile.domain.push(domain)
     })
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
