@@ -82,7 +82,7 @@ class UserService {
       const result = 'http://localhost:4200/auth/reset-password?token=' + token
       // const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
-        to: 'shubhamgupta.608@rediffmail.com',
+        to: toEmail, // 'shubhamgupta.608@rediffmail.com',
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
         text: `Hi ${name} \n
