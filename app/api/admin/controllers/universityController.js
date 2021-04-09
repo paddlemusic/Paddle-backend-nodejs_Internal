@@ -4,6 +4,7 @@ const UniversityService = require('../services/universityService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const University = require('../../../models/university')
+const UniversityDomain = require('../../../models/universityDomain')
 const UniversitySchema = require('../schemaValidator/universitySchema')
 const Sequelize = require('sequelize')
 
@@ -16,7 +17,7 @@ class UniversityController {
     try {
       // console.log('validationResultaaaaaaaaaaaaaaaaaaaaaaaaaaa')
       const validationResult = await UniversitySchema.addUniversity.validateAsync(req.body)
-      // console.log('validationResultaccccccccccccccccccccccccccccc')
+      console.log('validationResult',validationResult)
       if (validationResult.error) {
         console.log('validationResult.error', validationResult)
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
@@ -24,6 +25,20 @@ class UniversityController {
       }
       const data = await commonService.create(University, { name: req.body.name, city: req.body.city })
       console.log(data)
+      validationResult.domain.forEach(element => {
+        console.log("domain",element)
+      })
+      const Params = []
+
+      validationResult.domain.forEach(domain => {
+          Params.push({
+            university_id: data.dataValues.id,
+            domain: domain
+          })
+      })
+      const domainData = await commonService.bulkCreate(UniversityDomain, Params)
+      console.log("domaindata",domainData)
+      
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log('err is', err)
@@ -47,8 +62,30 @@ class UniversityController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const uniName = req.query.name
-      const data = await universityService.getUniversities(uniName, pagination)
-      console.log(data)
+      let dataCount =0
+     const data = await universityService.getUniversities(uniName, pagination)
+      console.log("data",data)
+      data.rows.forEach(element => {
+        dataCount=dataCount+1
+      })
+      console.log("data count is",dataCount)
+      for(let k=0;k<dataCount;k++)
+      {
+        data.rows[k].domain=new Array()
+       }
+     
+      const domainData= await universityService.getDomainData()
+      for(let i=0;i<dataCount;i++)
+      {
+        for(let j=0;j<domainData.count;j++)
+        {
+         if(Number(data.rows[i].id) === Number(domainData.rows[j].university_id))
+          {
+            data.rows[i].domain.push(domainData.rows[j].domain)
+          }
+        }
+      }
+      //console.log("data",data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
@@ -74,12 +111,15 @@ class UniversityController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const validationResult = await UniversitySchema.deleteUniversity.validateAsync(req.params)
+      
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
       }
       const data = await commonService.delete(University, { id: req.params.id })
       console.log(data)
+      const domainData = await commonService.delete(UniversityDomain, { university_id: req.params.id })
+      console.log(domainData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
@@ -91,6 +131,7 @@ class UniversityController {
     const langMsg = config.messages[req.app.get('lang')]
     try {
       const validationResult = await UniversitySchema.editUniversity.validateAsync(req.body)
+      console.log("validationResult",validationResult)
       if (validationResult.error) {
         util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
         return
@@ -98,6 +139,17 @@ class UniversityController {
 
       const updatedResult = await commonService.update(University, req.body, { id: req.params.id })
       console.log('updated result', updatedResult)
+      const data = await commonService.delete(UniversityDomain, { university_id: req.params.id })
+      const Params = []
+
+      validationResult.domain.forEach(domain => {
+          Params.push({
+            university_id: req.params.id,
+            domain: domain
+          })
+      })
+      const domainData = await commonService.bulkCreate(UniversityDomain, Params)
+      console.log("domaindata",domainData)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
@@ -140,6 +192,15 @@ class UniversityController {
       }
       // console.log(req.params.id)
       const myProfile = await commonService.findOne(University, { id: req.params.id }, ['name', 'city', 'created_at'])
+      console.log(myProfile)
+      myProfile.domain=[]
+      console.log(myProfile)
+      const domainData = await commonService.findAll(UniversityDomain, { university_id: req.params.id },['domain'])
+      console.log(domainData)
+      const domainNames = domainData.map(data => { return data.domain })
+      domainNames.forEach(domain => {
+        myProfile.domain.push(domain)
+    })
       util.successResponse(res, config.constants.SUCCESS, langMsg.successResponse, myProfile)
     } catch (err) {
       console.log(err)

@@ -14,7 +14,7 @@ const schema = {
     email: Joi.string().trim().email().required(),
     university_code: Joi.number().min(0).allow(null),
     password: Joi.string().trim().min(8).max(30).required(),
-    passcode: Joi.string().trim().max(30).min(6).required(),
+    passcode: Joi.string().trim().max(30).min(6),
     profile_picture: Joi.string().trim().uri().allow('').allow(null)
   }),
   sendOTP: Joi.object().keys({

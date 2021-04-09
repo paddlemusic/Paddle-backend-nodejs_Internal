@@ -12,6 +12,7 @@ const profileService = new ProfileService()
 const s3Bucket = require('../services/s3Bucket')
 const User = require('../../../models/user')
 const UserFollower = require('../../../models/userFollower')
+const University = require('../../../models/university')
 
 class ProfileController {
   async userSearch (req, res) {
@@ -114,6 +115,9 @@ class ProfileController {
       const updateResult = await profileService.editDetails(validationResult, req.decoded.id)
       console.log((updateResult))
 
+      const university = await commonService
+          .findOne(University, {id: updateResult[1][0].university_code}, ['id', 'name', 'city', 'is_active'])
+
       const payload = {
         id: updateResult[1][0].id,
         username: updateResult[1][0].username,
@@ -123,7 +127,12 @@ class ProfileController {
         isVerified: updateResult[1][0].is_verified
       }
       const token = await util.generateJwtToken(payload)
-      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, { token: token })
+      const response = {
+        university: university,
+        token: token
+      }
+      
+      util.successResponse(res, config.constants.SUCCESS, langMsg.updateSuccess, response)
     } catch (err) {
       console.log(err)
       const errorMessage = err.name === 'CustomError' ? err.message : langMsg.internalServerError
