@@ -39,7 +39,7 @@ class AnalyticsService {
     return result
   }
 
-  async getUniversityWiseStreamStats (params, pagination) { // to be removed
+  /* async getUniversityWiseStreamStats (params, pagination) { // to be removed
     const result = await StreamStats.findAll({
       where: {
         media_type: params.media_type,
@@ -57,7 +57,7 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
-  }
+  } */
 
   async getStreamStatsTotalCount (params) {
     const where = {
@@ -80,7 +80,7 @@ class AnalyticsService {
     return result
   }
 
-  async getStreamStatsUniversityWiseCount (params) { // to be removed
+  /* async getStreamStatsUniversityWiseCount (params) { // to be removed
     const result = await StreamStats.count({
       where: {
         media_type: params.media_type,
@@ -91,7 +91,7 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
-  }
+  } */
 
   // monthly stream services
 
@@ -122,7 +122,7 @@ class AnalyticsService {
     return result
   }
 
-  async getUniversityWiseStreamStatsMonthlyCount (params, startDate, endDate) { // to be removed
+  /* async getUniversityWiseStreamStatsMonthlyCount (params, startDate, endDate) { // to be removed
     const result = await StreamStats.count({
       where: {
         date: {
@@ -136,9 +136,9 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
-  }
+  } */
 
-  async getUniversityWiseMonthlyStreamStats (params, startDate, endDate, pagination) { // to be removed
+  /* async getUniversityWiseMonthlyStreamStats (params, startDate, endDate, pagination) { // to be removed
     const result = await StreamStats.findAll({
       where: {
         date: {
@@ -159,7 +159,7 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
-  }
+  } */
 
   async getMonthlyStreamStats (params, startDate, endDate, pagination) {
     const where = {
@@ -206,7 +206,6 @@ class AnalyticsService {
       distinct: true,
       col: 'media_id'
     })
-    // console.log(result)
     return result
   }
 
@@ -252,8 +251,6 @@ class AnalyticsService {
         // as: 'post'
       }]
     })
-
-    // console.log(result)
     return result
   }
 
@@ -422,7 +419,7 @@ class AnalyticsService {
     })
   }
 
-  async getStatsDataUniversityWise (universityId, datesInMonth, openTime, pagination) { // to be removed
+  /* async getStatsDataUniversityWise (universityId, datesInMonth, openTime, pagination) { // to be removed
     const result = await UserStats.findAll({
       where: {
         date: datesInMonth,
@@ -442,7 +439,7 @@ class AnalyticsService {
     })
     // console.log(result)
     return result
-  }
+  } */
 
   async getStatsData (universityId, datesInMonth, openTime, pagination) {
     const where = {

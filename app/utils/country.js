@@ -39,14 +39,17 @@ const getCachedCountryCallingCode = async () => {
     //   }
     // })
     countryCallingCode = countryCallingCode.reduce((result, country) => {
-      if (country.name && country.callingCodes[0] && country.flag) {
-        result.push({
-          name: country.name,
-          callingCode: country.callingCodes[0],
-          flag: country.flag
-        })
+      if (country.name && country.callingCodes[0] && country.flag && result.indexOf(country)) {
+        result.push(
+          country.callingCodes[0]
+          //{
+          // name: country.name,
+          //callingCode: country.callingCodes[0],
+          // flag: country.flag
+        //}
+        )
       }
-      return result
+      return [...new Set(result)]
     }, [])
     cachedCountryCallingCode = countryCallingCode
     return countryCallingCode

@@ -48,10 +48,10 @@ const UserPost = sequelize.define('User_Post', {
     type: DataTypes.STRING,
     allowNull: true
   },
-  shared_with: {
-    type: DataTypes.INTEGER,
-    allowNull: true
-  },
+  // shared_with: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: true
+  // },
   is_active: {
     type: DataTypes.BOOLEAN,
     allowNull: true,

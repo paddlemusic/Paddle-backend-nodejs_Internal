@@ -402,7 +402,8 @@ class UserMediaController {
     try {
       const condition = {
         user_id: req.decoded.id,
-        media_id: req.params.media_id
+        media_id: req.params.media_id,
+        usermedia_type: constants.USER_MEDIA_TYPE.SAVED_TRACKS_ARTIST
       }
       console.log('condition isMediaSaved', condition)
       const isMediaSaved = await commonService.findOne(UserMedia, condition, ['media_id'])

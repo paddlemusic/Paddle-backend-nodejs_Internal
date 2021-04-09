@@ -182,11 +182,11 @@ class UserService {
     })
   }
 
-  getFollowers (params, pagination) {
+  getFollowers (params, pagination = null) {
     return new Promise((resolve, reject) => {
       UserFollower.findAndCountAll({
         where: { user_id: params.id },
-        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture"')],
+        attributes: [Sequelize.literal('"follower"."id","follower"."name","follower"."username","follower"."profile_picture", "follower"."device_token"')],
         raw: true,
         limit: pagination.limit,
         offset: pagination.offset,
@@ -281,7 +281,7 @@ class UserService {
         order: [
           ['created_at', 'DESC']
         ],
-        attributes: ['id', 'media_id', 'caption', 'shared_with', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'like_count', 'play_uri', 'artist_id', 'album_id'], // added playURI,artist_id,album_id in recent post response
+        attributes: ['id', 'media_id', 'caption', 'media_name', 'media_image', 'meta_data', 'meta_data2', 'media_type', 'created_at', 'like_count', 'play_uri', 'artist_id', 'album_id'], // added playURI,artist_id,album_id in recent post response
         raw: true
         // result.likes=likes
       }).then(result => resolve(result))

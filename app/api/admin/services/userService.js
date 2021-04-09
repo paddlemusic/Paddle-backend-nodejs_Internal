@@ -35,14 +35,15 @@ class UserService {
   listUsers (name, uniName, pagination) {
     return new Promise((resolve, reject) => {
       User.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
         where: {
           role: 1,
           name: {
             [Op.iLike]: '%' + name + '%'
           }
         },
-        limit: pagination.limit,
-        offset: pagination.offset,
+        
         // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         // group: ['id'],
@@ -81,7 +82,7 @@ class UserService {
       const result = 'http://localhost:4200/auth/reset-password?token=' + token
       // const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
-        to: 'shubhamgupta.608@rediffmail.com',
+        to: toEmail, // 'shubhamgupta.608@rediffmail.com',
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
         text: `Hi ${name} \n
