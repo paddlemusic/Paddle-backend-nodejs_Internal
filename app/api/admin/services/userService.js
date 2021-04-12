@@ -85,9 +85,9 @@ class UserService {
       const mailOptions = {
         to: toEmail, // 'shubhamgupta.608@rediffmail.com',
         from: config.SENDGRID.fromEmail,
-        subject: 'Password reset link',
+        subject: 'Password Reset Link',
         text: `Hi ${name} \n
-       click ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+       Please click ${result} to reset your password .\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n\nRegards,\nPaddlle Support Team`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {

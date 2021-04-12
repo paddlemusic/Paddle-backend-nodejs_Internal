@@ -239,7 +239,7 @@ class UserController {
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
       // console.log('aaaaaaaaaaaaaaaa', userExist)
       if (!userExist) {
-        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }
       const payload = {
         is_active: userExist.is_active,
