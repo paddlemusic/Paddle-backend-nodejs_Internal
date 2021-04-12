@@ -317,7 +317,7 @@ class UserController {
       req.body.password = passwordHash
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
       if (!userExist) {
-        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }
       // const resetPasswordToken = await util.generatePasswordReset()
       // await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })
