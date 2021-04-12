@@ -79,11 +79,11 @@ class UserService {
     return new Promise((resolve, reject) => {
       // const str = 'Click Here'
       // const result2 = 'https://www.google.com'
-      const result = 'http://localhost:4200/auth/reset-password?token=' + token
-      // const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
+      // const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
       // const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
-        to:   'shubhamgupta.608@rediffmail.com',
+        to:   toEmail,//'shubhamgupta.608@rediffmail.com',
         from: config.SENDGRID.fromEmail,
         subject: 'Password Reset Link',
         // text : 'HI',
