@@ -30,4 +30,4 @@ const University = sequelize.define('University', {
 
 module.exports = University
 
-// University.sync({ force: true })
+//University.sync({ alter: true })

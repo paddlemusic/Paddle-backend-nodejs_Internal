@@ -79,22 +79,23 @@ class UserService {
     return new Promise((resolve, reject) => {
       // const str = 'Click Here'
       // const result2 = 'https://www.google.com'
-      //const result = 'http://localhost:4200/auth/reset-password?token=' + token
-      const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
+      const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      // const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
       // const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
-        to: toEmail, // 'shubhamgupta.608@rediffmail.com',
+        to:   'shubhamgupta.608@rediffmail.com',
         from: config.SENDGRID.fromEmail,
-        subject: 'Password reset link',
-        text: `Hi ${name} \n
-       click ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        subject: 'Password Reset Link',
+        // text : 'HI',
+        html: `Hi Admin, <br>
+       Please <a href = ${result}>click here</a> to reset your password .<br><br> If you did not request this, please ignore this email and your password will remain unchanged.<br><br>Regards,<br>Paddlle Support Team`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
           console.log(err)
           reject(err)
         } else {
-          // console.log(mailOptions)
+          console.log(mailOptions)
           resolve(mailOptions)
         }
       })
