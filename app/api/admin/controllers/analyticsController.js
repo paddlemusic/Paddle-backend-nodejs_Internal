@@ -226,12 +226,24 @@ class AnalyticsController {
         if (Number(req.query.university_id) >= 1) {
           const appUsageTime = await commonService.findAll(UserStats, { university_id: req.query.university_id }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
           console.log('University wise', appUsageTime[0].sum)
-          const data = { appUsageTime: appUsageTime[0].sum }
+           // seconds to HH:MM:SS
+         const measuredTime = new Date(null);
+         measuredTime.setSeconds(Number( appUsageTime[0].sum)) // specify value of SECONDS
+         const MHSTime = measuredTime.toISOString().substr(11, 8)
+         //console.log("time in format",MHSTime)
+          //const data = { appUsageTime: appUsageTime[0].sum }
+          const data = { appUsageTime: MHSTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
           const appUsageCount = await analyticsService.getTotalAppUsage()
           console.log('Whole wise', appUsageCount)
-          const data = { appUsageTime: appUsageCount[0].appUsageTime }
+          // seconds to HH:MM:SS
+         const measuredTime = new Date(null);
+         measuredTime.setSeconds(Number(appUsageCount[0].appUsageTime)) // specify value of SECONDS
+         const MHSTime = measuredTime.toISOString().substr(11, 8)
+         //console.log("time in format",MHSTime)
+          //const data = { appUsageTime: appUsageCount[0].appUsageTime }
+          const data = { appUsageTime: MHSTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       } else {
@@ -243,7 +255,13 @@ class AnalyticsController {
           const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
           const appUsageTime = await commonService.findAll(UserStats, { university_id: req.query.university_id, date: { [Op.between]: [startDate, endDate] } }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
           console.log('Whole wise', appUsageTime[0].sum)
-          const data = { appUsageTime: appUsageTime[0].sum }
+           // seconds to HH:MM:SS
+         const measuredTime = new Date(null);
+         measuredTime.setSeconds(Number( appUsageTime[0].sum)) // specify value of SECONDS
+         const MHSTime = measuredTime.toISOString().substr(11, 8)
+         //console.log("time in format",MHSTime)
+         // const data = { appUsageTime: appUsageTime[0].sum }
+         const data = { appUsageTime: MHSTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
@@ -252,7 +270,13 @@ class AnalyticsController {
           const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
           const appUsageCount = await analyticsService.getMonthlyTotalAppUsage(startDate, endDate)
           console.log('Whole wise', appUsageCount)
-          const data = { appUsageTime: appUsageCount[0].appUsageTime }
+           // seconds to HH:MM:SS
+         const measuredTime = new Date(null);
+         measuredTime.setSeconds(Number( appUsageCount[0].appUsageTime )) // specify value of SECONDS
+         const MHSTime = measuredTime.toISOString().substr(11, 8)
+         //console.log("time in format",MHSTime)
+          //const data = { appUsageTime: appUsageCount[0].appUsageTime }
+          const data = { appUsageTime:  MHSTime }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       }
