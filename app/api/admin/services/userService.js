@@ -78,7 +78,7 @@ class UserService {
 
   sendResetLink (toEmail, token, name) {
     return new Promise((resolve, reject) => {
-      // const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      // --const result = 'http://localhost:4200/auth/reset-password?token=' + token
       const result = config.baseURL + token
       const mailOptions = {
         to: toEmail,
