@@ -676,5 +676,19 @@ class UserController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async getUserStatus (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const condition = { id: req.decoded.id }
+      const attributes = ['is_active']
+      const data = await commonService.findOne(User, condition, attributes)
+      console.log(data)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
 }
 module.exports = UserController

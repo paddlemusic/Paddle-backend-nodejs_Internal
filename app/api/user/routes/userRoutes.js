@@ -525,4 +525,6 @@ router.post('/logout', auth.verifyToken, userController.logout)
  */
 router.post('/submitStats', auth.verifyToken, userController.submitStats)
 
+router.get('/status', auth.verifyToken, userController.getUserStatus)
+
 module.exports = router

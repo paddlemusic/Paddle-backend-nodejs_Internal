@@ -22,7 +22,7 @@ class CronJobService {
 
   async cleanStreamingStatsScheduler () {
     try {
-      console.log('CronJobService called')
+      console.log('CronJobService called 2')
       // const crontab = '0 0 1 * *' // first of every month at midnight
       // const crontab = '0 0 1 */3 *' // At 00:00 on day-of-month 1 in every 3rd month.
       const crontab = '0 0 * * 0' // At 00:00 on Sunday.

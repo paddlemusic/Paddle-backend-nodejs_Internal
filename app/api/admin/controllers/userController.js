@@ -4,6 +4,7 @@ const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const User = require('../../../models/user')
 const schema = require('../schemaValidator/userSchema')
+const notificationService = require('../../user/services/notificationService')
 // const { Console } = require('winston/lib/winston/transports')
 
 const commonService = new CommonService()
@@ -159,6 +160,20 @@ class UserController {
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      if (req.params.type === 'unblock') { return }
+
+      const users = await commonService.findAll(User, { id: req.body.ids }, ['device_token'])
+      console.log(users)
+      const message = {
+        notification: {
+          title: 'Account Deactivated!',
+          body: 'Your account has been deactivated by the Admin. \n Please contact admin.'
+        },
+        data: { type: 'block' }
+      }
+      console.log(message)
+      await notificationService.sendNotification(users, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
