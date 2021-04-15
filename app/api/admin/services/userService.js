@@ -79,8 +79,8 @@ class UserService {
     return new Promise((resolve, reject) => {
       // const str = 'Click Here'
       // const result2 = 'https://www.google.com'
-      const result = 'http://localhost:4200/auth/reset-password?token=' + token
-      // const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
+      //const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      const result = 'http://d293gm0uz2tbzl.cloudfront.net/auth/reset-password?token=' + token
       // const result = 'https://www.google.com' + '/' + 'Token=' + token
       const mailOptions = {
         to:   'shubhamgupta.608@rediffmail.com',
@@ -92,10 +92,10 @@ class UserService {
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
-          console.log(err)
+          console.log("err is",err)
           reject(err)
         } else {
-          console.log(mailOptions)
+          //console.log(mailOptions)
           resolve(mailOptions)
         }
       })

@@ -237,7 +237,7 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
-      // console.log('aaaaaaaaaaaaaaaa', userExist)
+      console.log('aaaaaaaaaaaaaaaa', userExist)
       if (!userExist) {
         return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }
