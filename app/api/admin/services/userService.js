@@ -5,6 +5,7 @@ const University = require('../../../models/university')
 const Sequelize = require('sequelize')
 const config = require('../../../config')
 const sgMail = require('@sendgrid/mail')
+// const constants = require('../../../config/constants')
 sgMail.setApiKey(config.SENDGRID.sendgridApiKey)
 
 const Op = Sequelize.Op
@@ -43,7 +44,7 @@ class UserService {
             [Op.iLike]: '%' + name + '%'
           }
         },
-        
+
         // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
         // group: ['id'],
@@ -77,12 +78,10 @@ class UserService {
 
   sendResetLink (toEmail, token, name) {
     return new Promise((resolve, reject) => {
-      // const str = 'Click Here'
-      // const result2 = 'https://www.google.com'
-      const result = 'http://localhost:4200/auth/reset-password?token=' + token
-      // const result = 'https://www.google.com' + '/' + 'Token=' + token
+      // const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      const result = config.baseURL + token
       const mailOptions = {
-        to: toEmail, // 'shubhamgupta.608@rediffmail.com',
+        to: toEmail,
         from: config.SENDGRID.fromEmail,
         subject: 'Password reset link',
         text: `Hi ${name} \n

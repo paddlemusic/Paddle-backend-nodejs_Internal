@@ -51,6 +51,7 @@ module.exports = {
     URI: 'accounts.spotify.com'
   },
   port: port,
+  baseURL: process.env.BASE_URL + 'auth/reset-password?token=',
   messages: messages,
   constants: constants
 }

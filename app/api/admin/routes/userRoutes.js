@@ -221,8 +221,9 @@ router.post('/changePassword', auth.verifyAdminToken, userController.changePassw
  *                    20
  *                      ]
  *                   }
- *     produces:
- *       - application/json
+ *     responses:
+ *          default:
+ *              description: Get list of niversities response object.
  */
 router.post('/blockUnblock/:type', userController.blockUnblockUser)
 
