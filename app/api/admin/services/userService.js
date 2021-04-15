@@ -52,7 +52,7 @@ class UserService {
         // raw: true,
         include: [{
           model: University,
-          required: true,
+          required: false,
           where: {
             // role: 1,
             name: {

@@ -120,7 +120,7 @@ class UserController {
       const userName = req.query.name
       const uniName = req.query.universityName
       const data = await userService.listUsers(userName, uniName, pagination)
-      // console.log(data)
+      console.log("Data is:", JSON.stringify(data, null , 2))
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
