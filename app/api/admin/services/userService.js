@@ -88,7 +88,7 @@ class UserService {
         subject: 'Password Reset Link',
         // text : 'HI',
         html: `Hi Admin, <br>
-       Please <a href = ${result}>click here</a> to reset your password .<br><br> If you did not request this, please ignore this email and your password will remain unchanged.<br><br>Regards,<br>Paddlle Support Team`
+       Please <a href = ${result}>click here</a> to reset your password.<br><br>If you did not request this, please ignore this email and your password will remain unchanged.<br><br>Regards,<br>Paddlle Support Team`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
