@@ -20,9 +20,9 @@ class UserController {
         'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt'])
       // console.log( loginResponse)
       if (!loginResponse) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       } else if (!loginResponse.password) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.wrongPassword)
       } else {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.password)
         if (didMatch) {
@@ -237,7 +237,7 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
-      // console.log('aaaaaaaaaaaaaaaa', userExist)
+      console.log('aaaaaaaaaaaaaaaa', userExist)
       if (!userExist) {
         return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }

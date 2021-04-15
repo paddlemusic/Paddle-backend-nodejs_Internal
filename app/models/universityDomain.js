@@ -35,4 +35,4 @@ UniversityDomain.belongsTo(University, {
 
 module.exports = UniversityDomain
 
-// UniversityDomain.sync({ alter: true })
+//UniversityDomain.sync()
