@@ -43,6 +43,14 @@ class UserService {
             [Op.iLike]: '%' + name + '%'
           }
         }
+      } else if (Number(universityId) === -1) {
+        where = {
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          },
+          university_id: { [Op.eq]: null }
+        }
       } else {
         where = {
           role: 1,
@@ -60,7 +68,7 @@ class UserService {
         order: [['id', 'ASC']],
         include: [{
           model: University,
-          required: true
+          required: false
           // where: {
           //   name: {
           //     [Op.iLike]: '%' + uniName + '%'
