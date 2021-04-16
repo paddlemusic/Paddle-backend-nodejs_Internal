@@ -118,8 +118,8 @@ class UserController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
-      const uniName = req.query.universityName
-      const data = await userService.listUsers(userName, uniName, pagination)
+      const universityId = req.query.universityId
+      const data = await userService.listUsers(userName, universityId, pagination)
       console.log('Data is:', JSON.stringify(data, null, 2))
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {

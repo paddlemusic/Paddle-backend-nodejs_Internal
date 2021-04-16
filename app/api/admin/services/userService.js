@@ -33,34 +33,39 @@ class UserService {
     })
   }
 
-  listUsers (name, uniName, pagination) {
+  listUsers (name, universityId, pagination) {
     return new Promise((resolve, reject) => {
-      User.findAndCountAll({
-        limit: pagination.limit,
-        offset: pagination.offset,
-        where: {
+      let where = {}
+      if (Number(universityId) === 0) {
+        where = {
           role: 1,
           name: {
             [Op.iLike]: '%' + name + '%'
           }
-        },
-
-        // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
+        }
+      } else {
+        where = {
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          },
+          university_id: universityId
+        }
+      }
+      User.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        where: where,
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
-        // group: ['id'],
         order: [['id', 'ASC']],
-        // raw: true,
         include: [{
           model: University,
-          required: false,
-          where: {
-            // role: 1,
-            name: {
-              [Op.iLike]: '%' + uniName + '%'
-            }
-          }
-          // attributes: ['id', 'name']
-          // as: 'post'
+          required: true
+          // where: {
+          //   name: {
+          //     [Op.iLike]: '%' + uniName + '%'
+          //   }
+          // }
         }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
