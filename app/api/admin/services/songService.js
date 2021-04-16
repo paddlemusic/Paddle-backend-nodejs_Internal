@@ -24,7 +24,8 @@ class ProfileService {
               [Op.iLike]: '%' + name + '%'
             }
           },
-          media_type: config.constants.MEDIA_TYPE.TRACK
+          media_type: config.constants.MEDIA_TYPE.TRACK,
+          university_id: universityId
         }
       }
       StreamStats.findAndCountAll({
