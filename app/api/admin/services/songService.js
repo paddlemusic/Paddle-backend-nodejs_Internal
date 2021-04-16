@@ -5,17 +5,30 @@ const config = require('../../../config/index')
 // const University = require('../../../models/university')
 const Op = Sequelize.Op
 class ProfileService {
-  getSongs (name, pagination) {
+  getSongs (name, universityId, pagination) {
     return new Promise((resolve, reject) => {
-      StreamStats.findAndCountAll({
-        where: {
+      let where = {}
+      if (Number(universityId) === 0) {
+        where = {
           media_metadata: {
             name: {
               [Op.iLike]: '%' + name + '%'
             }
           },
           media_type: config.constants.MEDIA_TYPE.TRACK
-        },
+        }
+      } else {
+        where = {
+          media_metadata: {
+            name: {
+              [Op.iLike]: '%' + name + '%'
+            }
+          },
+          media_type: config.constants.MEDIA_TYPE.TRACK
+        }
+      }
+      StreamStats.findAndCountAll({
+        where: where,
         limit: pagination.limit,
         offset: pagination.offset,
         // attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],

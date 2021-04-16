@@ -12,7 +12,8 @@ class SongsController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const uniName = req.query.name
-      const data = await songService.getSongs(uniName, pagination)
+      const universityId = req.query.universityId
+      const data = await songService.getSongs(uniName, universityId, pagination)
       console.log(data)
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
