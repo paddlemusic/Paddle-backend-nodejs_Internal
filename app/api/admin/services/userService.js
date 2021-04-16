@@ -49,7 +49,7 @@ class UserService {
           name: {
             [Op.iLike]: '%' + name + '%'
           },
-          university_id: { [Op.eq]: null }
+          university_code: { [Op.eq]: null }
         }
       } else {
         where = {
@@ -57,7 +57,7 @@ class UserService {
           name: {
             [Op.iLike]: '%' + name + '%'
           },
-          university_id: universityId
+          university_code: universityId
         }
       }
       User.findAndCountAll({
