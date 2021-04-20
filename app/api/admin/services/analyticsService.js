@@ -376,9 +376,10 @@ class AnalyticsService {
         'media_name',
         'meta_data',
         'meta_data2',
-        'caption'
+        'caption',
+        'album_name'
       ],
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption'],
+      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption', 'album_name'],
       limit: pagination.limit,
       offset: pagination.offset
     })

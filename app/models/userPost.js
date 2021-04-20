@@ -61,6 +61,10 @@ const UserPost = sequelize.define('User_Post', {
     type: DataTypes.BIGINT,
     allowNull: false,
     defaultValue: 0
+  },
+  album_name: {
+    type: DataTypes.TEXT,
+    allowNull: true
   }
 },
 {
@@ -78,6 +82,6 @@ UserPost.belongsTo(User, {
 
 // UserPost.hasOne(LikePost)
 
-// UserPost.sync({ alter: true })
+ UserPost.sync({ alter: false })
 
 module.exports = UserPost
