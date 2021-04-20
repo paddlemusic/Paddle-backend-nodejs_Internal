@@ -169,7 +169,7 @@ exports.verificationToken = (req, res, next) => {
     jwt.verify(token, secret, (err, decoded) => {
       if (err) {
         console.log(LangMsg.invalidToken)
-        util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.invalidToken)
+        util.failureResponse(res, config.constants.BAD_REQUEST, LangMsg.linkExpired)
       } else {
         // console.log('DEcoded is:', decoded)
         if (Number(decoded.role) !== 2) {

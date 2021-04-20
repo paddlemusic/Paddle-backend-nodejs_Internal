@@ -4,6 +4,7 @@ const util = require('../../../utils/utils')
 const config = require('../../../config/index')
 const User = require('../../../models/user')
 const schema = require('../schemaValidator/userSchema')
+const notificationService = require('../../user/services/notificationService')
 // const { Console } = require('winston/lib/winston/transports')
 
 const commonService = new CommonService()
@@ -20,9 +21,9 @@ class UserController {
         'password', 'is_privacy', 'is_verified', 'is_active', 'createdAt', 'updatedAt'])
       // console.log( loginResponse)
       if (!loginResponse) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       } else if (!loginResponse.password) {
-        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        util.failureResponse(res, config.constants.NOT_FOUND, langMsg.wrongPassword)
       } else {
         const didMatch = await util.comparePassword(req.body.password, loginResponse.password)
         if (didMatch) {
@@ -117,9 +118,9 @@ class UserController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       const userName = req.query.name
-      const uniName = req.query.universityName
-      const data = await userService.listUsers(userName, uniName, pagination)
-      // console.log(data)
+      const universityId = req.query.universityId
+      const data = await userService.listUsers(userName, universityId, pagination)
+      console.log('Data is:', JSON.stringify(data, null, 2))
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
     } catch (err) {
       console.log(err)
@@ -159,6 +160,20 @@ class UserController {
         console.log(data)
       }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+
+      if (req.params.type === 'unblock') { return }
+
+      const users = await commonService.findAll(User, { id: req.body.ids }, ['device_token'])
+      console.log(users)
+      const message = {
+        notification: {
+          title: 'Account Deactivated!',
+          body: 'Your account has been deactivated by the Admin. \n Please contact admin.'
+        },
+        data: { type: 'block' }
+      }
+      console.log(message)
+      await notificationService.sendNotification(users, message)
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
@@ -237,9 +252,9 @@ class UserController {
     const langMsg = config.messages[req.app.get('lang')]
     schema.forgotPassword.validateAsync(req.body).then(async () => {
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
-      // console.log('aaaaaaaaaaaaaaaa', userExist)
+      console.log('aaaaaaaaaaaaaaaa', userExist)
       if (!userExist) {
-        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }
       const payload = {
         is_active: userExist.is_active,
@@ -317,7 +332,7 @@ class UserController {
       req.body.password = passwordHash
       const userExist = await commonService.findOne(User, { role: config.constants.ROLE.ADMIN, email: req.body.email })
       if (!userExist) {
-        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.notFound)
+        return util.failureResponse(res, config.constants.NOT_FOUND, langMsg.usernotExist)
       }
       // const resetPasswordToken = await util.generatePasswordReset()
       // await userService.updateResetPasswordToken({ resetPasswordToken: resetPasswordToken, id: userExist.dataValues.id })

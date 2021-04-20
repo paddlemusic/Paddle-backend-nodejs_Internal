@@ -5,6 +5,7 @@ const University = require('../../../models/university')
 const Sequelize = require('sequelize')
 const config = require('../../../config')
 const sgMail = require('@sendgrid/mail')
+// const constants = require('../../../config/constants')
 sgMail.setApiKey(config.SENDGRID.sendgridApiKey)
 
 const Op = Sequelize.Op
@@ -32,34 +33,47 @@ class UserService {
     })
   }
 
-  listUsers (name, uniName, pagination) {
+  listUsers (name, universityId, pagination) {
     return new Promise((resolve, reject) => {
-      User.findAndCountAll({
-        limit: pagination.limit,
-        offset: pagination.offset,
-        where: {
+      let where = {}
+      if (Number(universityId) === 0) {
+        where = {
           role: 1,
           name: {
             [Op.iLike]: '%' + name + '%'
           }
-        },
-        
-        // attributes: [Sequelize.literal('"User"."name","User"."email","User"."phone_number","User"."is_active","User"."id"')],
+        }
+      } else if (Number(universityId) === -1) {
+        where = {
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          },
+          university_code: { [Op.eq]: null }
+        }
+      } else {
+        where = {
+          role: 1,
+          name: {
+            [Op.iLike]: '%' + name + '%'
+          },
+          university_code: universityId
+        }
+      }
+      User.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        where: where,
         attributes: ['name', 'email', 'phone_number', 'is_active', 'id'],
-        // group: ['id'],
         order: [['id', 'ASC']],
-        // raw: true,
         include: [{
           model: University,
-          required: true,
-          where: {
-            // role: 1,
-            name: {
-              [Op.iLike]: '%' + uniName + '%'
-            }
-          }
-          // attributes: ['id', 'name']
-          // as: 'post'
+          required: false
+          // where: {
+          //   name: {
+          //     [Op.iLike]: '%' + uniName + '%'
+          //   }
+          // }
         }]
       }).then(result => resolve(result))
         .catch(err => reject(err))
@@ -77,20 +91,19 @@ class UserService {
 
   sendResetLink (toEmail, token, name) {
     return new Promise((resolve, reject) => {
-      // const str = 'Click Here'
-      // const result2 = 'https://www.google.com'
-      const result = 'http://localhost:4200/auth/reset-password?token=' + token
-      // const result = 'https://www.google.com' + '/' + 'Token=' + token
+      // --const result = 'http://localhost:4200/auth/reset-password?token=' + token
+      const result = config.baseURL + token
       const mailOptions = {
-        to: toEmail, // 'shubhamgupta.608@rediffmail.com',
+        to: toEmail,
         from: config.SENDGRID.fromEmail,
-        subject: 'Password reset link',
-        text: `Hi ${name} \n
-       click ${result} to reset your password :\n\n If you did not request this, please ignore this email and your password will remain unchanged.\n`
+        subject: 'Password Reset Link',
+        // text : 'HI',
+        html: `Hi Admin, <br>
+       Please <a href = ${result}>click here</a> to reset your password.<br><br>If you did not request this, please ignore this email and your password will remain unchanged.<br><br>Regards,<br>Paddlle Support Team`
       }
       sgMail.send(mailOptions, (err, result) => {
         if (err) {
-          console.log(err)
+          console.log('err is', err)
           reject(err)
         } else {
           // console.log(mailOptions)
