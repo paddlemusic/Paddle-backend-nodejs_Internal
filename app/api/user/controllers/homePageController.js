@@ -39,7 +39,7 @@ class HomePageController {
         meta_data: validationResult.meta_data,
         meta_data2: validationResult.meta_data2,
         media_type: req.params.media_type,
-        album_name: req.params.album_name
+        album_name: validationResult.album_name
       }
 
       const createPostData = await commonService.create(UserPost, params)
