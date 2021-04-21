@@ -223,4 +223,6 @@ router.get('/getAppOpenData', analyticsController.getAppOpenData)
 
 router.get('/getWeeklyAppOpenData', analyticsController.getWeeklyAppOpenData)
 
+router.get('/userPostDataAnalytics', analyticsController.getAppPostData)
+
 module.exports = router

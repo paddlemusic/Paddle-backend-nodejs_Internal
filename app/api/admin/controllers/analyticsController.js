@@ -128,7 +128,7 @@ class AnalyticsController {
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       } else {
-        // Get Shares/likes on monthly basis
+        // Get Shares/likes on monthly basis Get Shares/likes on monthly basis
         if (Number(req.query.university_id) >= 1) {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
 
@@ -411,6 +411,52 @@ class AnalyticsController {
     } catch (err) {
       console.log(err)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  // 
+  async getAppPostData (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      if (Number(req.query.time_span) === 1) {
+        // Get All signup count
+        if (Number(req.query.university_id) >= 1) {
+          const totalCount = await analyticsService.getUserPostUniversityWiseCount(req.query)
+          console.log('totalCount', totalCount)
+          const data = { count: totalCount }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const totalCount = await analyticsService.getUserPostTotalCount(req.query)
+          console.log('totalCount', totalCount)
+          const data = { count: totalCount }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get Signup on monthly basis
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss ')
+
+          const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const data = { count: totalCount }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+
+          const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const data = { count: totalCount}
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
+    } catch (error) {
+      
     }
   }
 }
