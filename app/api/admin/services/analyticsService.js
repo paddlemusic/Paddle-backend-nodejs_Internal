@@ -314,6 +314,7 @@ class AnalyticsService {
       },
       distinct: true,
       col: 'media_id',
+      attributes: ['user_id'],
       include: [{
         model: User,
         required: true,
@@ -543,6 +544,46 @@ class AnalyticsService {
       // offset: pagination.offset
     })
     // console.log('from service', result)
+    return result
+  }
+
+  async getUserCountMoreThanTwoPost (params, startDate, endDate) {
+    const result = await UserPost.findAndCountAll({
+      where: {
+        created_at: {
+          [Op.between]: [startDate, endDate]
+        },
+        media_type: params.media_type
+      },
+      attributes: ['user_id']
+      // distinct: true,
+      // col: 'media_id'
+    })
+    console.log(result)
+    return result
+  }
+
+  async getUniversityUserCountMoreThanTwoPost (params, startDate, endDate) {
+    const result = await UserPost.finAndCountAll({
+      where: {
+        created_at: {
+          [Op.between]: [startDate, endDate]
+        },
+        media_type: params.media_type
+        // university_id: params.university_id
+      },
+      // distinct: true,
+      // col: 'media_id',
+      attributes: ['user_id'],
+      include: [{
+        model: User,
+        required: true,
+        where: { university_code: params.university_id },
+        attributes: []
+        // as: 'post'
+      }]
+    })
+    // console.log(result)
     return result
   }
 }
