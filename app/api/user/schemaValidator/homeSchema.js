@@ -11,7 +11,8 @@ const schema = {
     media_name: Joi.string().allow('').allow(null),
     meta_data: Joi.string().allow('').allow(null),
     meta_data2: Joi.string().allow('').allow(null),
-    shared_with: Joi.array().items(Joi.number().min(1).allow(null))
+    shared_with: Joi.array().items(Joi.number().min(1).allow(null)),
+    album_name: Joi.string().allow('').allow(null),
   }),
   likeUnlikePost: Joi.object().keys({
     post_id: Joi.number().required(),
