@@ -555,7 +555,8 @@ class AnalyticsService {
         },
         media_type: params.media_type
       },
-      attributes: ['user_id']
+      attributes: ['user_id'],
+      raw: true
       // distinct: true,
       // col: 'media_id'
     })
@@ -564,7 +565,7 @@ class AnalyticsService {
   }
 
   async getUniversityUserCountMoreThanTwoPost (params, startDate, endDate) {
-    const result = await UserPost.finAndCountAll({
+    const result = await UserPost.findAndCountAll({
       where: {
         created_at: {
           [Op.between]: [startDate, endDate]

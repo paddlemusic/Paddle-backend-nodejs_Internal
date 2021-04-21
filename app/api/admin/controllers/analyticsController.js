@@ -483,7 +483,7 @@ class AnalyticsController {
   async getAppPostData(req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      if (Number(req.query.time_span) === 1) {
+      if (Number(req.query.time_span) === 1) {  // last 1 year
         // Get All signup count
         if (Number(req.query.university_id) >= 1) {
           const totalCount = await analyticsService.getUserPostUniversityWiseCount(req.query)
@@ -500,8 +500,8 @@ class AnalyticsController {
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
-      } else if ((Number(req.query.time_span) === 2)) {
-        // Get Signup on monthly basis
+      } else if ((Number(req.query.time_span) === 2)) {   // last 1 month
+       
         if (Number(req.query.university_id) >= 1) {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
 
@@ -510,8 +510,22 @@ class AnalyticsController {
 
           const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
           console.log('totalCount', totalCount)
+
+          const countMoreThanTwoPost = await analyticsService.getUniversityUserCountMoreThanTwoPost(req.query, startDate, endDate)
+
+         // find the users which are repeated
+         let repeatArr = []
+         for (let i = 0; i < countMoreThanTwoPost.rows.length; i++) {
+           for(let j=i+1; j<countMoreThanTwoPost.rows.length; j++) {
+             if(countMoreThanTwoPost.rows[i].user_id == countMoreThanTwoPost.rows[j].user_id) {
+               repeatArr.push(countMoreThanTwoPost.rows[i].user_id)
+             }
+           }
+         }
+         repeatArr = [...new Set(repeatArr)]
+
           const data = {
-            count: totalCount
+            count: totalCount, countMoreThanTwoPost: repeatArr.length
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
@@ -520,30 +534,51 @@ class AnalyticsController {
           const daysInMonth = moment(startDate).daysInMonth()
           const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
 
-          const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)
-          console.log('totalCount', totalCount)
+          console.log('startDate - - -', startDate, endDate)
+
+          const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)          
+
+          const countMoreThanTwoPost = await analyticsService.getUserCountMoreThanTwoPost(req.query, startDate, endDate)
+          console.log('count more than two - - ', countMoreThanTwoPost.rows[0])
+
+          let repeatArr = []
+          for (let i = 0; i < countMoreThanTwoPost.rows.length; i++) {
+            for(let j=i+1; j<countMoreThanTwoPost.rows.length; j++) {
+              if(countMoreThanTwoPost.rows[i].user_id == countMoreThanTwoPost.rows[j].user_id) {
+                repeatArr.push(countMoreThanTwoPost.rows[i].user_id)
+              }
+            }
+          }
+          repeatArr = [...new Set(repeatArr)]
+
           const data = {
-            count: totalCount
+            count: totalCount, countMoreThanTwoPost: repeatArr.length
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
-      } else {
+      } else {    // last 1 week
         if (Number(req.query.university_id) >= 1) {
           const startDate = moment(Date.now() - 7 * 24 * 3600 * 1000).format('YYYY-MM-DD')
 
           const endDate = moment(Date.now()).format('YYYY-MM-DD')
 
-          console.log('startDate and endDate ', startDate, endDate)
-
-          // const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
-          // console.log('totalCount', totalCount)
-
           const countMoreThanTwoPost = await analyticsService.getUniversityUserCountMoreThanTwoPost(req.query, startDate, endDate)
-          console.log('totalCountper week - - - ', countMoreThanTwoPost)
 
-          const data = {
-            count: countMoreThanTwoPost
-          }
+         // find the users which are repeated
+         let repeatArr = []
+         for (let i = 0; i < countMoreThanTwoPost.rows.length; i++) {
+           for(let j=i+1; j<countMoreThanTwoPost.rows.length; j++) {
+             if(countMoreThanTwoPost.rows[i].user_id == countMoreThanTwoPost.rows[j].user_id) {
+               repeatArr.push(countMoreThanTwoPost.rows[i].user_id)
+             }
+           }
+         }
+         repeatArr = [...new Set(repeatArr)]
+         
+         const data = {
+           count: repeatArr.length
+         }
+
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
           
@@ -551,28 +586,19 @@ class AnalyticsController {
 
           const endDate = moment(Date.now()).format('YYYY-MM-DD')
 
-          //console.log('startDate and endDate ',startDate ,endDate)
-
           const countMoreThanTwoPost = await analyticsService.getUserCountMoreThanTwoPost(req.query, startDate, endDate)
-          //console.log('totalCountper week - - - ', countMoreThanTwoPost.rows[0])
-
-          // push the user_id into an array
-          // for (let i = 0; i < countMoreThanTwoPost.rows.length; i++) {
-          //   repeatArr.push(countMoreThanTwoPost.rows[i].user_id)
-          // }
-
-          
-
+        
           // find the users which are repeated
-          let map = {}
           let repeatArr = []
           for (let i = 0; i < countMoreThanTwoPost.rows.length; i++) {
-            if (map[countMoreThanTwoPost.rows[i]] !== undefined) {
-              repeatArr.push(countMoreThanTwoPost.rows[i])
+            for(let j=i+1; j<countMoreThanTwoPost.rows.length; j++) {
+              if(countMoreThanTwoPost.rows[i].user_id == countMoreThanTwoPost.rows[j].user_id) {
+                repeatArr.push(countMoreThanTwoPost.rows[i].user_id)
+              }
             }
-            map[countMoreThanTwoPost.rows[i]] = i
-            //console.log(map)
           }
+          repeatArr = [...new Set(repeatArr)]
+          //console.log('repeatArr - -', repeatArr)
           
           const data = {
             count: repeatArr.length
@@ -581,7 +607,7 @@ class AnalyticsController {
         }
       }
     } catch (error) {
-      console.log(err)
+      console.log(error)
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
