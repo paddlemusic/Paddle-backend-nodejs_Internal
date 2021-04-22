@@ -562,7 +562,7 @@ class AnalyticsController {
 
           const endDate = moment(Date.now()).format('YYYY-MM-DD')
 
-          const countMoreThanTwoPost = await analyticsService.getUniversityUserCountMoreThanTwoPost(req.query, startDate, endDate)
+          let countMoreThanTwoPost = await analyticsService.getUniversityUserCountMoreThanTwoPost(req.query, startDate, endDate)
 
          // find the users which are repeated
          let repeatArr = []
@@ -576,7 +576,7 @@ class AnalyticsController {
          repeatArr = [...new Set(repeatArr)]
          
          const data = {
-           count: repeatArr.length
+          countMoreThanTwoPost: repeatArr.length
          }
 
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
@@ -586,7 +586,7 @@ class AnalyticsController {
 
           const endDate = moment(Date.now()).format('YYYY-MM-DD')
 
-          const countMoreThanTwoPost = await analyticsService.getUserCountMoreThanTwoPost(req.query, startDate, endDate)
+          let countMoreThanTwoPost = await analyticsService.getUserCountMoreThanTwoPost(req.query, startDate, endDate)
         
           // find the users which are repeated
           let repeatArr = []
@@ -601,7 +601,7 @@ class AnalyticsController {
           //console.log('repeatArr - -', repeatArr)
           
           const data = {
-            count: repeatArr.length
+            countMoreThanTwoPost: repeatArr.length
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
