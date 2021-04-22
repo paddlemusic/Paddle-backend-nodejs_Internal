@@ -203,8 +203,9 @@ class AnalyticsService {
       where: {
         media_type: params.media_type
       },
-      //distinct: true,
+      distinct: true,
       col: 'media_id'
+    // group: ['media_id', 'like_count']
     })
     return result
   }
@@ -224,13 +225,12 @@ class AnalyticsService {
         'media_name',
         'meta_data',
         'meta_data2',
-        'caption',
         'album_name'
       ],
 
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption', 'album_name'],
-      // limit: pagination.limit,
-      // offset: pagination.offset,
+      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'album_name'],
+      limit: pagination.limit,
+      offset: pagination.offset,
       raw: true
     })
     // console.log(result)
