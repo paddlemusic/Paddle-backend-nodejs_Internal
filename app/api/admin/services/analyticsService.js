@@ -210,7 +210,7 @@ class AnalyticsService {
   }
 
   async getUserPost (params, pagination) {
-    const result = await UserPost.findAll({
+    const result = await UserPost.findAndCountAll({
       where: {
         media_type: params.media_type
         // university_id: params.university_id
@@ -230,7 +230,8 @@ class AnalyticsService {
 
       group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption', 'album_name'],
       limit: pagination.limit,
-      offset: pagination.offset
+      offset: pagination.offset,
+      raw: true
     })
     // console.log(result)
     return result
