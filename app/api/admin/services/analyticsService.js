@@ -228,6 +228,7 @@ class AnalyticsService {
         let result = await sequelize.query(rawQuery, {
             raw: true,
         });
+        return result
     // const result = await UserPost.findAll({
     //   where: {
     //     media_type: params.media_type
@@ -251,7 +252,7 @@ class AnalyticsService {
     //   raw: true
     // })
      //console.log(result)
-    return result
+   
   }
 
   async getUserPostUniversityWiseCount (params) {
@@ -274,34 +275,49 @@ class AnalyticsService {
   }
 
   async getUniversityWiseUserPost (params, pagination) {
-    const result = await UserPost.findAll({
-      where: {
-        media_type: params.media_type
-        // university_id: params.university_id
-      },
-      attributes: [
-        [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
-        [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
-        'media_id',
-        'media_image',
-        'media_name',
-        'meta_data',
-        'meta_data2',
-        'caption'
-      ],
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption'],
-      limit: pagination.limit,
-      offset: pagination.offset,
-      include: [{
-        model: User,
-        required: true,
-        where: { university_code: params.university_id },
-        attributes: []
-        // as: 'post'
-      }]
-    })
-    // console.log(result)
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , album_name,
+     sum(like_count) as likeCount, sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id 
+      inner join "University" on "User".university_code = "University".id 
+      where media_type = ${params.media_type} and "University".id = ${params.university_id}
+      group by (media_id, media_image, media_name, album_name)
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
     return result
+    // const result = await UserPost.findAll({
+    //   where: {
+    //     media_type: params.media_type
+    //     // university_id: params.university_id
+    //   },
+    //   attributes: [
+    //     [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+    //     [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
+    //     'media_id',
+    //     'media_image',
+    //     'media_name',
+    //     'meta_data',
+    //     'meta_data2',
+    //     'caption'
+    //   ],
+    //   group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption'],
+    //   limit: pagination.limit,
+    //   offset: pagination.offset,
+    //   include: [{
+    //     model: User,
+    //     required: true,
+    //     where: { university_code: params.university_id },
+    //     attributes: []
+    //     // as: 'post'
+    //   }]
+    // })
+    // console.log(result)
+    //return result
   }
 
   // monthly stream services
@@ -339,72 +355,109 @@ class AnalyticsService {
         where: { university_code: params.university_id },
         attributes: []
         // as: 'post'
-      }]
+      }],
+      group: ['media_id', 'user_id'],
     })
     // console.log(result)
     return result
   }
 
   async getUniversityWiseMonthlyUserPost (params, startDate, endDate, pagination) {
-    const result = await UserPost.findAll({
-      where: {
-        created_at: {
-          [Op.between]: [startDate, endDate]
-        },
-        media_type: params.media_type
-        // university_id: params.university_id
-      },
-      attributes: [
-        [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
-        [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
-        'media_id',
-        'media_image',
-        'media_name',
-        'meta_data',
-        'meta_data2',
-        'caption'
-      ],
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption'],
-      limit: pagination.limit,
-      offset: pagination.offset,
-      include: [{
-        model: User,
-        required: true,
-        where: { university_code: params.university_id },
-        attributes: []
-        // as: 'post'
-      }]
-    })
-    // console.log(result)
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , album_name,
+          sum(like_count) as likeCount, sum(media_type) as shareCount 
+          from "User_Post" inner join "User" on "User_Post".user_id="User".id
+           inner join "University" on "User".university_code = "University".id 
+           where media_type = ${params.media_type} and "University".id = ${params.university_id} AND
+          "User".created_at BETWEEN '${startDate}' AND '${endDate}'
+           group by (media_id, media_image, media_name, album_name)
+           limit ${pagination.limit} offset ${pagination.offset}`
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
     return result
+    // const result = await UserPost.findAll({
+    //   where: {
+    //     created_at: {
+    //       [Op.between]: [startDate, endDate]
+    //     },
+    //     media_type: params.media_type
+    //     // university_id: params.university_id
+    //   },
+    //   attributes: [
+    //     [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+    //     [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
+    //     'media_id',
+    //     'media_image',
+    //     'media_name',
+    //     'meta_data',
+    //     'meta_data2',
+    //     'caption'
+    //   ],
+    //   group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption'],
+    //   limit: pagination.limit,
+    //   offset: pagination.offset,
+    //   include: [{
+    //     model: User,
+    //     required: true,
+    //     where: { university_code: params.university_id },
+    //     attributes: []
+    //     // as: 'post'
+    //   }]
+    // })
+    // // console.log(result)
+    // return result
   }
 
   async getMonthlyUserPost (params, startDate, endDate, pagination) {
-    const result = await UserPost.findAll({
-      where: {
-        created_at: {
-          [Op.between]: [startDate, endDate]
-        },
-        media_type: params.media_type
-        // university_id: params.university_id
-      },
-      attributes: [
-        [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
-        [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
-        'media_id',
-        'media_image',
-        'media_name',
-        'meta_data',
-        'meta_data2',
-        'caption',
-        'album_name'
-      ],
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption', 'album_name'],
-      limit: pagination.limit,
-      offset: pagination.offset
-    })
-    // console.log(result)
-    return result
+
+    let rawQuery = ""
+        let where = {}
+        let employees;
+
+        // let admin_id = params.admin_id
+
+        rawQuery = `select media_id, media_image , media_name , album_name,
+                    sum(like_count) as likeCount, 
+                    sum(media_type) as shareCount from "User_Post"
+                    where media_type = ${params.media_type} AND
+                    created_at BETWEEN '${startDate}' AND '${endDate}'
+                    group by (media_id, media_image, media_name, album_name)
+                    limit ${pagination.limit} offset ${pagination.offset} `
+
+        let result = await sequelize.query(rawQuery, {
+            raw: true,
+        });
+        return result
+    // const result = await UserPost.findAll({
+    //   where: {
+    //     created_at: {
+    //       [Op.between]: [startDate, endDate]
+    //     },
+    //     media_type: params.media_type
+    //     // university_id: params.university_id
+    //   },
+    //   attributes: [
+    //     [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+    //     [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
+    //     'media_id',
+    //     'media_image',
+    //     'media_name',
+    //     'meta_data',
+    //     'meta_data2',
+    //     'caption',
+    //     'album_name'
+    //   ],
+    //   group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'caption', 'album_name'],
+    //   limit: pagination.limit,
+    //   offset: pagination.offset
+    // })
+    // // console.log(result)
+    // return result
   }
 
   getTotalAppUsage () {

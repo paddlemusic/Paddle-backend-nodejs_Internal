@@ -125,7 +125,7 @@ class AnalyticsController {
           console.log('allStreamStats', allStreamStats)
           const data = {
             count: totalCount,
-            mediaData: allStreamStats
+            mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
@@ -142,25 +142,25 @@ class AnalyticsController {
       } else {
         // Get Shares/likes on monthly basis Get Shares/likes on monthly basis
         if (Number(req.query.university_id) >= 1) {
-          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
           const daysInMonth = moment(startDate).daysInMonth()
-          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss ')
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
 
           const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
           console.log('totalCount', totalCount)
           const allStreamStats = await analyticsService.getUniversityWiseMonthlyUserPost(req.query, startDate, endDate, pagination)
           console.log('allStreamStats', allStreamStats)
           const data = {
-            count: totalCount,
-            mediaData: allStreamStats
+            count: totalCount[0].count,
+            mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
-          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
           const daysInMonth = moment(startDate).daysInMonth()
-          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
 
           const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)
           console.log('totalCount', totalCount)
@@ -168,7 +168,7 @@ class AnalyticsController {
           console.log('allStreamStats', allStreamStats)
           const data = {
             count: totalCount,
-            mediaData: allStreamStats
+            mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
