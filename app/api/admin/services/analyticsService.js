@@ -211,29 +211,46 @@ class AnalyticsService {
   }
 
   async getUserPost (params, pagination) {
-    const result = await UserPost.findAll({
-      where: {
-        media_type: params.media_type
-        // university_id: params.university_id
-      },
 
-      attributes: [
-        [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
-        [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
-        'media_id',
-        'media_image',
-        'media_name',
-        'meta_data',
-        'meta_data2',
-        'album_name'
-      ],
+    let rawQuery = ""
+        let where = {}
+        let employees;
 
-      group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'album_name'],
-      limit: pagination.limit,
-      offset: pagination.offset,
-      raw: true
-    })
-    // console.log(result)
+        // let admin_id = params.admin_id
+
+        rawQuery = `select media_id, media_image , media_name , album_name,
+                    sum(like_count) as likeCount, 
+                    sum(media_type) as shareCount from "User_Post"
+                    where media_type = ${params.media_type}
+                    group by (media_id, media_image, media_name, album_name)
+                    limit ${pagination.limit} offset ${pagination.offset} `
+
+        let result = await sequelize.query(rawQuery, {
+            raw: true,
+        });
+    // const result = await UserPost.findAll({
+    //   where: {
+    //     media_type: params.media_type
+    //     // university_id: params.university_id
+    //   },
+
+    //   attributes: [
+    //     [Sequelize.fn('count', Sequelize.col('media_type')), 'shareCount'],
+    //     [Sequelize.fn('sum', Sequelize.col('like_count')), 'likeCount'],
+    //     'media_id',
+    //     'media_image',
+    //     'media_name',
+    //     'meta_data',
+    //     'meta_data2',
+    //     'album_name'
+    //   ],
+
+    //   group: ['media_id', 'media_type', 'media_image', 'media_name', 'meta_data', 'meta_data2', 'album_name'],
+    //   limit: pagination.limit,
+    //   offset: pagination.offset,
+    //   raw: true
+    // })
+     //console.log(result)
     return result
   }
 

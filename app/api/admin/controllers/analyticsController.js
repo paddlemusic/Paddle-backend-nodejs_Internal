@@ -130,12 +130,12 @@ class AnalyticsController {
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
           const totalCount = await analyticsService.getUserPostTotalCount(req.query)
-          console.log('totalCount', totalCount)
+          //console.log('totalCount', totalCount)
           const allUserPost = await analyticsService.getUserPost(req.query, pagination)
-          console.log('allStreamStats', allUserPost)
+          //console.log('allStreamStats', allUserPost)
           const data = {
             count: totalCount,
-            mediaData: allUserPost
+            mediaData: allUserPost[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
