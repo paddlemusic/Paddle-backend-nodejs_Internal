@@ -218,11 +218,11 @@ class AnalyticsService {
 
         // let admin_id = params.admin_id
 
-        rawQuery = `select media_id, media_image , media_name , album_name,
+        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
                     sum(like_count) as likeCount, 
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type}
-                    group by (media_id, media_image, media_name, album_name)
+                    group by (media_id, media_image, media_name, meta_data, album_name)
                     limit ${pagination.limit} offset ${pagination.offset} `
 
         let result = await sequelize.query(rawQuery, {
@@ -278,12 +278,12 @@ class AnalyticsService {
     let rawQuery = ""
 
     rawQuery = `
-    select media_id, media_image , media_name , album_name,
+    select media_id, media_image , media_name , meta_data, album_name,
      sum(like_count) as likeCount, sum(media_type) as shareCount
       from "User_Post" inner join "User" on "User".id = "User_Post".user_id 
       inner join "University" on "User".university_code = "University".id 
       where media_type = ${params.media_type} and "University".id = ${params.university_id}
-      group by (media_id, media_image, media_name, album_name)
+      group by (media_id, media_image, media_name, meta_data, album_name)
       limit ${pagination.limit} offset ${pagination.offset} `
 
     let result = await sequelize.query(rawQuery, {
@@ -367,13 +367,13 @@ class AnalyticsService {
     let rawQuery = ""
 
     rawQuery = `
-    select media_id, media_image , media_name , album_name,
+    select media_id, media_image , media_name , meta_data, album_name,
           sum(like_count) as likeCount, sum(media_type) as shareCount 
           from "User_Post" inner join "User" on "User_Post".user_id="User".id
            inner join "University" on "User".university_code = "University".id 
            where media_type = ${params.media_type} and "University".id = ${params.university_id} AND
           "User".created_at BETWEEN '${startDate}' AND '${endDate}'
-           group by (media_id, media_image, media_name, album_name)
+           group by (media_id, media_image, media_name, meta_data, album_name)
            limit ${pagination.limit} offset ${pagination.offset}`
 
     let result = await sequelize.query(rawQuery, {
@@ -421,12 +421,12 @@ class AnalyticsService {
 
         // let admin_id = params.admin_id
 
-        rawQuery = `select media_id, media_image , media_name , album_name,
+        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
                     sum(like_count) as likeCount, 
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type} AND
                     created_at BETWEEN '${startDate}' AND '${endDate}'
-                    group by (media_id, media_image, media_name, album_name)
+                    group by (media_id, media_image, media_name, meta_data, album_name)
                     limit ${pagination.limit} offset ${pagination.offset} `
 
         let result = await sequelize.query(rawQuery, {
