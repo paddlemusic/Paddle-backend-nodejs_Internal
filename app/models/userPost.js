@@ -82,6 +82,6 @@ UserPost.belongsTo(User, {
 
 // UserPost.hasOne(LikePost)
 
- UserPost.sync({ alter: false })
+ //UserPost.sync({ alter: true })
 
 module.exports = UserPost

@@ -152,7 +152,7 @@ class AnalyticsController {
           const allStreamStats = await analyticsService.getUniversityWiseMonthlyUserPost(req.query, startDate, endDate, pagination)
           console.log('allStreamStats', allStreamStats)
           const data = {
-            count: totalCount[0].count,
+            count: totalCount.length ? totalCount[0].count : 0,
             mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
