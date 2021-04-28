@@ -32,9 +32,14 @@ class AnalyticsController {
 
       if (Number(req.query.time_span) === 1) {
         // Get All stream stats
-        req.query.university_id = Number(req.query.university_id) >= 1 ? req.query.university_id : null
+        if(req.query.university_id == 0) {
+          req.query.university_id = null
+        }else if(req.query.university_id == -1) {
+          req.query.university_id = 0
+        }
+        console.log('university_id - - - ', req.query.university_id)
         const totalCount = await analyticsService.getStreamStatsTotalCount(req.query)
-        console.log('totalCount', totalCount)
+        //console.log('totalCount', totalCount)
         const allStreamStats = await analyticsService.getStreamStats(req.query, pagination)
         console.log('allStreamStats', allStreamStats)
         const data = {
@@ -60,7 +65,12 @@ class AnalyticsController {
         } */
       } else {
         // Get Streams on monthly basis
-        req.query.university_id = Number(req.query.university_id) >= 1 ? req.query.university_id : null
+        //req.query.university_id = Number(req.query.university_id) >= 1 ? req.query.university_id : null
+        if(req.query.university_id == 0) {
+          req.query.university_id = null
+        }else if(req.query.university_id == -1) {
+          req.query.university_id = 0
+        }
         const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
         const daysInMonth = moment(startDate).daysInMonth()
