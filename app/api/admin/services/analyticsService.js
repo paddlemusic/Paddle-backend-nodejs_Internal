@@ -274,6 +274,62 @@ class AnalyticsService {
     return result
   }
 
+  async getUserPostWithoutUniversityCount (params) {
+    const result = await UserPost.count({
+      where: {
+        media_type: params.media_type
+        // university_id: params.university_id
+      },
+      distinct: true,
+      col: 'media_id',
+      include: [{
+        model: User,
+        required: true,
+        where: { university_code: null },
+        attributes: []
+        // as: 'post'
+      }]
+    })
+    return result
+  }
+
+  async getUserPostWithoutUniversityCount (params) {
+    const result = await UserPost.count({
+      where: {
+        media_type: params.media_type
+        // university_id: params.university_id
+      },
+      distinct: true,
+      col: 'media_id',
+      include: [{
+        model: User,
+        required: true,
+        where: { university_code: null },
+        attributes: []
+        // as: 'post'
+      }]
+    })
+    return result
+  }
+
+  async getWithoutUniversityUserPost (params, pagination) {
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+     sum(like_count) as likeCount, sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id
+      where media_type = ${params.media_type} and "User".university_code is null
+      group by (media_id, media_image, media_name, meta_data, album_name)
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
+  }
+
   async getUniversityWiseUserPost (params, pagination) {
     let rawQuery = ""
 
@@ -337,6 +393,50 @@ class AnalyticsService {
     return result
   }
 
+  async getWithoutUniversityUserPostMonthlyCount (params, startDate, endDate) {
+    const result = await UserPost.count({
+      where: {
+        created_at: {
+          [Op.between]: [startDate, endDate]
+        },
+        media_type: params.media_type
+        // university_id: params.university_id
+      },
+      distinct: true,
+      col: 'media_id',
+      attributes: ['user_id'],
+      include: [{
+        model: User,
+        required: true,
+        where: { university_code: null },
+        attributes: []
+        // as: 'post'
+      }],
+      group: ['media_id', 'user_id'],
+    })
+    // console.log(result)
+    return result
+  }
+
+  async getWithoutUniversityMonthlyUserPost (params, startDate, endDate, pagination) {
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+     sum(like_count) as likeCount, sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id
+      where media_type = ${params.media_type} and "User".university_code is null and
+      "User".created_at BETWEEN '${startDate}' AND '${endDate}'
+      group by (media_id, media_image, media_name, meta_data, album_name)
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
+  }
+
   async getUniversityUserPostMonthlyCount (params, startDate, endDate) {
     const result = await UserPost.count({
       where: {
@@ -361,6 +461,7 @@ class AnalyticsService {
     // console.log(result)
     return result
   }
+
 
   async getUniversityWiseMonthlyUserPost (params, startDate, endDate, pagination) {
 

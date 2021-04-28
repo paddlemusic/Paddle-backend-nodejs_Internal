@@ -115,9 +115,10 @@ class AnalyticsController {
         return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
       } */
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-
+      ``
+      // yearly basis
       if (Number(req.query.time_span) === 1) {
-        // Get All share/likes
+        // for particular university
         if (Number(req.query.university_id) >= 1) {
           const totalCount = await analyticsService.getUserPostUniversityWiseCount(req.query)
           console.log('totalCount', totalCount)
@@ -128,7 +129,20 @@ class AnalyticsController {
             mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        } 
+        // for none
+        else if(Number(req.query.university_id) < 0) {
+          const totalCount = await analyticsService.getUserPostWithoutUniversityCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getWithoutUniversityUserPost(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+        else { // for all university
           const totalCount = await analyticsService.getUserPostTotalCount(req.query)
           //console.log('totalCount', totalCount)
           const allUserPost = await analyticsService.getUserPost(req.query, pagination)
@@ -140,7 +154,8 @@ class AnalyticsController {
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       } else {
-        // Get Shares/likes on monthly basis Get Shares/likes on monthly basis
+        // Get Shares/likes on monthly basis
+        // for particular university
         if (Number(req.query.university_id) >= 1) {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
@@ -156,7 +171,26 @@ class AnalyticsController {
             mediaData: allStreamStats[0]
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        }
+        // for none
+        else if(Number(req.query.university_id) < 0) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+
+          const totalCount = await analyticsService.getWithoutUniversityUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getWithoutUniversityMonthlyUserPost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount.length ? totalCount[0].count : 0,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } 
+        // for all university
+        else {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
           const daysInMonth = moment(startDate).daysInMonth()
@@ -200,7 +234,19 @@ class AnalyticsController {
             signupCount: streamCount.count
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        }
+        else if(Number(req.query.university_id) === -1) {
+          const streamCount = await commonService.findAndCountAll(User, {
+            university_code: null,
+            role: config.constants.ROLE.USER
+          })
+          //console.log('unviersity wise', streamCount.count)
+          const data = {
+            signupCount: streamCount.count
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } 
+        else {
           const streamCount = await commonService.findAndCountAll(User, {
             role: config.constants.ROLE.USER
           })
@@ -229,7 +275,26 @@ class AnalyticsController {
             signupCount: streamCount.count
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        } 
+        else if(Number(req.query.university_id) === -1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD hh:mm:ss')
+          const streamCount = await commonService.findAndCountAll(User, {
+            university_code: null,
+            created_at: {
+              [Op.between]: [startDate, endDate]
+            },
+            role: config.constants.ROLE.USER
+          })
+          console.log('unviersity wise', streamCount.count)
+          const data = {
+            signupCount: streamCount.count
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+        else {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
 
           const daysInMonth = moment(startDate).daysInMonth()
@@ -280,7 +345,24 @@ class AnalyticsController {
             appUsageTime: MHSTime
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        }
+        else if(Number(req.query.university_id) === -1) {
+          const appUsageTime = await commonService.findAll(UserStats, {
+            university_id: null
+          }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
+          console.log('University wise', appUsageTime[0].sum)
+          // seconds to HH:MM:SS
+          const measuredTime = new Date(null);
+          measuredTime.setSeconds(Number(appUsageTime[0].sum)) // specify value of SECONDS
+          const MHSTime = measuredTime.toISOString().substr(11, 8)
+          //console.log("time in format",MHSTime)
+          //const data = { appUsageTime: appUsageTime[0].sum }
+          const data = {
+            appUsageTime: MHSTime
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+         else {
           const appUsageCount = await analyticsService.getTotalAppUsage()
           console.log('Whole wise', appUsageCount)
           // seconds to HH:MM:SS
@@ -318,7 +400,31 @@ class AnalyticsController {
             appUsageTime: MHSTime
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        } 
+        else if(Number(req.query.university_id) === -1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+          const appUsageTime = await commonService.findAll(UserStats, {
+            university_id: null,
+            date: {
+              [Op.between]: [startDate, endDate]
+            }
+          }, [Sequelize.fn('sum', Sequelize.col('app_usage_time'))])
+          console.log('Whole wise', appUsageTime[0].sum)
+          // seconds to HH:MM:SS
+          const measuredTime = new Date(null);
+          measuredTime.setSeconds(Number(appUsageTime[0].sum)) // specify value of SECONDS
+          const MHSTime = measuredTime.toISOString().substr(11, 8)
+          //console.log("time in format",MHSTime)
+          // const data = { appUsageTime: appUsageTime[0].sum }
+          const data = {
+            appUsageTime: MHSTime
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+        else {
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
 
           const daysInMonth = moment(startDate).daysInMonth()
@@ -492,7 +598,16 @@ class AnalyticsController {
             count: totalCount
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
-        } else {
+        }
+        else if(Number(req.query.university_id) === -1) {
+          const totalCount = await analyticsService.getUserPostWithoutUniversityCount(req.query)
+          console.log('totalCount', totalCount)
+          const data = {
+            count: totalCount
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+         else {
           const totalCount = await analyticsService.getUserPostTotalCount(req.query)
           console.log('totalCount', totalCount)
           const data = {
@@ -502,7 +617,9 @@ class AnalyticsController {
         }
       } else if ((Number(req.query.time_span) === 2)) {   // last 1 month
        
-        if (Number(req.query.university_id) >= 1) {
+        if (Number(req.query.university_id) >= 1 || Number(req.query.university_id) === -1) {
+          Number(req.query.university_id) === -1 ? req.query.university_id = null : req.query.university_id
+          console.log('university id - - - ',req.query.university_id)
           const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD hh:mm:ss')
 
           const daysInMonth = moment(startDate).daysInMonth()
@@ -525,7 +642,7 @@ class AnalyticsController {
          repeatArr = [...new Set(repeatArr)]
 
           const data = {
-            count: totalCount, countMoreThanTwoPost: repeatArr.length
+            count: totalCount.length ? totalCount[0].count : 0, countMoreThanTwoPost: repeatArr.length
           }
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         } else {
@@ -557,7 +674,9 @@ class AnalyticsController {
           util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
         }
       } else {    // last 1 week
-        if (Number(req.query.university_id) >= 1) {
+        if (Number(req.query.university_id) >= 1 || Number(req.query.university_id) === -1 ){
+          Number(req.query.university_id) === -1 ? req.query.university_id = null : req.query.university_id
+          
           const startDate = moment(Date.now() - 7 * 24 * 3600 * 1000).format('YYYY-MM-DD')
 
           const endDate = moment(Date.now()).format('YYYY-MM-DD')
