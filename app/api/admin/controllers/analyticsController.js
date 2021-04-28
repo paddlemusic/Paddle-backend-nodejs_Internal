@@ -115,7 +115,7 @@ class AnalyticsController {
         return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
       } */
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
-      ``
+      
       // yearly basis
       if (Number(req.query.time_span) === 1) {
         // for particular university
