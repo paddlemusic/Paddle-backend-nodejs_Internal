@@ -38,6 +38,7 @@ module.exports = {
     artistDeleted: 'Artist deleted successfully',
     logOut: 'User logged out successfully',
     notAllowed: 'Not allowed.',
-    passcodeOremail: 'Signup failed! Either Passcode or University email address is required.'
+    passcodeOremail: 'Signup failed! Either Passcode or University email address is required.',
+    alreadyExist: 'Data already exist'
   }
 }
