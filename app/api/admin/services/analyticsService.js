@@ -32,6 +32,7 @@ class AnalyticsService {
         'media_metadata'
       ],
       group: ['media_id', 'media_type', 'media_metadata'],
+      order: [[Sequelize.fn('sum', Sequelize.col('count')), 'desc']],
       limit: pagination.limit,
       offset: pagination.offset
     })
@@ -189,6 +190,7 @@ class AnalyticsService {
         'media_metadata'
       ],
       group: ['media_id', 'media_type', 'media_metadata'],
+      order: [[Sequelize.fn('sum', Sequelize.col('count')), 'desc']],
       limit: pagination.limit,
       offset: pagination.offset
     })
