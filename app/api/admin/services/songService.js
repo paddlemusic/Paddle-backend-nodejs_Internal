@@ -33,8 +33,8 @@ class ProfileService {
         limit: pagination.limit,
         offset: pagination.offset,
         // attributes: [Sequelize.literal('"StreamStats"."id","StreamStats"."university_id","StreamStats"."media_metadata","StreamStats"."date"')],
-        attributes: ['university_id', 'media_metadata', 'date'],
-        order: [['university_id', 'ASC']],
+        attributes: ['university_id', 'media_metadata', 'count', 'date'],
+        order: [['count', 'DESC']],
         raw: true
       }).then(result => resolve(result))
         .catch(err => reject(err))
