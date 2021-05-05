@@ -223,6 +223,112 @@ class AnalyticsController {
     }
   }
 
+  async getShareAnalytics(req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      /* const validationResult = await AnalyticsSchema.getStream.validateAsync(req.query)
+      if (validationResult.error) {
+        return util.failureResponse(res, config.constants.BAD_REQUEST, validationResult.error.details[0].message)
+      } */
+      const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
+      
+      // yearly basis
+      if (Number(req.query.time_span) === 1) {
+        // for particular university
+        if (Number(req.query.university_id) >= 1) {
+          const totalCount = await analyticsService.getUserPostUniversityWiseCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseUserSharePost(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } 
+        // for none
+        else if(Number(req.query.university_id) < 0) {
+          const totalCount = await analyticsService.getUserPostWithoutUniversityCount(req.query)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getWithoutUniversityUserSharePost(req.query, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+        else { // for all university
+          const totalCount = await analyticsService.getUserPostTotalCount(req.query)
+          //console.log('totalCount', totalCount)
+          const allUserPost = await analyticsService.getUserSharePost(req.query, pagination)
+          //console.log('allStreamStats', allUserPost)
+          const data = {
+            count: totalCount,
+            mediaData: allUserPost[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      } else {
+        // Get Shares/likes on monthly basis
+        // for particular university
+        if (Number(req.query.university_id) >= 1) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+
+          const totalCount = await analyticsService.getUniversityUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getUniversityWiseMonthlyUserSharePost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount.length ? totalCount[0].count : 0,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+        // for none
+        else if(Number(req.query.university_id) < 0) {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+
+          const totalCount = await analyticsService.getWithoutUniversityUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getWithoutUniversityMonthlyUserSharePost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount.length ? totalCount[0].count : 0,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        } 
+        // for all university
+        else {
+          const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+
+          const daysInMonth = moment(startDate).daysInMonth()
+          const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD')
+
+          const totalCount = await analyticsService.getUserPostMonthlyCount(req.query, startDate, endDate)
+          console.log('totalCount', totalCount)
+          const allStreamStats = await analyticsService.getMonthlyUserSharePost(req.query, startDate, endDate, pagination)
+          console.log('allStreamStats', allStreamStats)
+          const data = {
+            count: totalCount,
+            mediaData: allStreamStats[0]
+          }
+          util.successResponse(res, config.constants.SUCCESS, langMsg.success, data)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
   async getSignups(req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {

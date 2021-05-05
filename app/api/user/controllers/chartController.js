@@ -49,6 +49,7 @@ class ChartController {
       }
       if (validationResult.album) {
         validationResult.album.university_id = universityCode
+        validationResult.album.media_metadata.artist_name = validationResult.artist.media_metadata.name
         validationResult.album.date = date
         param.push(validationResult.album)
       }

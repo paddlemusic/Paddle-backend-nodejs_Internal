@@ -225,4 +225,6 @@ router.get('/getWeeklyAppOpenData', analyticsController.getWeeklyAppOpenData)
 
 router.get('/userPostDataAnalytics', analyticsController.getAppPostData)
 
+router.get('/getShareAnalytics', analyticsController.getShareAnalytics)
+
 module.exports = router

@@ -32,6 +32,7 @@ class AnalyticsService {
         'media_metadata'
       ],
       group: ['media_id', 'media_type', 'media_metadata'],
+      order: [[Sequelize.fn('sum', Sequelize.col('count')), 'desc']],
       limit: pagination.limit,
       offset: pagination.offset
     })
@@ -189,6 +190,7 @@ class AnalyticsService {
         'media_metadata'
       ],
       group: ['media_id', 'media_type', 'media_metadata'],
+      order: [[Sequelize.fn('sum', Sequelize.col('count')), 'desc']],
       limit: pagination.limit,
       offset: pagination.offset
     })
@@ -223,6 +225,7 @@ class AnalyticsService {
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type}
                     group by (media_id, media_image, media_name, meta_data, album_name)
+                    order by likeCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
         let result = await sequelize.query(rawQuery, {
@@ -252,6 +255,28 @@ class AnalyticsService {
     //   raw: true
     // })
      //console.log(result)
+   
+  }
+
+  async getUserSharePost (params, pagination) {
+
+    let rawQuery = ""
+        let where = {}
+        let employees;
+
+        // let admin_id = params.admin_id
+
+        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
+                    sum(media_type) as shareCount from "User_Post"
+                    where media_type = ${params.media_type}
+                    group by (media_id, media_image, media_name, meta_data, album_name)
+                    order by shareCount desc
+                    limit ${pagination.limit} offset ${pagination.offset} `
+
+        let result = await sequelize.query(rawQuery, {
+            raw: true,
+        });
+        return result
    
   }
 
@@ -322,6 +347,26 @@ class AnalyticsService {
       from "User_Post" inner join "User" on "User".id = "User_Post".user_id
       where media_type = ${params.media_type} and "User".university_code is null
       group by (media_id, media_image, media_name, meta_data, album_name)
+      order by likeCount desc
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
+  }
+
+  async getWithoutUniversityUserSharePost (params, pagination) {
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+     sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id
+      where media_type = ${params.media_type} and "User".university_code is null
+      group by (media_id, media_image, media_name, meta_data, album_name)
+      order by shareCount
       limit ${pagination.limit} offset ${pagination.offset} `
 
     let result = await sequelize.query(rawQuery, {
@@ -340,6 +385,7 @@ class AnalyticsService {
       inner join "University" on "User".university_code = "University".id 
       where media_type = ${params.media_type} and "University".id = ${params.university_id}
       group by (media_id, media_image, media_name, meta_data, album_name)
+      order by likeCount desc
       limit ${pagination.limit} offset ${pagination.offset} `
 
     let result = await sequelize.query(rawQuery, {
@@ -374,6 +420,25 @@ class AnalyticsService {
     // })
     // console.log(result)
     //return result
+  }
+
+  async getUniversityWiseUserSharePost (params, pagination) {
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+      sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id 
+      inner join "University" on "User".university_code = "University".id 
+      where media_type = ${params.media_type} and "University".id = ${params.university_id}
+      group by (media_id, media_image, media_name, meta_data, album_name)
+      order by shareCount DESC
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
   }
 
   // monthly stream services
@@ -429,6 +494,27 @@ class AnalyticsService {
       where media_type = ${params.media_type} and "User".university_code is null and
       "User".created_at BETWEEN '${startDate}' AND '${endDate}'
       group by (media_id, media_image, media_name, meta_data, album_name)
+      order by likeCount desc
+      limit ${pagination.limit} offset ${pagination.offset} `
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
+  }
+
+  async getWithoutUniversityMonthlyUserSharePost (params, startDate, endDate, pagination) {
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+     sum(media_type) as shareCount
+      from "User_Post" inner join "User" on "User".id = "User_Post".user_id
+      where media_type = ${params.media_type} and "User".university_code is null and
+      "User".created_at BETWEEN '${startDate}' AND '${endDate}'
+      group by (media_id, media_image, media_name, meta_data, album_name)
+      order by shareCount
       limit ${pagination.limit} offset ${pagination.offset} `
 
     let result = await sequelize.query(rawQuery, {
@@ -475,6 +561,7 @@ class AnalyticsService {
            where media_type = ${params.media_type} and "University".id = ${params.university_id} AND
           "User".created_at BETWEEN '${startDate}' AND '${endDate}'
            group by (media_id, media_image, media_name, meta_data, album_name)
+           order by likeCount desc
            limit ${pagination.limit} offset ${pagination.offset}`
 
     let result = await sequelize.query(rawQuery, {
@@ -514,6 +601,27 @@ class AnalyticsService {
     // return result
   }
 
+  async getUniversityWiseMonthlyUserSharePost (params, startDate, endDate, pagination) {
+
+    let rawQuery = ""
+
+    rawQuery = `
+    select media_id, media_image , media_name , meta_data, album_name,
+          sum(media_type) as shareCount 
+          from "User_Post" inner join "User" on "User_Post".user_id="User".id
+           inner join "University" on "User".university_code = "University".id 
+           where media_type = ${params.media_type} and "University".id = ${params.university_id} AND
+          "User".created_at BETWEEN '${startDate}' AND '${endDate}'
+           group by (media_id, media_image, media_name, meta_data, album_name)
+           order by shareCount desc
+           limit ${pagination.limit} offset ${pagination.offset}`
+
+    let result = await sequelize.query(rawQuery, {
+        raw: true,
+    });
+    return result
+  }
+
   async getMonthlyUserPost (params, startDate, endDate, pagination) {
 
     let rawQuery = ""
@@ -528,6 +636,7 @@ class AnalyticsService {
                     where media_type = ${params.media_type} AND
                     created_at BETWEEN '${startDate}' AND '${endDate}'
                     group by (media_id, media_image, media_name, meta_data, album_name)
+                    order by likeCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
         let result = await sequelize.query(rawQuery, {
@@ -559,6 +668,29 @@ class AnalyticsService {
     // })
     // // console.log(result)
     // return result
+  }
+
+
+  async getMonthlyUserSharePost (params, startDate, endDate, pagination) {
+
+    let rawQuery = ""
+        let where = {}
+        let employees;
+
+        // let admin_id = params.admin_id
+
+        rawQuery = `select media_id, media_image , media_name , meta_data, album_name, 
+                    sum(media_type) as shareCount from "User_Post"
+                    where media_type = ${params.media_type} AND
+                    created_at BETWEEN '${startDate}' AND '${endDate}'
+                    group by (media_id, media_image, media_name, meta_data, album_name)
+                    order by shareCount desc
+                    limit ${pagination.limit} offset ${pagination.offset} `
+
+        let result = await sequelize.query(rawQuery, {
+            raw: true,
+        });
+        return result
   }
 
   getTotalAppUsage () {
