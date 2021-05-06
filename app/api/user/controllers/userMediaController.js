@@ -121,13 +121,13 @@ class UserMediaController {
           media_type: config.constants.MEDIA_TYPE.TRACK// 1 // req.params.media_type
         }
       })
-      let condition = {}
-      condition.playlist_id = req.params.playlist_id
-      condition.media_id = params.media_id
-      const existData = await userMediaService.getUserMedia(params)
-      if(existData) {
-      util.failureResponse(res, config.constants.CONFLICT, langMsg.alreadyExist)        
-      }
+      // let condition = {}
+      // condition.playlist_id = req.params.playlist_id
+      // condition.media_id = params.media_id
+      // const existData = await userMediaService.getUserMedia(params)
+      // if(existData) {
+      // util.failureResponse(res, config.constants.CONFLICT, langMsg.alreadyExist)        
+      // }
      // console.log('existData - - -',existData)
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
       console.log(playlistData)
