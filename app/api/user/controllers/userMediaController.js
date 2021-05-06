@@ -121,16 +121,24 @@ class UserMediaController {
           media_type: config.constants.MEDIA_TYPE.TRACK// 1 // req.params.media_type
         }
       })
+
+      // Start condition to check duplicate track
       let condition = {}
-      condition.playlist_id = req.params.playlist_id
-      condition.media_id = params.media_id
-      const existData = await userMediaService.getUserMedia(params)
-      if(existData) {
-      util.failureResponse(res, config.constants.CONFLICT, langMsg.alreadyExist)        
+      condition.playlist_id = data.length ? data[0].playlist_id : "";
+      condition.media_id = data.length ? data[0].media_id : "";
+
+      // const existData = await userMediaService.getUserMedia(params)
+
+      const trackData = await commonService.findOne(PlaylistTrack, condition,
+        ['id', 'playlist_id', 'media_id']);
+
+      if(trackData) {
+        util.failureResponse(res, config.constants.CONFLICT, langMsg.alreadyExist);
+        return;
       }
-     // console.log('existData - - -',existData)
+      // End
       const playlistData = await commonService.bulkCreate(PlaylistTrack, params)
-      console.log(playlistData)
+      
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
     } catch (err) {
       console.log(err)
