@@ -124,14 +124,14 @@ class UserMediaController {
 
       // Start condition to check duplicate track
       let condition = {}
-      condition.playlist_id = data.length ? data[0].playlist_id : "";
+      condition.playlist_id = req.params.playlist_id
       condition.media_id = data.length ? data[0].media_id : "";
 
       // const existData = await userMediaService.getUserMedia(params)
-
+      console.log('condition - - - ',condition)
       const trackData = await commonService.findOne(PlaylistTrack, condition,
-        ['id', 'playlist_id', 'media_id']);
-
+        ['playlist_id', 'media_id']);
+       
       if(trackData) {
         util.failureResponse(res, config.constants.CONFLICT, langMsg.alreadyExist);
         return;
