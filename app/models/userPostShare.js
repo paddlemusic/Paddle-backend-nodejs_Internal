@@ -7,18 +7,18 @@ const PostShare = sequelize.define('Post_Share', {
   post_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    unique: false,
-    primaryKey: true
+    unique: false
+    // primaryKey: true
   },
   shared_by: {
     type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true
+    allowNull: false
+    // primaryKey: true
   },
   shared_with: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    primaryKey: true
+    allowNull: true
+    // primaryKey: true
   }
 },
 {
@@ -42,6 +42,6 @@ PostShare.belongsTo(UserPost, {
   onUpdate: 'Cascade'
 })
 
-// PostShare.sync({ alter: true })
+PostShare.sync({ force: true })
 
 module.exports = PostShare
