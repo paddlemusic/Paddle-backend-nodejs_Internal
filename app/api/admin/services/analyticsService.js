@@ -785,7 +785,12 @@ class AnalyticsService {
 
   async getWeeks (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if (universityId) {
+    if(universityId == -1) {
+      console.log('universityId in -1 - - - ', universityId)
+      subQuery = ` AND university_id is null`
+    }
+    else if (universityId !=0 ) {
+      console.log('universityId - - - ', universityId)
       subQuery = ` AND university_id = ${universityId} `
     }
     const rawQuery =
@@ -811,7 +816,12 @@ class AnalyticsService {
 
   async getAppOpenDataWeekly (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if (universityId) {
+    if(universityId == -1) {
+      console.log('universityId in -1 - - - ', universityId)
+      subQuery = ` AND university_id is null`
+    }
+    else if (universityId !=0 ) {
+      console.log('universityId - - - ', universityId)
       subQuery = ` AND university_id = ${universityId} `
     }
     const rawQuery =
