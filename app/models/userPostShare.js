@@ -42,6 +42,6 @@ PostShare.belongsTo(UserPost, {
   onUpdate: 'Cascade'
 })
 
-PostShare.sync({ alter: true  })
+PostShare.sync({ alter: false  })
 
 module.exports = PostShare
