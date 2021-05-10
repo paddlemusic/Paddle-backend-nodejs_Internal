@@ -570,10 +570,8 @@ class AnalyticsController {
     try {
       const pagination = commonService.getPagination(req.query.page, req.query.pageSize)
       // req.query.university_id = Number(req.query.university_id) >= 1 ? req.query.university_id : null
-      if(req.query.university_id == 0) {
+      if(req.query.university_id == -1) {
         req.query.university_id = null
-      }else if(req.query.university_id == -1) {
-        req.query.university_id = 0
       }
       let startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
       let count = 0
