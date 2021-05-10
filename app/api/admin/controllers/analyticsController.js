@@ -584,6 +584,7 @@ class AnalyticsController {
         datesInMonth.push(date)
         startDate = date
       }
+      console.log('daysInMonth - - - ',daysInMonth)
       const getStats = await analyticsService.getStatsData(req.query.university_id, datesInMonth, req.query.open_time, pagination)
       console.log('all over', getStats)
       const countsData = getStats.map(post => {
