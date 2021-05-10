@@ -26,7 +26,7 @@ const PostShare = sequelize.define('Post_Share', {
   underscored: true
 })
 
-PostShare.removeAttribute('id')
+//PostShare.removeAttribute('id')
 
 PostShare.belongsTo(User, {
   sourceKey: 'id',
@@ -42,6 +42,6 @@ PostShare.belongsTo(UserPost, {
   onUpdate: 'Cascade'
 })
 
-PostShare.sync({ force: true })
+PostShare.sync({ alter: true  })
 
 module.exports = PostShare

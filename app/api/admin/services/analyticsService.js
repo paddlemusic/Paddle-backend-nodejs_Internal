@@ -755,10 +755,12 @@ class AnalyticsService {
         [Op.gte]: openTime
       }
     }
-
-    if (!(universityId === null)) {
+    if(universityId != 0) {
       where.university_id = universityId
     }
+    // if (!(universityId === null)) {
+    //   where.university_id = universityId
+    // }
     console.log('where condition', where)
     const result = await UserStats.findAll({
       where: where,
