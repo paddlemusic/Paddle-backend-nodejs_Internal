@@ -184,7 +184,7 @@ class HomePageController {
       const myfollowingData = await userService.getUserFollowing(req.decoded)
       const myfollowingIDs = myfollowingData.map(data => { return data.user_id })
       console.log('myfollowingIDs is: ', myfollowingIDs)
-
+      myfollowingIDs.push(req.decoded.id);
       const postData = await homeService.getUserPost(myfollowingIDs, req.decoded.id, pagination)
       const postIds = postData.rows.map(post => { return post.id })
       console.log('postIds', postIds)
