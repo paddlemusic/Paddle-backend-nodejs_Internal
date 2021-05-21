@@ -675,12 +675,14 @@ class AnalyticsController {
       const daysInMonth = moment(startDate).daysInMonth()
       const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
 
-      const getWeeks = await analyticsService.getWeeks(startDate, endDate, req.query.university_id)
-      const weekDayStartingDate = getWeeks[1].rows.map(post => {
-        return moment(post.weekdate).format('YYYY-MM-DD')
-      })
+      // const getWeeks = await analyticsService.getWeeks(startDate, endDate, req.query.university_id)
+      // const weekDayStartingDate = getWeeks[1].rows.map(post => {
+      //   return moment(post.weekdate).format('YYYY-MM-DD')
+      // })
 
-      const weekCount = weekDayStartingDate.length
+      // const weekCount = weekDayStartingDate.length
+
+      const weekCount = 4;
 
       const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
 
@@ -690,7 +692,7 @@ class AnalyticsController {
         weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ?
           (weeklyUsersCount[[weekData.user_id]] + 1) :
           (1)
-        if (Number(weeklyUsersCount[[weekData.user_id]]) === Number(weekCount)) {
+        if (Number(weeklyUsersCount[[weekData.user_id]]) >= weekCount) {
           usersCount++
         }
       })
