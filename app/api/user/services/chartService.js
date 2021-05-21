@@ -83,7 +83,7 @@ class ChartService {
     })
   }
 
-  fetchChart (universityId, mediaType, pagination) {
+  fetchChartOld (universityId, mediaType, pagination) {
     return new Promise((resolve, reject) => {
       StreamStats.findAndCountAll({
         where: {
@@ -102,6 +102,42 @@ class ChartService {
     })
   }
 
+  async fetchChart (universityId, mediaType, pagination) {
+    const date = moment().utc().subtract(15, 'days').format('YYYY-MM-DD');
+    const rawQuery =
+             `select
+             "media_id",
+             "media_type",
+             "media_metadata",
+             "play_uri",
+             "artist_id",
+             "album_id",
+             sum("count") as "overall_count"
+           from
+             "Stream_Stats" as "Stream_Stats"
+           where
+             "Stream_Stats"."university_id" = ${universityId}
+             and "Stream_Stats"."media_type" = ${mediaType}
+             and "Stream_Stats"."date" >= '${date}'
+           group by
+             "media_id",
+             "media_type",
+             "media_metadata",
+             "play_uri",
+             "artist_id",
+             "album_id"
+           order by
+             "overall_count" desc
+           limit ${pagination.limit} offset ${pagination.offset}`;
+
+    const data = await sequelize.query(rawQuery, {
+      type: Sequelize.QueryTypes.SELECT,
+      raw: true
+      // bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
+    })
+    return data;
+  }
+
   fetchArtistsChart (universityId, pagination) {
     return new Promise((resolve, reject) => {
       UniversityTrending.findAndCountAll({
@@ -116,6 +152,24 @@ class ChartService {
       }).then(result => resolve(result))
         .catch(err => reject(err))
     })
+  }
+
+  async fetchChartCount (universityId, mediaType) {
+    const date = moment().utc().subtract(15, 'days').format('YYYY-MM-DD');
+    const rawQuery = `select
+    count(distinct media_id) 
+  from
+    "Stream_Stats" as "Stream_Stats"
+  where
+    "Stream_Stats"."university_id" = ${universityId}
+    and "Stream_Stats"."media_type" = ${mediaType}
+    and "Stream_Stats"."date" >= '${date}'`;
+
+    const data =  await sequelize.query(rawQuery, {
+      type: Sequelize.QueryTypes.SELECT,
+      raw: true
+    })
+    return data;
   }
 }
 

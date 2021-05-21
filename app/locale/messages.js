@@ -31,14 +31,14 @@ module.exports = {
     failed: 'Error occured.',
     changePassowrd: 'Password change successfully',
     incorrectPassword: 'Password not correct',
-    invalidPasscode: 'Signup failed! Passcode did not match.',
+    invalidPasscode: 'Sign up failed! Access Code did not match.',
     trackAdded: 'Track added successfully',
     artistAdded: 'Artist added successfully',
     trackDeleted: 'Track deleted successfully',
     artistDeleted: 'Artist deleted successfully',
     logOut: 'User logged out successfully',
     notAllowed: 'Not allowed.',
-    passcodeOremail: 'Signup failed! Either Passcode or University email address is required.',
+    passcodeOremail: 'Sign up failed! Either Access Code or University email address is required.',
     alreadyExist: 'Data already exist'
   }
 }

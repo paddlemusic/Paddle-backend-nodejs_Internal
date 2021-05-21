@@ -70,8 +70,11 @@ class ChartController {
       const university = await commonService.findOne(University, { id: req.decoded.university_code }, ['id', 'is_active'])
       console.log(university)
       if (university && university.is_active) {
-        const result = await chartService.fetchChart(university.id, chartType, pagination)
-        util.successResponse(res, config.constants.SUCCESS, langMsg.success, result)
+        const result = await chartService.fetchChart(university.id, chartType, pagination);
+        const data = await chartService.fetchChartCount(university.id, chartType);
+        const count = data && data.length ? data[0].count : 0;
+        const  finalResult = {count: count, rows: result};
+        util.successResponse(res, config.constants.SUCCESS, langMsg.success, finalResult)
       } else {
         util.failureResponse(res, config.constants.FORBIDDEN, langMsg.notAllowed)
       }
