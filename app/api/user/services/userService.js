@@ -257,7 +257,7 @@ class UserService {
   getFollowBack (id, followers) {
     return new Promise((resolve, reject) => {
       UserFollower.findAll({
-        where: { user_id: followers, follower_id: id },
+        where: { user_id: {[Op.in] : followers }, follower_id: id },
         attributes: [Sequelize.literal('"followed"."id","followed"."name","followed"."profile_picture"')],
         raw: true,
         include: [{
