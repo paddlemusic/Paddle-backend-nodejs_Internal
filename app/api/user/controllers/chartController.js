@@ -51,6 +51,7 @@ class ChartController {
         validationResult.album.university_id = universityCode
         validationResult.album.media_metadata.artist_name = validationResult.artist.media_metadata.name
         validationResult.album.date = date
+        validationResult.album.album_type = validationResult.album.media_metadata.album_type;
         param.push(validationResult.album)
       }
       await chartService.submitStramingStats(param)
