@@ -74,6 +74,9 @@ const auth = require('../../../middleware/authenticate')
  *                    media_id:
  *                     type: string
  *                     required: true
+ *                    album_type:
+ *                     type: string
+ *                     required: false
  *                    media_metadata:
  *                      type: object
  *                      properties:
