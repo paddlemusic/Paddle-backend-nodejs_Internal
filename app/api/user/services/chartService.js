@@ -45,7 +45,8 @@ class ChartService {
                 "date",
                 play_uri,
                 artist_id,
-                album_id)
+                album_id,
+                album_type)
               VALUES ${values} 
               ON CONFLICT 
                 (university_id,
