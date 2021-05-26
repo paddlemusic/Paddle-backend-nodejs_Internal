@@ -68,15 +68,15 @@ const auth = require('../../../middleware/authenticate')
  *                          type: string
  *                         image:
  *                           type: string
+ *                         album_type:
+ *                           type: string
+ *                           required: false
  *               album:
  *                 type: object
  *                 properties:
  *                    media_id:
  *                     type: string
  *                     required: true
- *                    album_type:
- *                     type: string
- *                     required: false
  *                    media_metadata:
  *                      type: object
  *                      properties:
@@ -84,6 +84,9 @@ const auth = require('../../../middleware/authenticate')
  *                          type: string
  *                         image:
  *                           type: string
+ *                          album_type:
+ *                            type: string
+ *                            required: false
  *     produces:
  *       - application/json
  */
