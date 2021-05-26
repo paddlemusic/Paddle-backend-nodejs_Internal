@@ -47,10 +47,11 @@ class ChartController {
         validationResult.artist.date = date
         param.push(validationResult.artist)
       }
-      if (validationResult.album && validationResult.album_type && validationResult.album_type !== 'single') {
+      if (validationResult.album && validationResult.album.media_metadata && validationResult.album.media_metadata.album_type && validationResult.album.media_metadata.album_type !== 'single') {
         validationResult.album.university_id = universityCode
         validationResult.album.media_metadata.artist_name = validationResult.artist.media_metadata.name
         validationResult.album.date = date
+        validationResult.album.album_type = validationResult.album.media_metadata.album_type;
         param.push(validationResult.album)
       }
       await chartService.submitStramingStats(param)
