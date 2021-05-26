@@ -46,6 +46,10 @@ const StreamStats = sequelize.define('Stream_Stats', {
     allowNull: false,
     defaultValue: 1,
     validate: { min: 1 }
+  },
+  album_type: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 },
 {
