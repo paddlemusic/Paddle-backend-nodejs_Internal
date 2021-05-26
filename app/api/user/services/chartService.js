@@ -32,7 +32,7 @@ class ChartService {
     let values = ''
     params.forEach(param => {
       if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI || ''}','${param.artist_id || ''}','${param.album_id || ''}')`// added play_uri,artist_id,album_id
+      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI || ''}','${param.artist_id || ''}','${param.album_id || ''}', '${param.album_type || ''}')`// added play_uri,artist_id,album_id
       values += value
     })
     const rawQuery =
