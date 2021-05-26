@@ -48,7 +48,7 @@ class HomePageController {
       const postShareParams = []
 
       validationResult.shared_with.forEach(shareId => {
-        if (Number(req.decoded.id) !== Number(req.body.shareId)) {
+        if (Number(req.decoded.id) !== Number(shareId)) {
           postShareParams.push({
             post_id: createPostData.id,
             shared_by: req.decoded.id,
