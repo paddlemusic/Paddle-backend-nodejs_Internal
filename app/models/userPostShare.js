@@ -42,6 +42,14 @@ PostShare.belongsTo(UserPost, {
   onUpdate: 'Cascade'
 })
 
+PostShare.belongsTo(User, {
+  as: "sharedwith",
+  sourceKey: 'id',
+  foreignKey: 'shared_with',
+  onDelete: 'Cascade',
+  onUpdate: 'Cascade'
+})
+
 PostShare.sync({ alter: false  })
 
 module.exports = PostShare
