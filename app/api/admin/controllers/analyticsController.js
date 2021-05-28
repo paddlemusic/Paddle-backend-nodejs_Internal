@@ -18,6 +18,7 @@ const Op = Sequelize.Op
 const commonService = new CommonService()
 // const userService = new UserService()
 const analyticsService = new AnalyticsService()
+const csvToJson = require("csvtojson");
 
 class AnalyticsController {
   // optimized code for analytics
@@ -852,6 +853,19 @@ class AnalyticsController {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }
+
+  async createAppOpenData (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const csvFilePath = 'file-path';
+      const userStatsData = await csvToJson().fromFile(csvFilePath);
+      await commonService.bulkCreate(UserStats, userStatsData, false);
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch(error) {
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
 }
 
 module.exports = AnalyticsController
