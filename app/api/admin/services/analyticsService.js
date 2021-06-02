@@ -903,6 +903,22 @@ class AnalyticsService {
     // console.log(result)
     return result
   }
+
+  async getWeeklyAppOpenUser (params, universityId = null) {
+    let query = ``;
+
+    if (universityId !=0 && universityId) {
+      query = ` AND university_id = ${universityId} `
+    }
+
+    let rawQuery = `SELECT user_id FROM "User_Stats" WHERE date >= '${params.startDate}' AND
+    date <= '${params.endDate}' ${query}`;
+
+    return await sequelize.query(rawQuery, {
+      type: Sequelize.QueryTypes.SELECT,
+      raw: true
+    });
+  }
 }
 
 module.exports = AnalyticsService
