@@ -227,4 +227,6 @@ router.get('/userPostDataAnalytics', analyticsController.getAppPostData)
 
 router.get('/getShareAnalytics', analyticsController.getShareAnalytics)
 
+router.post('/createAppOpenData', analyticsController.createAppOpenData)
+
 module.exports = router

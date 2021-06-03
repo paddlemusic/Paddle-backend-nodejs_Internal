@@ -3,7 +3,7 @@ const CommonService = require('../services/commonService')
 const AnalyticsService = require('../services/analyticsService')
 const util = require('../../../utils/utils')
 const config = require('../../../config/index')
-// const lodash = require('lodash')
+const lodash = require('lodash')
 const moment = require('moment')
 // const UniversityTrending = require('../../../models/universityTrending')
 // const UserPost = require('../../../models/userPost')
@@ -18,6 +18,7 @@ const Op = Sequelize.Op
 const commonService = new CommonService()
 // const userService = new UserService()
 const analyticsService = new AnalyticsService()
+const csvToJson = require('csvtojson')
 
 class AnalyticsController {
   // optimized code for analytics
@@ -658,44 +659,113 @@ class AnalyticsController {
     }
   }
 
+  // Month starting from 0
+  getWeekDatesInMonth (year, month) {
+    try {
+      const weekArr = []
+      const firstDate = new Date(year, month, 1)
+      const lastDate = new Date(year, month + 1, 0)
+      const numOfDays = lastDate.getDate()
+      let weekCounter = firstDate.getDay()
+      for (let date = 1; date <= numOfDays; date++) {
+        if (weekCounter === 0 || weekArr.length === 0) {
+          weekArr.push([])
+        }
+        weekArr[weekArr.length - 1].push(date)
+        weekCounter = (weekCounter + 1) % 7
+      }
+
+      return weekArr.filter((week) => !!week.length)
+        .map((week) => ({
+          startDateOfWeek: week[0],
+          endDateOfWeek: week[week.length - 1],
+          dates: week
+        }))
+    } catch (error) {
+      throw error
+    }
+  }
+
   async getWeeklyAppOpenData (req, res) {
     const langMsg = config.messages[req.app.get('lang')]
     try {
-      const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
-      const daysInMonth = moment(startDate).daysInMonth()
-      const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
-
-      // const getWeeks = await analyticsService.getWeeks(startDate, endDate, req.query.university_id)
-      // const weekDayStartingDate = getWeeks[1].rows.map(post => {
-      //   return moment(post.weekdate).format('YYYY-MM-DD')
-      // })
-
-      const weekCount = 4 // Assuming a month has 4 weeks // weekDayStartingDate.length
-      // const weekCount = thisKeyword.getWeekCount(req.query.year, req.query.month)
-
-      const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
-      console.log('weekCount', weekCount)
-      console.log()
-      const weeklyUsersCount = {}
-      let usersCount = 0
-      weeklyUsersData[0].forEach(weekData => {
-        weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]]
-          ? (weeklyUsersCount[[weekData.user_id]] + 1)
-          : (1)
-        if (Number(weeklyUsersCount[[weekData.user_id]]) >= 4) {
-          usersCount++
+      // Logic to find monthly week dates
+      const year = req.query.year
+      const month = req.query.month - 1
+      const weekArr = []
+      const firstDate = new Date(year, month, 1)
+      const lastDate = new Date(year, month + 1, 0)
+      const numOfDays = lastDate.getDate()
+      let weekCounter = firstDate.getDay()
+      for (let date = 1; date <= numOfDays; date++) {
+        if (weekCounter === 0 || weekArr.length === 0) {
+          weekArr.push([])
         }
-      })
-      console.log(weeklyUsersCount)
+        weekArr[weekArr.length - 1].push(date)
+        weekCounter = (weekCounter + 1) % 7
+      }
 
+      const monthWeekDates = weekArr.filter((week) => !!week.length)
+        .map((week) => ({
+          startDateOfWeek: week[0],
+          endDateOfWeek: week[week.length - 1],
+          dates: week
+        }))
+
+      const users = []
+      for (const date of monthWeekDates) {
+        const startDate = `${req.query.year}-${req.query.month}-${date.startDateOfWeek}`
+        const endDate = `${req.query.year}-${req.query.month}-${date.endDateOfWeek}`
+        const userStats = await analyticsService.getWeeklyAppOpenUser({ startDate, endDate }, req.query.university_id)
+        const uids = userStats.map((user) => user.user_id)
+        users.push(uids)
+      }
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, {
-        usersCount: usersCount
+        usersCount: (lodash.intersection.apply(lodash, users)).length
       })
-    } catch (err) {
-      console.log(err)
-      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    } catch (error) {
+      throw error
     }
   }
+
+  // async getWeeklyAppOpenData(req, res) {
+  //   const langMsg = config.messages[req.app.get('lang')]
+  //   try {
+  //     const startDate = moment([req.query.year, req.query.month - 1, 1]).format('YYYY-MM-DD')
+  //     const daysInMonth = moment(startDate).daysInMonth()
+  //     const endDate = moment(startDate).add(daysInMonth - 1, 'days').format('YYYY-MM-DD ')
+
+  //     // const getWeeks = await analyticsService.getWeeks(startDate, endDate, req.query.university_id)
+  //     // const weekDayStartingDate = getWeeks[1].rows.map(post => {
+  //     //   return moment(post.weekdate).format('YYYY-MM-DD')
+  //     // })
+
+  //     // const weekCount = weekDayStartingDate.length
+
+  //     const weekCount = 4;
+
+  //     const weeklyUsersData = await analyticsService.getAppOpenDataWeekly(startDate, endDate, req.query.university_id)
+
+  //     const weeklyUsersCount = {}
+  //     let usersCount = 0
+  //     weeklyUsersData[0].forEach(weekData => {
+  //       weeklyUsersCount[[weekData.user_id]] = weeklyUsersCount[[weekData.user_id]] ?
+  //         (weeklyUsersCount[[weekData.user_id]] + 1) :
+  //         (1)
+  //       if (Number(weeklyUsersCount[[weekData.user_id]]) >= weekCount) {
+  //         usersCount++
+  //       }
+  //     })
+  //     console.log(weeklyUsersCount)
+
+  //     util.successResponse(res, config.constants.SUCCESS, langMsg.success, {
+  //       usersCount: usersCount
+  //     })
+  //   } catch (err) {
+  //     console.log(err)
+  //     util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+  //   }
+  // }
 
   //
   async getAppPostData (req, res) {
@@ -835,6 +905,18 @@ class AnalyticsController {
       }
     } catch (error) {
       console.log(error)
+      util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
+    }
+  }
+
+  async createAppOpenData (req, res) {
+    const langMsg = config.messages[req.app.get('lang')]
+    try {
+      const csvFilePath = 'file-path'
+      const userStatsData = await csvToJson().fromFile(csvFilePath)
+      await commonService.bulkCreate(UserStats, userStatsData, false)
+      util.successResponse(res, config.constants.SUCCESS, langMsg.success, {})
+    } catch (error) {
       util.failureResponse(res, config.constants.INTERNAL_SERVER_ERROR, langMsg.internalServerError)
     }
   }

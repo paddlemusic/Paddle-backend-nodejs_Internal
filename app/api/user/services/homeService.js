@@ -15,7 +15,7 @@ const moment = require('moment')
 // const userService = new UserService()
 
 class HomeService {
-  getUserPost (followingId, userId, pagination) {
+  getUserPostOld (followingId, userId, pagination) {
     console.log('ffffffffffff', followingId, userId)
     return new Promise((resolve, reject) => {
       PostShare.findAndCountAll({
@@ -44,6 +44,46 @@ class HomeService {
           attributes: []
           // as: 'post'
         }, {
+          model: UserPost,
+          required: true,
+          attributes: []
+        }]
+      }).then(result => resolve(result))
+        .catch(err => reject(err))
+    })
+  }
+
+  getUserPost (followingId, userId, pagination) {
+    console.log('ffffffffffff', followingId, userId)
+    return new Promise((resolve, reject) => {
+      PostShare.findAndCountAll({
+        limit: pagination.limit,
+        offset: pagination.offset,
+        where: {
+          [Op.and]: { [Op.or]: [ { shared_by: followingId }, { shared_with: userId } ], created_at: {
+            [Op.gte]: moment().subtract(5, 'days').toDate()
+          }},
+        },
+        order: [
+          ['created_at', 'DESC']
+        ],
+        //,
+        attributes: [Sequelize.literal(`"User_Post"."id","user_id","User"."name","User"."profile_picture","media_id","caption","shared_with",
+        "media_image","media_name","meta_data","meta_data2","media_type","caption", "like_count","play_uri","artist_id","album_id", album_name, "sharedwith"."name" as shared_with_name, "sharedwith"."profile_picture" as shared_with_profile_pic`)], // in response added playURI,artist_id,album_id
+        raw: true,
+        include: [{
+          model: User,
+          required: true,
+          attributes: []
+          // as: 'post'
+        }, 
+        {
+          model: User,
+          required: false,
+          attributes: [],
+          as: 'sharedwith'
+        },
+        {
           model: UserPost,
           required: true,
           attributes: []

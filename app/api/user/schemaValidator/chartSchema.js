@@ -21,7 +21,8 @@ const schema = {
       media_type: Joi.number().default(2),
       media_metadata: Joi.object().keys({
         name: Joi.string().trim().allow('').allow(null),
-        image: Joi.string().trim().allow('').allow(null)
+        image: Joi.string().trim().allow('').allow(null),
+        album_type: Joi.string().trim().allow('').allow(null)
       })
     }),
     album: Joi.object().keys({
@@ -29,8 +30,9 @@ const schema = {
       media_type: Joi.number().default(3),
       media_metadata: Joi.object().keys({
         name: Joi.string().trim().allow('').allow(null),
-        image: Joi.string().trim().allow('').allow(null)
-      })
+        image: Joi.string().trim().allow('').allow(null),
+        album_type: Joi.string().trim().allow('').allow(null)
+      }),
     }).allow(null).allow('').optional()
   })
 }

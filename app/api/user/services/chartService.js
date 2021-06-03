@@ -32,7 +32,7 @@ class ChartService {
     let values = ''
     params.forEach(param => {
       if (values.length) { values += ',' }
-      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI || ''}','${param.artist_id || ''}','${param.album_id || ''}')`// added play_uri,artist_id,album_id
+      const value = `(${param.university_id} , '${param.media_id}', ${param.media_type}, '${JSON.stringify(param.media_metadata)}', '${param.date}','${param.playURI || ''}','${param.artist_id || ''}','${param.album_id || ''}', '${param.album_type || ''}')`// added play_uri,artist_id,album_id
       values += value
     })
     const rawQuery =
@@ -45,7 +45,8 @@ class ChartService {
                 "date",
                 play_uri,
                 artist_id,
-                album_id)
+                album_id,
+                album_type)
               VALUES ${values} 
               ON CONFLICT 
                 (university_id,
@@ -104,6 +105,11 @@ class ChartService {
 
   async fetchChart (universityId, mediaType, pagination) {
     const date = moment().utc().subtract(15, 'days').format('YYYY-MM-DD');
+    let albumQuery = ``;
+    if(mediaType == 3) {
+      albumQuery = `and ("Stream_Stats"."media_metadata"->>'album_type' IS NOT NULL) and "Stream_Stats"."media_metadata"->>'album_type' != 'single'`;
+    }
+    // validationResult.album.media_metadata.album_type && validationResult.album.media_metadata.album_type !== 'single'
     const rawQuery =
              `select
              "media_id",
@@ -119,6 +125,7 @@ class ChartService {
              "Stream_Stats"."university_id" = ${universityId}
              and "Stream_Stats"."media_type" = ${mediaType}
              and "Stream_Stats"."date" >= '${date}'
+             ${albumQuery}
            group by
              "media_id",
              "media_type",

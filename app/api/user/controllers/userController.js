@@ -585,8 +585,13 @@ class UserController {
       const followersID = followerData.rows.map(follower => { return follower.id })
       const followBackData = await userService.getFollowBack(req.decoded.id, followersID)
       followerData.rows.forEach((follower, index) => {
+        followerData.rows[index].follow_back = false;
+        let isFollow = false;
         followBackData.forEach(followBack => {
-          followerData.rows[index].follow_back = follower.id === followBack.id
+          if(!isFollow && follower.id === followBack.id) {
+            isFollow = true;
+            followerData.rows[index].follow_back = true;
+          }
         })
       })
       util.successResponse(res, config.constants.SUCCESS, langMsg.success, followerData)
