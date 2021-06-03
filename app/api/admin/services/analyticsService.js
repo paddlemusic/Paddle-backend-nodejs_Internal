@@ -213,14 +213,13 @@ class AnalyticsService {
   }
 
   async getUserPost (params, pagination) {
+    let rawQuery = ''
+    const where = {}
+    let employees
 
-    let rawQuery = ""
-        let where = {}
-        let employees;
+    // let admin_id = params.admin_id
 
-        // let admin_id = params.admin_id
-
-        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
+    rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
                     sum(like_count) as likeCount, 
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type}
@@ -228,10 +227,10 @@ class AnalyticsService {
                     order by likeCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
-        let result = await sequelize.query(rawQuery, {
-            raw: true,
-        });
-        return result
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
+    return result
     // const result = await UserPost.findAll({
     //   where: {
     //     media_type: params.media_type
@@ -254,30 +253,27 @@ class AnalyticsService {
     //   offset: pagination.offset,
     //   raw: true
     // })
-     //console.log(result)
-   
+    // console.log(result)
   }
 
   async getUserSharePost (params, pagination) {
+    let rawQuery = ''
+    const where = {}
+    let employees
 
-    let rawQuery = ""
-        let where = {}
-        let employees;
+    // let admin_id = params.admin_id
 
-        // let admin_id = params.admin_id
-
-        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
+    rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type}
                     group by (media_id, media_image, media_name, meta_data, album_name)
                     order by shareCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
-        let result = await sequelize.query(rawQuery, {
-            raw: true,
-        });
-        return result
-   
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
+    return result
   }
 
   async getUserPostUniversityWiseCount (params) {
@@ -338,8 +334,7 @@ class AnalyticsService {
   }
 
   async getWithoutUniversityUserPost (params, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -350,15 +345,14 @@ class AnalyticsService {
       order by likeCount desc
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
   async getWithoutUniversityUserSharePost (params, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -369,14 +363,14 @@ class AnalyticsService {
       order by shareCount
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
   async getUniversityWiseUserPost (params, pagination) {
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -388,9 +382,9 @@ class AnalyticsService {
       order by likeCount desc
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
     // const result = await UserPost.findAll({
     //   where: {
@@ -419,11 +413,11 @@ class AnalyticsService {
     //   }]
     // })
     // console.log(result)
-    //return result
+    // return result
   }
 
   async getUniversityWiseUserSharePost (params, pagination) {
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -435,9 +429,9 @@ class AnalyticsService {
       order by shareCount DESC
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
@@ -477,15 +471,14 @@ class AnalyticsService {
         attributes: []
         // as: 'post'
       }],
-      group: ['media_id', 'user_id'],
+      group: ['media_id', 'user_id']
     })
     // console.log(result)
     return result
   }
 
   async getWithoutUniversityMonthlyUserPost (params, startDate, endDate, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -497,15 +490,14 @@ class AnalyticsService {
       order by likeCount desc
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
   async getWithoutUniversityMonthlyUserSharePost (params, startDate, endDate, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -517,9 +509,9 @@ class AnalyticsService {
       order by shareCount
       limit ${pagination.limit} offset ${pagination.offset} `
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
@@ -542,16 +534,14 @@ class AnalyticsService {
         attributes: []
         // as: 'post'
       }],
-      group: ['media_id', 'user_id'],
+      group: ['media_id', 'user_id']
     })
     // console.log(result)
     return result
   }
 
-
   async getUniversityWiseMonthlyUserPost (params, startDate, endDate, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -564,9 +554,9 @@ class AnalyticsService {
            order by likeCount desc
            limit ${pagination.limit} offset ${pagination.offset}`
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
     // const result = await UserPost.findAll({
     //   where: {
@@ -602,8 +592,7 @@ class AnalyticsService {
   }
 
   async getUniversityWiseMonthlyUserSharePost (params, startDate, endDate, pagination) {
-
-    let rawQuery = ""
+    let rawQuery = ''
 
     rawQuery = `
     select media_id, media_image , media_name , meta_data, album_name,
@@ -616,21 +605,20 @@ class AnalyticsService {
            order by shareCount desc
            limit ${pagination.limit} offset ${pagination.offset}`
 
-    let result = await sequelize.query(rawQuery, {
-        raw: true,
-    });
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
     return result
   }
 
   async getMonthlyUserPost (params, startDate, endDate, pagination) {
+    let rawQuery = ''
+    const where = {}
+    let employees
 
-    let rawQuery = ""
-        let where = {}
-        let employees;
+    // let admin_id = params.admin_id
 
-        // let admin_id = params.admin_id
-
-        rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
+    rawQuery = `select media_id, media_image , media_name , meta_data, album_name,
                     sum(like_count) as likeCount, 
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type} AND
@@ -639,10 +627,10 @@ class AnalyticsService {
                     order by likeCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
-        let result = await sequelize.query(rawQuery, {
-            raw: true,
-        });
-        return result
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
+    return result
     // const result = await UserPost.findAll({
     //   where: {
     //     created_at: {
@@ -670,16 +658,14 @@ class AnalyticsService {
     // return result
   }
 
-
   async getMonthlyUserSharePost (params, startDate, endDate, pagination) {
+    let rawQuery = ''
+    const where = {}
+    let employees
 
-    let rawQuery = ""
-        let where = {}
-        let employees;
+    // let admin_id = params.admin_id
 
-        // let admin_id = params.admin_id
-
-        rawQuery = `select media_id, media_image , media_name , meta_data, album_name, 
+    rawQuery = `select media_id, media_image , media_name , meta_data, album_name, 
                     sum(media_type) as shareCount from "User_Post"
                     where media_type = ${params.media_type} AND
                     created_at BETWEEN '${startDate}' AND '${endDate}'
@@ -687,10 +673,10 @@ class AnalyticsService {
                     order by shareCount desc
                     limit ${pagination.limit} offset ${pagination.offset} `
 
-        let result = await sequelize.query(rawQuery, {
-            raw: true,
-        });
-        return result
+    const result = await sequelize.query(rawQuery, {
+      raw: true
+    })
+    return result
   }
 
   getTotalAppUsage () {
@@ -755,7 +741,7 @@ class AnalyticsService {
         [Op.gte]: openTime
       }
     }
-    if(universityId != 0) {
+    if (universityId != 0) {
       where.university_id = universityId
     }
     // if (!(universityId === null)) {
@@ -785,11 +771,10 @@ class AnalyticsService {
 
   async getWeeks (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if(universityId == -1) {
+    if (universityId == -1) {
       console.log('universityId in -1 - - - ', universityId)
-      subQuery = ` AND university_id is null`
-    }
-    else if (universityId !=0 ) {
+      subQuery = ' AND university_id is null'
+    } else if (universityId != 0) {
       console.log('universityId - - - ', universityId)
       subQuery = ` AND university_id = ${universityId} `
     }
@@ -801,12 +786,11 @@ class AnalyticsService {
            where
              date >= '${startDate}'
              and date <= '${endDate}'
-             ${subQuery}
            group by
              1
            order by
              1`
-    // console.log(rawQuery)
+    console.log(rawQuery)
     const data = await sequelize.query(rawQuery, {
       // bind: [params.user_id, params.university_id, params.date, params.app_usage_time, 1]
     })
@@ -816,11 +800,10 @@ class AnalyticsService {
 
   async getAppOpenDataWeekly (startDate, endDate, universityId = null) {
     let subQuery = ''
-    if(universityId == -1) {
+    if (universityId == -1) {
       console.log('universityId in -1 - - - ', universityId)
-      subQuery = ` AND university_id is null`
-    }
-    else if (universityId !=0 ) {
+      subQuery = ' AND university_id is null'
+    } else if (universityId != 0) {
       console.log('universityId - - - ', universityId)
       subQuery = ` AND university_id = ${universityId} `
     }
@@ -837,6 +820,7 @@ class AnalyticsService {
                 weekdate, user_id`
     const data = await sequelize.query(rawQuery, {
     })
+    console.log(data)
     return data
   }
 
