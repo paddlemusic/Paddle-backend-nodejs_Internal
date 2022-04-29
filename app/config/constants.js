@@ -1,0 +1,31 @@
+module.exports = {
+  apiVersion: 1,
+  apiVersion2: 2,
+  SUCCESS: 200,
+  CREATED: 201,
+  ACCEPTED: 202,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  INTERNAL_SERVER_ERROR: 500,
+  ROLE: {
+    USER: 1,
+    ADMIN: 2
+  },
+  MEDIA_TYPE: {
+    TRACK: 1,
+    ARTIST: 2,
+    ALBUM: 3
+  },
+  USER_MEDIA_TYPE: {
+    TOP_TRACKS_ARTISTS: 1,
+    SAVED_TRACKS_ARTIST: 2
+  },
+  PASSCODE: 'KEYTOPADDLE',
+  OTPType: {
+    VERIFY_ACCOUNT: 1,
+    RESET_PASSWORD: 2
+  }
+}
